@@ -659,7 +659,7 @@ public class Room {
 					json.put("nextIndex", turnIndex);
 					json.put("startingSuit", startingSuit);
 					json.put("points", points);
-					json.put("isCut", isCut);
+					json.put("cut", isCut);
 
 					sendMessageToAll(new Message(Message.Type.BID,
 							json.toString()));
