@@ -16,7 +16,6 @@ public class GameTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Room game = RoomManagerFactory.getInstance().getRoom("vdppl");
 		
 		System.out.println("Player added:" + game.addPlayer("Hitesh"));

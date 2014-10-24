@@ -32,7 +32,6 @@ public class Message {
 			json.put("type", type.toString().toLowerCase());
 			json.put("message", message);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return json.toString();
