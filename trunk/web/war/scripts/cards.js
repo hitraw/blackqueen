@@ -2,16 +2,17 @@ var partnerSelected = false;
 var trumpSelected = false;
 var partnerCard;
 var trumpCard;
+var myCardArray;
 
 function showCards(cardArray) {
 	console.log(myIndex + ":" + cardArray);
-	players[myIndex].cards = cardArray;
+	myCardArray = cardArray;
 	// clear hand first
 	$('#myHand').html("");
 	var $img;
 	for (var i = 0; i < cardArray.length; i++) {
 		$img = $("<img id='" + cardArray[i] + "'"
-				+ " class='handCard' src='/images/cards/" + cardArray[i]
+				+ " class='handCard unplayable' src='/images/cards/" + cardArray[i]
 				+ ".png'/>")
 				.click(function(){
 					// if it's my turn 
@@ -89,7 +90,7 @@ function checkShowDoneBtn() {
 						u : sessionStorage.username,
 						g : sessionStorage.gameKey,
 						p : partnerCard,
-						t : trumpCard.toUpperCase()
+						t : trumpCard
 					}, function(result) {
 						$('#bidSpec').hide(600);
 					});

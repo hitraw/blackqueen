@@ -68,8 +68,8 @@
 					src="/images/cards/7S.png" /> <img id="6S" class="cardSpec"
 					src="/images/cards/6S.png" /> <img id="5S" class="cardSpec"
 					src="/images/cards/5S.png" /></td>
-				<td class="trumpCell"><img id="spades" class="suitSpec"
-					src="/images/cards/spades.png" /></td>
+				<td class="trumpCell"><img id="S" class="suitSpec"
+					src="/images/cards/S.png" /></td>
 			</tr>
 			<tr>
 				<td class="partnerCell"><img id="AH" class="cardSpec"
@@ -83,8 +83,8 @@
 					src="/images/cards/7H.png" /> <img id="6H" class="cardSpec"
 					src="/images/cards/6H.png" /> <img id="5H" class="cardSpec"
 					src="/images/cards/5H.png" /></td>
-				<td class="trumpCell"><img id="hearts" class="suitSpec"
-					src="/images/cards/hearts.png" /></td>
+				<td class="trumpCell"><img id="H" class="suitSpec"
+					src="/images/cards/H.png" /></td>
 			</tr>
 			<tr>
 				<td class="partnerCell"><img id="AC" class="cardSpec"
@@ -98,8 +98,8 @@
 					src="/images/cards/7C.png" /> <img id="6C" class="cardSpec"
 					src="/images/cards/6C.png" /> <img id="5C" class="cardSpec"
 					src="/images/cards/5C.png" /></td>
-				<td class="trumpCell"><img id="clubs" class="suitSpec"
-					src="/images/cards/clubs.png" /></td>
+				<td class="trumpCell"><img id="C" class="suitSpec"
+					src="/images/cards/C.png" /></td>
 			</tr>
 			<tr>
 				<td class="partnerCell"><img id="AD" class="cardSpec"
@@ -113,8 +113,8 @@
 					src="/images/cards/7D.png" /> <img id="6D" class="cardSpec"
 					src="/images/cards/6D.png" /> <img id="5D" class="cardSpec"
 					src="/images/cards/5D.png" /></td>
-				<td class="trumpCell"><img id="diams" class="suitSpec"
-					src="/images/cards/diams.png" /></td>
+				<td class="trumpCell"><img id="D" class="suitSpec"
+					src="/images/cards/D.png" /></td>
 			</tr>
 		</table>
 	</div>

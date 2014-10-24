@@ -289,7 +289,7 @@ function Player(jsonObj) {
 	this.turn = jsonObj["turn"];
 	this.bid = jsonObj["bid"];
 	this.screenPosition; // position of player on screen (slot 0 -> 7)
-	this.cards; // card array
+	this.pointCards; // card array
 	this.connected;
 
 	this.setPosition = function(screenPos) {

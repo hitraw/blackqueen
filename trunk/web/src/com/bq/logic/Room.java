@@ -132,8 +132,8 @@ public class Room {
 	}
 
 	/**
-	 * Method to end the current game in progress abruptly 
-	 * TODO add code to handle logical completion of game
+	 * Method to end the current game in progress abruptly TODO add code to
+	 * handle logical completion of game
 	 */
 	public void endGame() {
 		// remove robots from player list
@@ -162,7 +162,7 @@ public class Room {
 	public void readyToDeal() {
 		changeStatus(Status.READY_TO_DEAL);
 
-		// capture and rotate turn - don't rotate as of now, 
+		// capture and rotate turn - don't rotate as of now,
 		// TODO later
 		int index = (dealTurnIndex) % players.size();
 		players.get(index).setTurn();
@@ -217,12 +217,15 @@ public class Room {
 				sendMessage(p, new Message(Message.Type.STATUS, getStatus()));
 				// if game has already begun, send the bid spec and other info
 				// e.g. cards on the table
-				if (Status.PLAYING.equals(status)){
-					sendMessage(p,
-							new Message(Message.Type.SPEC, currGame.getBidSpec()));
-//					sendMessage(p,
-//							new Message(Message.Type.STATE, currGame.getRoundInfo()));
-				}	
+				if (Status.PLAYING.equals(status)) {
+					sendMessage(
+							p,
+							new Message(Message.Type.SPEC, currGame
+									.getBidSpec()));
+					// sendMessage(p,
+					// new Message(Message.Type.STATE,
+					// currGame.getRoundInfo()));
+				}
 				sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayers()));
 				sendMessage(p,
 						new Message(Message.Type.CARDS, p.getHandCardsJson()));
@@ -361,11 +364,14 @@ public class Room {
 		private int oppScore;
 		private int maxTarget;
 
+		// for game play
 		private String partnerCard;
 		private Suit trumpSuit;
-
+		private boolean isCut = false;
+		
+		// for bidding
 		private int turnIndex;
-		private int bidderIndex;
+		private int bidWinnerIndex;
 
 		public Game(int turnIndex) {
 			super();
@@ -491,7 +497,7 @@ public class Room {
 				if (p.getBid() > bidTarget) {
 					// make this bid as the highest
 					bidTarget = p.getBid();
-					bidderIndex = playerIndex;
+					bidWinnerIndex = playerIndex;
 
 					// else if next player's existing bid equals highest bid
 				} else if (nextPlayer.getBid() == bidTarget) {
@@ -541,7 +547,7 @@ public class Room {
 
 		public void setBidSpec(String partnerCard, String trumpSuit) {
 			this.partnerCard = partnerCard;
-			this.trumpSuit = Card.Suit.valueOf(trumpSuit.toUpperCase().trim());
+			this.trumpSuit = Card.Suit.getSuitEnum(trumpSuit);
 			changeStatus(Status.PLAYING);
 			sendMessageToAll(new Message(Message.Type.SPEC, getBidSpec()));
 		}
@@ -552,7 +558,7 @@ public class Room {
 				json.put("bidTarget", bidTarget);
 				json.put("oppTarget", oppTarget);
 				json.put("partner", partnerCard);
-				json.put("trump", trumpSuit.toString().toLowerCase());
+				json.put("trump", trumpSuit.getKey());
 
 			} catch (JSONException e) {
 				log.severe("Error in building BID json" + e.getStackTrace());
@@ -592,8 +598,6 @@ public class Room {
 
 		}
 
-		private boolean isCut = false;
-
 		class Round {
 			// list of cards on the table
 			List<Card> table;
@@ -602,34 +606,37 @@ public class Room {
 			Suit startingSuit;
 			Card highestCard;
 			int points;
-			int handWinnerIndex;
-			
+			int roundWinnerIndex;
 
 			private Round(int turnIndex) {
 				table = new ArrayList<Card>();
 				indices = new ArrayList<Integer>();
-				points = 0;handWinnerIndex = 0;
+				points = 0;
+				roundWinnerIndex = 0;
 				highestCard = null;
 				startingSuit = null;
 			}
 
-			private boolean play(int playerIndex, Card c) {
-				Player p= players.get(playerIndex);
-				int cardIndex = p.getHandCards().indexOf(c);
-				
-				if (cardIndex >-1 && validatePlay(p, c)){
+			private boolean play(int playerIndex, int cardIndex) {
+				Player p = players.get(playerIndex);
+				Card c = p.getHandCards().get(cardIndex);
+
+				if (validatePlay(p, c)) {
 					table.add(p.getHandCards().remove(cardIndex));
+
+					// for order, who played which card, not sure if we need
+					// this
 					indices.add(playerIndex);
 					points += c.getPoints();
-					if(isHigher(c,highestCard)){
+
+					if (isHigher(c, highestCard)) {
 						highestCard = c;
-						handWinnerIndex = playerIndex;
+						roundWinnerIndex = playerIndex;
 					}
-					if(table.size() == players.size()){
+					if (table.size() == players.size()) {
 						// declare round(hand) winner;
 						declareRoundWinner();
-					}
-					else{
+					} else {
 						// pass turn
 						p.removeTurn();
 						turnIndex = (playerIndex + 1) % players.size();
@@ -638,8 +645,7 @@ public class Room {
 						sendPlayMessage(playerIndex, c);
 					}
 					return true;
-				}	
-				else
+				} else
 					return false;
 			}
 
@@ -654,8 +660,9 @@ public class Room {
 					json.put("startingSuit", startingSuit);
 					json.put("points", points);
 					json.put("isCut", isCut);
-					
-					sendMessageToAll(new Message(Message.Type.BID, json.toString()));
+
+					sendMessageToAll(new Message(Message.Type.BID,
+							json.toString()));
 				} catch (JSONException e) {
 					log.severe("Error in building BID json" + e.getStackTrace());
 				}
@@ -663,41 +670,44 @@ public class Room {
 
 			private void declareRoundWinner() {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			private boolean validatePlay(Player p, Card c) {
-				if (!p.isTurn()) // check if it's player's turn
+				if (c != null && p != null || !p.isTurn())
+					// check for null objects if it's player's turn
 					return false;
 
 				return true;
 			}
-			
+
 			/**
 			 * 
 			 * @param c1
 			 * @param c2
 			 * @return true if c1 is greater (or equal) to c2
 			 */
-			private boolean isHigher(Card c1, Card c2){
+			private boolean isHigher(Card c1, Card c2) {
 				// if c1 is of the same suit as c2
-				if(c1.getSuit().equals(c2.getSuit())){
-					
+				if (c1.getSuit().equals(c2.getSuit())) {
+
 					// check the card value, if c1 value is greater or equal
-					// equal also because assume c1 is played after c2, 
+					// equal also because assume c1 is played after c2,
 					// so latter wins, if needs to be former change this to >
-					if(c1.getValue() >= c2.getValue())
+					if (c1.getValue() >= c2.getValue())
 						return true;
 					// if same suit but lesser value, c1 is lower
-					else return false;
+					else
+						return false;
 				}
 				// else i.e. if different suit
-				else{
+				else {
 					// if c1 is trump suit, c1 is higher
-					if(c1.getSuit().equals(trumpSuit))
+					if (c1.getSuit().equals(trumpSuit))
 						return true;
 					// else lower
-					else return false;
+					else
+						return false;
 				}
 			}
 		}

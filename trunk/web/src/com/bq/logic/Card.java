@@ -9,17 +9,25 @@ public class Card {
 	private static final String BLACK_QUEEN_CODE = "QS";
 	private static final int BLACK_QUEEN_POINTS = 30;
 
-	enum Suit {SPADES, HEARTS, CLUBS, DIAMS};
-//		SPADES(1), HEARTS(2), CLUBS(3), DIAMS(4);
-//		private final int order;
-//		
-//		private Suit(int order){
-//			this.order = order;
-//		}
-//		
-//		public int getOrder(){
-//			return order;
-//		}
+	enum Suit { 
+		SPADES("S"), HEARTS("H"), CLUBS("C"), DIAMS("D");
+		private final String key;
+		
+		private Suit(String key){
+			this.key = key;
+		}
+		
+		public String getKey(){
+			return key;
+		}
+		
+		public final static Suit getSuitEnum(String key){
+			for(Suit s: Suit.values()){
+				if(s.key.equals(key))
+					return s;
+			}
+			throw new IllegalArgumentException("Invalid Suit Key:"+key);
+		}
 		// when above strings are converted to lower case and surrounded by &
 		// and ; will render the following symbols in HTML
 
@@ -33,7 +41,7 @@ public class Card {
 		// public String getSymbol(){
 		// return this.symbol;
 		// }
-//	}
+	}
 
 	enum Rank {
 		TWO("2", 2, 0), THREE("3", 3, 0), FOUR("4", 4, 0), FIVE("5", 5, 5), SIX(
@@ -60,7 +68,7 @@ public class Card {
 	public Card(Suit suit, Rank rank) {
 		super();
 		this.suit = suit;
-		this.code = rank.key + suit.name().substring(0, 1);
+		this.code = rank.key + suit.key;
 		this.value = rank.value;
 		if (BLACK_QUEEN_CODE.equals(this.code))
 			this.points = BLACK_QUEEN_POINTS;
