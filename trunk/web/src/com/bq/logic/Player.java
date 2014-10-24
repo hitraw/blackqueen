@@ -36,10 +36,10 @@ public class Player {
 	public Player(String name) {
 		super();
 		this.name = name;
-		initializeRound();
+		reset();
 	}
 
-	public void initializeRound() {
+	public void reset() {
 		handCards = new ArrayList<Card>();
 		pointCards = new ArrayList<Card>();
 		loyalty = Loyalty.NEUTRAL;
