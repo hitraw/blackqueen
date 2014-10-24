@@ -134,6 +134,10 @@ function onMessage(result) {
 		// update bid information on the screen
 		manageSpecMessage(JSON.parse(message));
 		break;
+	case MessageType.PLAY:
+		// update play information on the screen
+		managePlayMessage(JSON.parse(message));
+		break;
 	case MessageType.KICK:
 		// show notification, alert and close connection
 		addNotification(message);

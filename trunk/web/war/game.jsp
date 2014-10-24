@@ -135,7 +135,7 @@
 							<tr class="tblRow">
 								<td width="30%">
 									<div class="bidSpec">
-										Partner / Trump
+										Partner &nbsp; | &nbsp;&nbsp; Trump
 										<div id="partnerTrump"></div>
 									</div>
 
