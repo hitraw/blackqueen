@@ -132,8 +132,8 @@ public class Room {
 	}
 
 	/**
-	 * Method to end the current game in progress abruptly TODO add code to
-	 * handle logical completion of game
+	 * Method to end the current game in progress abruptly 
+	 * TODO add code to handle logical completion of game
 	 */
 	public void endGame() {
 		// remove robots from player list
@@ -162,7 +162,8 @@ public class Room {
 	public void readyToDeal() {
 		changeStatus(Status.READY_TO_DEAL);
 
-		// capture and rotate turn - don't rotate as of now, TODO later
+		// capture and rotate turn - don't rotate as of now, 
+		// TODO later
 		int index = (dealTurnIndex) % players.size();
 		players.get(index).setTurn();
 
@@ -370,7 +371,7 @@ public class Room {
 			super();
 			this.turnIndex = turnIndex;
 			for (Player p : players) {
-				p.initializeRound();
+				p.reset();
 			}
 		}
 
@@ -488,7 +489,7 @@ public class Room {
 
 				// if existing player's bid is greater than highest bid
 				if (p.getBid() > bidTarget) {
-					// make this bid as the higest
+					// make this bid as the highest
 					bidTarget = p.getBid();
 					bidderIndex = playerIndex;
 
@@ -596,24 +597,73 @@ public class Room {
 		class Round {
 			// list of cards on the table
 			List<Card> table;
-			Card[] tabCards;
-			Player[] plyrs;
 			// list of playerIndex for order
 			List<Integer> indices;
-			int highestCardIndex;
+			Suit startingSuit;
 			Card highestCard;
-			Suit startinSuit;
+			int points;
+			int handWinnerIndex;
+			
 
 			private Round(int turnIndex) {
-				tabCards = new Card[players.size()];
+				table = new ArrayList<Card>();
+				indices = new ArrayList<Integer>();
+				points = 0;handWinnerIndex = 0;
+				highestCard = null;
+				startingSuit = null;
 			}
 
-			private boolean play(Player p, Card c) {
-				if (validatePlay(p, c))
-
+			private boolean play(int playerIndex, Card c) {
+				Player p= players.get(playerIndex);
+				int cardIndex = p.getHandCards().indexOf(c);
+				
+				if (cardIndex >-1 && validatePlay(p, c)){
+					table.add(p.getHandCards().remove(cardIndex));
+					indices.add(playerIndex);
+					points += c.getPoints();
+					if(isHigher(c,highestCard)){
+						highestCard = c;
+						handWinnerIndex = playerIndex;
+					}
+					if(table.size() == players.size()){
+						// declare round(hand) winner;
+						declareRoundWinner();
+					}
+					else{
+						// pass turn
+						p.removeTurn();
+						turnIndex = (playerIndex + 1) % players.size();
+						players.get(turnIndex).setTurn();
+						// send play message
+						sendPlayMessage(playerIndex, c);
+					}
 					return true;
+				}	
 				else
 					return false;
+			}
+
+			private void sendPlayMessage(int currentIndex, Card c) {
+
+				JSONObject json = new JSONObject();
+				try {
+					json.put("card", c.getCode());
+					json.put("highestCard", highestCard);
+					json.put("currentIndex", currentIndex);
+					json.put("nextIndex", turnIndex);
+					json.put("startingSuit", startingSuit);
+					json.put("points", points);
+					json.put("isCut", isCut);
+					
+					sendMessageToAll(new Message(Message.Type.BID, json.toString()));
+				} catch (JSONException e) {
+					log.severe("Error in building BID json" + e.getStackTrace());
+				}
+			}
+
+			private void declareRoundWinner() {
+				// TODO Auto-generated method stub
+				
 			}
 
 			private boolean validatePlay(Player p, Card c) {
@@ -621,6 +671,34 @@ public class Room {
 					return false;
 
 				return true;
+			}
+			
+			/**
+			 * 
+			 * @param c1
+			 * @param c2
+			 * @return true if c1 is greater (or equal) to c2
+			 */
+			private boolean isHigher(Card c1, Card c2){
+				// if c1 is of the same suit as c2
+				if(c1.getSuit().equals(c2.getSuit())){
+					
+					// check the card value, if c1 value is greater or equal
+					// equal also because assume c1 is played after c2, 
+					// so latter wins, if needs to be former change this to >
+					if(c1.getValue() >= c2.getValue())
+						return true;
+					// if same suit but lesser value, c1 is lower
+					else return false;
+				}
+				// else i.e. if different suit
+				else{
+					// if c1 is trump suit, c1 is higher
+					if(c1.getSuit().equals(trumpSuit))
+						return true;
+					// else lower
+					else return false;
+				}
 			}
 		}
 	}
