@@ -246,7 +246,7 @@ function showBidControl(highestBid) {
 	$('#bidControl1').append($img);
 	$('#bidControl1').append("<br/>");
 
-	for (var bid = highestBid + 5, count = 0; bid < maxBid && count < 16; bid += 5, count++) {
+	for (var bid = highestBid + 5, count = 0; bid < maxBid && count < 20; bid += 5, count++) {
 		$img = $(
 				"<input type='button' id='bidBtn" + bid
 						+ "' class='button green bidButton' value='" + bid

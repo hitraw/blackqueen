@@ -335,7 +335,7 @@
 							</tr>
 
 							<!-- My cards -->
-							<tr height="100px">
+							<tr height="110px">
 								<td colspan="3">
 									<div id="myHand"></div>
 								</td>
