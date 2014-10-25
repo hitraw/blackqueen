@@ -8,15 +8,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.bq.logic.Message;
 import com.bq.logic.Room;
 import com.bq.room.manager.RoomManagerFactory;
 
 @SuppressWarnings("serial")
 public class PlayServlet extends HttpServlet {
 
-	private static Logger log = Logger.getLogger(PlayServlet.class
-			.getName());
+	private static Logger log = Logger.getLogger(PlayServlet.class.getName());
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -34,16 +32,23 @@ public class PlayServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String username = req.getParameter("u");
-		String gameKey = req.getParameter("g");
-		String m = req.getParameter("m");
-		Room game = RoomManagerFactory.getInstance().getRoom(gameKey);
-
-		Message message = new Message(Message.Type.PLAY, username + ": "+m);
-		log.info(message.toString());
-		game.sendMessageToAll(message);
+		String roomName = req.getParameter("g");
+		String playerIndex = req.getParameter("i");
+		String cardIndex = req.getParameter("c");
 		
+		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
+
+		log.info("Player " + playerIndex + ":" + username + " played card "
+				+ cardIndex + " from his hand");
 		resp.setContentType("text/plain");
-		resp.getWriter().println("Message sent");
+
+		if (room.play(playerIndex, cardIndex)) {
+			resp.setStatus(200);
+			resp.getWriter().println("Card played successfully");
+		} else {
+			resp.setStatus(401);
+			resp.getWriter().println("Invalid Card");
+		}
 
 	}
 

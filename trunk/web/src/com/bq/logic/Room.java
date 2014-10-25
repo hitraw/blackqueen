@@ -352,12 +352,25 @@ public class Room {
 		currGame.setBidSpec(partner, trump);
 	}
 
+	public boolean play(String strPlayerIndex, String card) {
+		try {
+			int playerIndex = Integer.parseInt(strPlayerIndex);
+			return currGame.currRound.play(playerIndex, card);
+		} catch (Exception e) {
+			log.severe("Error in playing card");
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	class Game {
 
 		private final int PASS = -1; // pass bid
 
+		// this is for scoreboard, will hold final player points for this game
 		private List<Integer> points;
 
+		// for bid and game play
 		private int bidTarget;
 		private int oppTarget;
 		private int bidScore;
@@ -368,10 +381,12 @@ public class Room {
 		private String partnerCard;
 		private Suit trumpSuit;
 		private boolean isCut = false;
-		
+
 		// for bidding
 		private int turnIndex;
 		private int bidWinnerIndex;
+
+		private Round currRound;
 
 		public Game(int turnIndex) {
 			super();
@@ -550,6 +565,7 @@ public class Room {
 			this.trumpSuit = Card.Suit.getSuitEnum(trumpSuit);
 			changeStatus(Status.PLAYING);
 			sendMessageToAll(new Message(Message.Type.SPEC, getBidSpec()));
+			currRound = new Round();
 		}
 
 		private String getBidSpec() {
@@ -558,7 +574,7 @@ public class Room {
 				json.put("bidTarget", bidTarget);
 				json.put("oppTarget", oppTarget);
 				json.put("partner", partnerCard);
-				json.put("trump", trumpSuit.getKey());
+				json.put("trump", trumpSuit.getShortCode());
 
 			} catch (JSONException e) {
 				log.severe("Error in building BID json" + e.getStackTrace());
@@ -595,7 +611,6 @@ public class Room {
 			else {
 				// game goes on.
 			}
-
 		}
 
 		class Round {
@@ -605,10 +620,12 @@ public class Room {
 			List<Integer> indices;
 			Suit startingSuit;
 			Card highestCard;
-			int points;
 			int roundWinnerIndex;
 
-			private Round(int turnIndex) {
+			// total no. of points till now in this round/hand
+			int points;
+
+			private Round() {
 				table = new ArrayList<Card>();
 				indices = new ArrayList<Integer>();
 				points = 0;
@@ -617,22 +634,37 @@ public class Room {
 				startingSuit = null;
 			}
 
-			private boolean play(int playerIndex, int cardIndex) {
+			private boolean play(int playerIndex, String card) {
 				Player p = players.get(playerIndex);
+
+				int cardIndex = p.getCardIndex(card);
+				log.info("cardIndex="+cardIndex);
 				Card c = p.getHandCards().get(cardIndex);
+
+				/*
+				 * we are retrieving index first and then card from that index,
+				 * not operating on card directly because there might be 2 cards
+				 * with same code in this player's hand and we don't want to
+				 * remove both, when he is playing only 1 hence retrieving index
+				 * of first and playing that one
+				 */
 
 				if (validatePlay(p, c)) {
 					table.add(p.getHandCards().remove(cardIndex));
 
 					// for order, who played which card, not sure if we need
-					// this
 					indices.add(playerIndex);
 					points += c.getPoints();
 
+					if(startingSuit == null)
+						startingSuit = c.getSuit();
+					
 					if (isHigher(c, highestCard)) {
 						highestCard = c;
 						roundWinnerIndex = playerIndex;
 					}
+					
+
 					if (table.size() == players.size()) {
 						// declare round(hand) winner;
 						declareRoundWinner();
@@ -654,17 +686,17 @@ public class Room {
 				JSONObject json = new JSONObject();
 				try {
 					json.put("card", c.getCode());
-					json.put("highestCard", highestCard);
+					json.put("highestCard", highestCard.getCode());
 					json.put("currentIndex", currentIndex);
 					json.put("nextIndex", turnIndex);
-					json.put("startingSuit", startingSuit);
+					json.put("startingSuit", startingSuit.getShortCode());
 					json.put("points", points);
 					json.put("cut", isCut);
 
-					sendMessageToAll(new Message(Message.Type.BID,
+					sendMessageToAll(new Message(Message.Type.PLAY,
 							json.toString()));
 				} catch (JSONException e) {
-					log.severe("Error in building BID json" + e.getStackTrace());
+					log.severe("Error in building PLAY json" + e.getStackTrace());
 				}
 			}
 
@@ -674,9 +706,12 @@ public class Room {
 			}
 
 			private boolean validatePlay(Player p, Card c) {
-				if (c != null && p != null || !p.isTurn())
+				if (c == null || p == null || !p.isTurn())
 					// check for null objects if it's player's turn
 					return false;
+				
+				// TODO: add more server side validation based on logic from 
+				// setPlayableCards in cards.js 
 
 				return true;
 			}
@@ -688,29 +723,32 @@ public class Room {
 			 * @return true if c1 is greater (or equal) to c2
 			 */
 			private boolean isHigher(Card c1, Card c2) {
-				// if c1 is of the same suit as c2
-				if (c1.getSuit().equals(c2.getSuit())) {
+				if (c1 != null && c2 != null) {
+					// if c1 is of the same suit as c2
+					if (c1.getSuit().equals(c2.getSuit())) {
 
-					// check the card value, if c1 value is greater or equal
-					// equal also because assume c1 is played after c2,
-					// so latter wins, if needs to be former change this to >
-					if (c1.getValue() >= c2.getValue())
-						return true;
-					// if same suit but lesser value, c1 is lower
-					else
-						return false;
-				}
-				// else i.e. if different suit
-				else {
-					// if c1 is trump suit, c1 is higher
-					if (c1.getSuit().equals(trumpSuit))
-						return true;
-					// else lower
-					else
-						return false;
-				}
+						// check the card value, if c1 value is greater or equal
+						// equal also because assume c1 is played after c2,
+						// so latter wins, if needs to be former change this to
+						// >
+						if (c1.getValue() >= c2.getValue())
+							return true;
+						// if same suit but lesser value, c1 is lower
+						else
+							return false;
+					}
+					// else i.e. if different suit
+					else {
+						// if c1 is trump suit, c1 is higher
+						if (c1.getSuit().equals(trumpSuit))
+							return true;
+						// else lower
+						else
+							return false;
+					}
+				} else
+					return true;
 			}
 		}
 	}
-
 }

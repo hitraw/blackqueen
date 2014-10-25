@@ -210,4 +210,13 @@ public class Player {
 		this.bid = bid;
 	}
 
+	public int getCardIndex(String card) {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < handCards.size(); i++) {
+			if (card.equals(handCards.get(i).getCode()))
+				return i;
+		}
+		return -1;
+	}
+
 }

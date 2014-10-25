@@ -11,22 +11,22 @@ public class Card {
 
 	enum Suit { 
 		SPADES("S"), HEARTS("H"), CLUBS("C"), DIAMS("D");
-		private final String key;
+		private final String shortCode;
 		
-		private Suit(String key){
-			this.key = key;
+		private Suit(String shortCode){
+			this.shortCode = shortCode;
 		}
 		
-		public String getKey(){
-			return key;
+		public String getShortCode(){
+			return shortCode;
 		}
 		
-		public final static Suit getSuitEnum(String key){
+		public final static Suit getSuitEnum(String shortCode){
 			for(Suit s: Suit.values()){
-				if(s.key.equals(key))
+				if(s.shortCode.equals(shortCode))
 					return s;
 			}
-			throw new IllegalArgumentException("Invalid Suit Key:"+key);
+			throw new IllegalArgumentException("Invalid Suit Key:"+shortCode);
 		}
 		// when above strings are converted to lower case and surrounded by &
 		// and ; will render the following symbols in HTML
@@ -68,7 +68,7 @@ public class Card {
 	public Card(Suit suit, Rank rank) {
 		super();
 		this.suit = suit;
-		this.code = rank.key + suit.key;
+		this.code = rank.key + suit.shortCode;
 		this.value = rank.value;
 		if (BLACK_QUEEN_CODE.equals(this.code))
 			this.points = BLACK_QUEEN_POINTS;
