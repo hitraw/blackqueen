@@ -34,15 +34,15 @@ public class PlayServlet extends HttpServlet {
 		String username = req.getParameter("u");
 		String roomName = req.getParameter("g");
 		String playerIndex = req.getParameter("i");
-		String cardIndex = req.getParameter("c");
+		String card = req.getParameter("c");
 		
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
 
-		log.info("Player " + playerIndex + ":" + username + " played card "
-				+ cardIndex + " from his hand");
+		log.info("Player " + playerIndex + ":" + username + " played "
+				+ card + ".");
 		resp.setContentType("text/plain");
 
-		if (room.play(playerIndex, cardIndex)) {
+		if (room.play(playerIndex, card)) {
 			resp.setStatus(200);
 			resp.getWriter().println("Card played successfully");
 		} else {
