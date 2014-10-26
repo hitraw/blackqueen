@@ -251,7 +251,7 @@ function showBidControl(highestBid) {
 				"<input type='button' id='bidBtn" + bid
 						+ "' class='button green bidButton' value='" + bid
 						+ "'/>").click(function() {
-			console.log("calling /bid: " + bid);
+			console.log("calling /bid: " + $(this).val());
 			$.post('/bid', {
 				u : sessionStorage.username,
 				g : sessionStorage.gameKey,

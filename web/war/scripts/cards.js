@@ -8,21 +8,31 @@ var startingSuit;
 var isCut;
 var points;
 var myCardArray;
+var tableCardArray;
+var highestCard;
+var tableTop = 300;
+var tableLeft = 450;
 
+// defining endsWith function for strings
 if (typeof String.prototype.endsWith !== 'function') {
 	String.prototype.endsWith = function(suffix) {
 		return this.indexOf(suffix, this.length - suffix.length) !== -1;
 	};
 }
 
+/**
+ * This method displays the cards dealt to this player (me)
+ * @param cardArray
+ */
 function showCards(cardArray) {
 	myCardArray = cardArray;
 	// clear hand first
 	$('#myHand').html("");
 	var $img;
 	for (var i = 0; i < cardArray.length; i++) {
-		// id is array index appended to keyword card
-		// so card0 to card9 or card15
+		// id is array index and card code appended to keyword myCard
+		// e.g. myCard0-AS, we need index and code both, b'coz code can repeat
+		// and we can't use only index, as they change on server side
 		var id = 'myCard'+i+"-"+cardArray[i];
 		$img = $(
 				"<div id='" + id
@@ -33,10 +43,10 @@ function showCards(cardArray) {
 			if (players[myIndex].turn) {
 				// if I've clicked on a playable card
 				if ($(this).hasClass('playable')) {
-					var cardId = $(this).prop('id');
+					var $card = $(this);
+					var cardId = $card.prop('id');
 					var splitArray = cardId.split("-");
 					cardCode = splitArray[1]; 
-					// cardCode.replace(/myCard/g/, "")
 					$.post('/play', {
 						u : sessionStorage.username,
 						g : sessionStorage.gameKey,
@@ -44,17 +54,56 @@ function showCards(cardArray) {
 						i : myIndex
 					}, function(result) {
 						// remove 1 card from array at this position
+						console.log("played card successfully, now remove from hand");
+						console.log("outside action position of card on screen:");
+						
+						var offset = $card.offset();
+						console.log("bfr repos: card: top: "+ $card.offset().top +", left:" + $card.offset().left);
+						$card.detach().appendTo('#cardMat');
+						$('#cardMat').show();
+						console.log("aft repos: card: top: "+ $card.offset().top +", left:" + $card.offset().left);
+						$card.offset(offset);
+						console.log("aft adjus: card: top: "+ $card.offset().top +", left:" + $card.offset().left);
+						tableTop = $('#cardMat').offset().top;
+						tableLeft = $('#cardMat').offset().left;
+						var offset = $card.offset();
+						console.log("mat: top: "+ tableTop +", left:" + tableLeft);
+						console.log("card: top: "+ offset.top +", left:" + offset.left);
+						
+						var move = "{'margin-top': '"
+							+ (Math.round(tableTop - offset.top))
+							+ "px', 'margin-left': '"
+							+ (Math.round(tableLeft - offset.left))
+							+ "px'}";
+						console.log("move="+move);
+						var moveTop = tableTop - offset.top;
+						var moveLeft = offset.left - tableLeft;
+						
+						$card.removeClass('handCard playable')
+							.addClass('tableCard').animate(
+//							{'margin-top':'-190px', 'margin-left':'370px'}
+//							{
+//						top : '-=' + moveTop,
+//						left : '-=50'
+//						}
+					move
+					, 500);
+						
 						var cardIndex = cardArray.indexOf(cardCode);
 						myCardArray = cardArray.splice(cardIndex, 1);
+						
 						// TODO: show animation card moving up
 						// for now, just hide
-						$(this).hide();
+						
 					}).error(function() {
 						console.log("error in playing card");
 						addNotification("You played an invalid card.");
 						// TODO display error message: invalid move
 					});
-					// TODO: show animation, card moving up
+					// TODO: show animation, card moving up slightly now
+					// and to the table on success above
+//					$(this).animate({'margin-top':'-50px'}, 500);
+					
 				} else {
 					// TODO display error message you can't play this card
 					// if startingSuit is null, it could only mean you're
@@ -184,7 +233,7 @@ function setPlayableCards() {
 	// i.e. if I am starting this round
 	if (startingSuit === undefined || startingSuit === null) {
 		console.log("I am starting this round");
-		// it it has been cut, everything is playable
+		// if it has been cut, everything is playable
 		if (isCut)
 			$('.handCard').removeClass('unplayable').addClass('playable');
 
@@ -252,7 +301,7 @@ function setPlayableCards() {
 
 function managePlayMessage(json) {
 	var card = json["card"];
-	var highestCard = json["highestCard"];
+	var newHighestCard = json["highestCard"];
 	var playerIndex = json["currentIndex"];
 	var nextIndex = json["nextIndex"];
 	startingSuit = json["startingSuit"];
@@ -272,8 +321,11 @@ function managePlayMessage(json) {
 
 	// TODO add card animation logic in place of following
 	addNotification(players[playerIndex].name + " played " + card + ".");
+	//playCardAnimation();
 
+//	if(playerIndex !== myIndex)
 	disableHandCards();
+	console.log("myIndex=" + myIndex + " ::: nextIndex=" + nextIndex);
 	if (myIndex === nextIndex)
 		setPlayableCards();
 }
