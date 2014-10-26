@@ -5,7 +5,8 @@
 <head>
 <meta charset="utf-8">
 <title>Black Queen</title>
-<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Trochut:700'>
+<link rel='stylesheet'
+	href='http://fonts.googleapis.com/css?family=Trochut:700'>
 <link rel="stylesheet" href="css/home.css">
 <link rel="stylesheet" href="css/style.css">
 <script src="/_ah/channel/jsapi" type="text/javascript"></script>
@@ -34,95 +35,98 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<input type="hidden" id='token'
 		value='<%=request.getAttribute("token")%>' />
-
-	<div id="bidSpecSelector">
-
-		<table class="bidTable">
-			<tr>
-				<td width="20%"><div id="doneBtn"></div></td>
-				<td width="60%"><div id="bidTitle"></div></td>
-				<td width="20%"><div id="bidValue"></div></td>
-			</tr>
-		</table>
-
-		<hr />
-
-		<table class="bidTable">
-			<tr>
-				<th class="partnerCell">Partner</th>
-				<th class="trumpCell">Trump</th>
-			</tr>
-			<tr>
-			<tr>
-				<td class="partnerCell"><img id="AS" class="cardSpec"
-					src="/images/cards/AS.png" /> <img id="KS" class="cardSpec"
-					src="/images/cards/KS.png" /> <img id="QS" class="cardSpec"
-					src="/images/cards/QS.png" /> <img id="JS" class="cardSpec"
-					src="/images/cards/JS.png" /> <img id="10S" class="cardSpec"
-					src="/images/cards/10S.png" /> <img id="9S" class="cardSpec"
-					src="/images/cards/9S.png" /> <img id="8S" class="cardSpec"
-					src="/images/cards/8S.png" /> <img id="7S" class="cardSpec"
-					src="/images/cards/7S.png" /> <img id="6S" class="cardSpec"
-					src="/images/cards/6S.png" /> <img id="5S" class="cardSpec"
-					src="/images/cards/5S.png" /></td>
-				<td class="trumpCell"><img id="S" class="suitSpec"
-					src="/images/cards/S.png" /></td>
-			</tr>
-			<tr>
-				<td class="partnerCell"><img id="AH" class="cardSpec"
-					src="/images/cards/AH.png" /> <img id="KH" class="cardSpec"
-					src="/images/cards/KH.png" /> <img id="QH" class="cardSpec"
-					src="/images/cards/QH.png" /> <img id="JH" class="cardSpec"
-					src="/images/cards/JH.png" /> <img id="10H" class="cardSpec"
-					src="/images/cards/10H.png" /> <img id="9H" class="cardSpec"
-					src="/images/cards/9H.png" /> <img id="8H" class="cardSpec"
-					src="/images/cards/8H.png" /> <img id="7H" class="cardSpec"
-					src="/images/cards/7H.png" /> <img id="6H" class="cardSpec"
-					src="/images/cards/6H.png" /> <img id="5H" class="cardSpec"
-					src="/images/cards/5H.png" /></td>
-				<td class="trumpCell"><img id="H" class="suitSpec"
-					src="/images/cards/H.png" /></td>
-			</tr>
-			<tr>
-				<td class="partnerCell"><img id="AC" class="cardSpec"
-					src="/images/cards/AC.png" /> <img id="KC" class="cardSpec"
-					src="/images/cards/KC.png" /> <img id="QC" class="cardSpec"
-					src="/images/cards/QC.png" /> <img id="JC" class="cardSpec"
-					src="/images/cards/JC.png" /> <img id="10C" class="cardSpec"
-					src="/images/cards/10C.png" /> <img id="9C" class="cardSpec"
-					src="/images/cards/9C.png" /> <img id="8C" class="cardSpec"
-					src="/images/cards/8C.png" /> <img id="7C" class="cardSpec"
-					src="/images/cards/7C.png" /> <img id="6C" class="cardSpec"
-					src="/images/cards/6C.png" /> <img id="5C" class="cardSpec"
-					src="/images/cards/5C.png" /></td>
-				<td class="trumpCell"><img id="C" class="suitSpec"
-					src="/images/cards/C.png" /></td>
-			</tr>
-			<tr>
-				<td class="partnerCell"><img id="AD" class="cardSpec"
-					src="/images/cards/AD.png" /> <img id="KD" class="cardSpec"
-					src="/images/cards/KD.png" /> <img id="QD" class="cardSpec"
-					src="/images/cards/QD.png" /> <img id="JD" class="cardSpec"
-					src="/images/cards/JD.png" /> <img id="10D" class="cardSpec"
-					src="/images/cards/10D.png" /> <img id="9D" class="cardSpec"
-					src="/images/cards/9D.png" /> <img id="8D" class="cardSpec"
-					src="/images/cards/8D.png" /> <img id="7D" class="cardSpec"
-					src="/images/cards/7D.png" /> <img id="6D" class="cardSpec"
-					src="/images/cards/6D.png" /> <img id="5D" class="cardSpec"
-					src="/images/cards/5D.png" /></td>
-				<td class="trumpCell"><img id="D" class="suitSpec"
-					src="/images/cards/D.png" /></td>
-			</tr>
-		</table>
-	</div>
 
 	<div id="room">
 		<table id="roomTable">
 			<tr>
 				<td width="900">
+
+					<div id="bidSpecContainer" align="center">
+						<div id="bidSpecSelector">
+
+							<table class="bidTable">
+								<tr>
+									<td width="20%"><div id="doneBtn"></div></td>
+									<td width="60%"><div id="bidTitle"></div></td>
+									<td width="20%"><div id="bidValue"></div></td>
+								</tr>
+							</table>
+
+							<hr />
+
+							<table class="bidTable">
+								<tr>
+									<th class="partnerCell">Partner</th>
+									<th class="trumpCell">Trump</th>
+								</tr>
+								<tr>
+								<tr>
+									<td class="partnerCell"><img id="AS" class="cardSpec"
+										src="/images/cards/AS.png" /> <img id="KS" class="cardSpec"
+										src="/images/cards/KS.png" /> <img id="QS" class="cardSpec"
+										src="/images/cards/QS.png" /> <img id="JS" class="cardSpec"
+										src="/images/cards/JS.png" /> <img id="10S" class="cardSpec"
+										src="/images/cards/10S.png" /> <img id="9S" class="cardSpec"
+										src="/images/cards/9S.png" /> <img id="8S" class="cardSpec"
+										src="/images/cards/8S.png" /> <img id="7S" class="cardSpec"
+										src="/images/cards/7S.png" /> <img id="6S" class="cardSpec"
+										src="/images/cards/6S.png" /> <img id="5S" class="cardSpec"
+										src="/images/cards/5S.png" /></td>
+									<td class="trumpCell"><img id="S" class="suitSpec"
+										src="/images/cards/S.png" /></td>
+								</tr>
+								<tr>
+									<td class="partnerCell"><img id="AH" class="cardSpec"
+										src="/images/cards/AH.png" /> <img id="KH" class="cardSpec"
+										src="/images/cards/KH.png" /> <img id="QH" class="cardSpec"
+										src="/images/cards/QH.png" /> <img id="JH" class="cardSpec"
+										src="/images/cards/JH.png" /> <img id="10H" class="cardSpec"
+										src="/images/cards/10H.png" /> <img id="9H" class="cardSpec"
+										src="/images/cards/9H.png" /> <img id="8H" class="cardSpec"
+										src="/images/cards/8H.png" /> <img id="7H" class="cardSpec"
+										src="/images/cards/7H.png" /> <img id="6H" class="cardSpec"
+										src="/images/cards/6H.png" /> <img id="5H" class="cardSpec"
+										src="/images/cards/5H.png" /></td>
+									<td class="trumpCell"><img id="H" class="suitSpec"
+										src="/images/cards/H.png" /></td>
+								</tr>
+								<tr>
+									<td class="partnerCell"><img id="AC" class="cardSpec"
+										src="/images/cards/AC.png" /> <img id="KC" class="cardSpec"
+										src="/images/cards/KC.png" /> <img id="QC" class="cardSpec"
+										src="/images/cards/QC.png" /> <img id="JC" class="cardSpec"
+										src="/images/cards/JC.png" /> <img id="10C" class="cardSpec"
+										src="/images/cards/10C.png" /> <img id="9C" class="cardSpec"
+										src="/images/cards/9C.png" /> <img id="8C" class="cardSpec"
+										src="/images/cards/8C.png" /> <img id="7C" class="cardSpec"
+										src="/images/cards/7C.png" /> <img id="6C" class="cardSpec"
+										src="/images/cards/6C.png" /> <img id="5C" class="cardSpec"
+										src="/images/cards/5C.png" /></td>
+									<td class="trumpCell"><img id="C" class="suitSpec"
+										src="/images/cards/C.png" /></td>
+								</tr>
+								<tr>
+									<td class="partnerCell"><img id="AD" class="cardSpec"
+										src="/images/cards/AD.png" /> <img id="KD" class="cardSpec"
+										src="/images/cards/KD.png" /> <img id="QD" class="cardSpec"
+										src="/images/cards/QD.png" /> <img id="JD" class="cardSpec"
+										src="/images/cards/JD.png" /> <img id="10D" class="cardSpec"
+										src="/images/cards/10D.png" /> <img id="9D" class="cardSpec"
+										src="/images/cards/9D.png" /> <img id="8D" class="cardSpec"
+										src="/images/cards/8D.png" /> <img id="7D" class="cardSpec"
+										src="/images/cards/7D.png" /> <img id="6D" class="cardSpec"
+										src="/images/cards/6D.png" /> <img id="5D" class="cardSpec"
+										src="/images/cards/5D.png" /></td>
+									<td class="trumpCell"><img id="D" class="suitSpec"
+										src="/images/cards/D.png" /></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+
 					<div id="gameTableContainer" align="center">
 
 						<table id="gameTable">
@@ -348,22 +352,22 @@
 
 				<td>
 					<div id="boardContainer" align="right">
-					
+
 						<div id="notifWindow" class="logWindow">
-						<div class="header">&nbsp;Notifications</div>
+							<div class="header">&nbsp;Notifications</div>
 							<div id="notifLog" class="log">
 								<ul id="lsNotif" class="list">
 								</ul>
 							</div>
 						</div>
-				 	<div id="pointsWindow" class="logWindow">
+						<div id="pointsWindow" class="logWindow">
 							<div class="header">&nbsp;Points</div>
 							<div id="pointsLog" class="log">
 								<ul id="lsPoints" class="list">
 								</ul>
 							</div>
 						</div>
-						
+
 						<div id="chatWindow" class="logWindow">
 							<div class="header">&nbsp;Chat</div>
 							<div id="chatLog">
