@@ -10,8 +10,20 @@ var points;
 var myCardArray;
 var tableCardArray;
 var highestCard;
-var tableTop = 300;
-var tableLeft = 450;
+var tableTop = 200;
+var tableLeft = 400;
+var $myCard;
+
+var cardpos = [	// array of card positions for players 0 to 7
+           {top: 300, left: 415},
+           {top: 250, left: 350},
+           {top: 210, left: 350},
+           {top: 170, left: 350},
+           {top: 145, left: 415},
+           {top: 170, left: 480},
+           {top: 210, left: 480},
+           {top: 250, left: 480}
+          ];
 
 // defining endsWith function for strings
 if (typeof String.prototype.endsWith !== 'function') {
@@ -25,7 +37,7 @@ if (typeof String.prototype.endsWith !== 'function') {
  * @param cardArray
  */
 function showCards(cardArray) {
-	myCardArray = cardArray;
+	myCardArray = new Array();
 	// clear hand first
 	$('#myHand').html("");
 	var $img;
@@ -34,6 +46,7 @@ function showCards(cardArray) {
 		// e.g. myCard0-AS, we need index and code both, b'coz code can repeat
 		// and we can't use only index, as they change on server side
 		var id = 'myCard'+i+"-"+cardArray[i];
+		myCardArray.push(id);
 		$img = $(
 				"<div id='" + id
 						+ "' " // style='z-index:" + i + "'
@@ -43,10 +56,10 @@ function showCards(cardArray) {
 			if (players[myIndex].turn) {
 				// if I've clicked on a playable card
 				if ($(this).hasClass('playable')) {
-					var $card = $(this);
-					var cardId = $card.prop('id');
+					$myCard = $(this);
+					var cardId = $myCard.prop('id');
 					var splitArray = cardId.split("-");
-					cardCode = splitArray[1]; 
+					var cardCode = splitArray[1]; 
 					$.post('/play', {
 						u : sessionStorage.username,
 						g : sessionStorage.gameKey,
@@ -55,46 +68,42 @@ function showCards(cardArray) {
 					}, function(result) {
 						// remove 1 card from array at this position
 						console.log("played card successfully, now remove from hand");
-						console.log("outside action position of card on screen:");
+						// do we even need to maintain myCardArray?? 
+						// YES!!! we use this in setPlayable to check which cards
+						// remain in our hand  
+						// comment for now TODO: check later
+						var cardIndex = myCardArray.indexOf(cardId);
+						myCardArray.splice(cardIndex, 1);
 						
-						var offset = $card.offset();
-						console.log("bfr repos: card: top: "+ $card.offset().top +", left:" + $card.offset().left);
-						$card.detach().appendTo('#cardMat');
-						$('#cardMat').show();
-						console.log("aft repos: card: top: "+ $card.offset().top +", left:" + $card.offset().left);
-						$card.offset(offset);
-						console.log("aft adjus: card: top: "+ $card.offset().top +", left:" + $card.offset().left);
-						tableTop = $('#cardMat').offset().top;
-						tableLeft = $('#cardMat').offset().left;
-						var offset = $card.offset();
-						console.log("mat: top: "+ tableTop +", left:" + tableLeft);
-						console.log("card: top: "+ offset.top +", left:" + offset.left);
+						// retrieve and store the offset in a temp variable
+						// because it's gonna change after moving it to #cardMat
+						var offset = $myCard.offset();
+
+						// adjust classes of the card 
+						$myCard.removeClass('handCard playable')
+							.addClass('tableCard');
 						
-						var move = "{'margin-top': '"
-							+ (Math.round(tableTop - offset.top))
-							+ "px', 'margin-left': '"
-							+ (Math.round(tableLeft - offset.left))
-							+ "px'}";
-						console.log("move="+move);
-						var moveTop = tableTop - offset.top;
-						var moveLeft = offset.left - tableLeft;
+						// detach $card from #myHand and attach it to #cardMat
+						$myCard.detach().appendTo('#cardMat');
+
+						// #cardMat might be hidden, let's show it!
+						$('#cardMat').show(); 
 						
-						$card.removeClass('handCard playable')
-							.addClass('tableCard').animate(
-//							{'margin-top':'-190px', 'margin-left':'370px'}
-//							{
-//						top : '-=' + moveTop,
-//						left : '-=50'
-//						}
-					move
-					, 500);
+						// assign it's old position back to the card, so we
+						// can show it getting animated from there itself!
+						$myCard.offset(offset);
 						
-						var cardIndex = cardArray.indexOf(cardCode);
-						myCardArray = cardArray.splice(cardIndex, 1);
+//						console.log("source: top: "+ offset.top +", left:" + offset.left);
+//						console.log("target: top: "+ cardpos[0].top +", left:" + cardpos[0].left);
+	
+						// build our move string
+						var moveTop = Math.round(cardpos[0].top - offset.top);
+						var moveLeft = Math.round(cardpos[0].left - offset.left);
 						
-						// TODO: show animation card moving up
-						// for now, just hide
-						
+						// move the card
+						$myCard.animate(
+							{'margin-top': moveTop + 'px', 'margin-left': moveLeft + 'px'}
+							, 500);
 					}).error(function() {
 						console.log("error in playing card");
 						addNotification("You played an invalid card.");
@@ -232,7 +241,7 @@ function setPlayableCards() {
 	// if startingSuit is null/undefined
 	// i.e. if I am starting this round
 	if (startingSuit === undefined || startingSuit === null) {
-		console.log("I am starting this round");
+		console.log("I am starting this round. cut="+isCut);
 		// if it has been cut, everything is playable
 		if (isCut)
 			$('.handCard').removeClass('unplayable').addClass('playable');
@@ -242,19 +251,24 @@ function setPlayableCards() {
 
 			// let's assume I have don't have non trump cards
 			var hasNonTrump = false;
+			
+			console.log("myCardArray:"+myCardArray);
 
 			// iterate through each card in hand
-			for ( var i in myCardArray) {
+			for (var i in myCardArray) {
 
-				card = myCardArray[i];
+				var cardId = myCardArray[i];
+				var splitArray = cardId.split("-");
+				card = splitArray[1];
 
+//				console.log("card:"+card);
+//				console.log("trumpSuit:"+trumpSuit);
+				
 				// if this card is not a trump suit
 				if (!card.endsWith(trumpSuit)) {
 
-					// console.log(card + " DOESN'T end with " + trumpSuit);
 					// make it playable
-					var id = '#myCard' + i + "-" + myCardArray[i];
-					$(id).removeClass('unplayable').addClass('playable');
+					$('#'+ cardId).removeClass('unplayable').addClass('playable');
 
 					// refute assumption that i don't have any
 					// non trump & flag that I have at least one
@@ -278,14 +292,16 @@ function setPlayableCards() {
 
 		// iterate through each card in hand
 		for ( var i in myCardArray) {
-			card = myCardArray[i];
+			var cardId = myCardArray[i];
+			var splitArray = cardId.split("-");
+			card = splitArray[1];
 
 			// so if this card is same as starting suit
 			if (card.endsWith(startingSuit)) {
-
+				
+//				console.log("I have the card "+ card + " of suit " + startingSuit);
 				// make it playable
-				var id = '#myCard' + i + "-" + myCardArray[i];
-				$(id).removeClass('unplayable').addClass('playable');
+				$('#'+ cardId).removeClass('unplayable').addClass('playable');
 
 				// refute assumption that i don't have any card
 				// of starting suit & flag that I have at least one
@@ -294,19 +310,71 @@ function setPlayableCards() {
 		}
 		// if after iteration, I have no card with starting suit
 		if (!hasStartingSuit)
-			// make everything playable
+			// make everything in my hand playable
 			$('.handCard').removeClass('unplayable').addClass('playable');
 	}
 }
 
-function managePlayMessage(json) {
-	var card = json["card"];
-	var newHighestCard = json["highestCard"];
-	var playerIndex = json["currentIndex"];
-	var nextIndex = json["nextIndex"];
+function showCardTable(json){
+	highestCard = json["highestCard"];
 	startingSuit = json["startingSuit"];
 	isCut = json["cut"];
 	points = json["points"];
+	
+	var cards = json["table"]; // array might need parsing
+	var indices = json["indices"]; // array might need parsing
+	
+//	console.log("table cards:" + cards);
+//	console.log("played by i:" + indices);
+
+	// if there are any cards on table
+	if(cards.length > 0){
+		// show them
+		for (var i = 0; i < cards.length; i++){ 
+			
+			var index = indices[i];
+			// TODO Replace following notification with card animation
+			addNotification(players[index].name + " played " + cards[i] + ".");
+			
+			// show played cards including my own played card
+			showPlayedCard(cards[i],indices[i]);
+			
+		}	
+		// show the total points on the table if more than 0
+		// if(points > 0)	// for now show 0 as well
+//		$('#tablePoints').html(points);
+	}
+	// else i.e if no cards on the table, it means new round
+	else{
+		// wait for 2 seconds before clearing card mat
+		window.setTimeout(function(){
+			$tablePoints = $('#tablePoints');
+			$tablePoints.html("");
+			// this will remove tablePoints also
+			$('#cardMat').html("");
+			// so put tablePoints back on the mat
+			$('#cardMat').html($tablePoints);
+		}, 2000);
+	}
+	
+	// disable cards in my hand
+	disableHandCards();
+	
+	// if it's my turn now, set & enable my playable cards
+	if (players[myIndex].turn)
+		setPlayableCards();
+}
+
+function managePlayMessage(json) {
+	var card = json["card"];
+	var playerIndex = json["currentIndex"];
+	var nextIndex = json["nextIndex"];
+	startingSuit = json["startingSuit"];
+	highestCard = json["highestCard"];
+	isCut = json["cut"];
+	points = json["points"];
+	var isWon = json["won"];
+	var roundWinnerIndex = json["winnerIndex"];
 
 	var currPlayer = players[playerIndex];
 
@@ -318,16 +386,90 @@ function managePlayMessage(json) {
 	console.log("card:" + card);
 	console.log("played by:" + players[playerIndex]);
 	console.log("next turn:" + players[nextIndex]);
+	console.log("points on table:" + points);
 
-	// TODO add card animation logic in place of following
+	// TODO Replace following notification with card animation
 	addNotification(players[playerIndex].name + " played " + card + ".");
-	//playCardAnimation();
+//	$('#tablePoints').html(points);
 
-//	if(playerIndex !== myIndex)
+	// card animation and visibility manipulation
+	if (playerIndex !== myIndex)
+		//if it's not my card show played card
+		showPlayedCard(card,playerIndex);
+	else // if it's my card, the set highest
+		if(card === highestCard){
+			// remove previous
+			$('.highestCard').removeClass('highestCard');
+			// mark this as highest
+			$myCard.addClass('highestCard');
+		}
+
+	if(isWon)
+		addNotification(players[roundWinnerIndex].name + " has won this round: " + points + " points");
+	
+	// disable cards in my hand
 	disableHandCards();
-	console.log("myIndex=" + myIndex + " ::: nextIndex=" + nextIndex);
+	
+	// if it's my turn now, set my playable cards
 	if (myIndex === nextIndex)
 		setPlayableCards();
+}
+	
+function showPlayedCard(card, playerIndex){
+
+	// create non clickable card object at player position
+
+	var id = "p" + playerIndex + "card" + card;
+	var $card = $("<div id='" + id + "' "
+			+ "class='tableCard' style='background-image:url(/images/cards/"
+			+ card + ".png);'/>");
+	// get player offset
+	
+	// get player position on table
+	var position = players[playerIndex].screenPosition;
+//	console.log("position: " + position);
+
+	// get offset of this player on the table
+	var startingOffset = $('#pos' + position).offset();
+//	console.log("starting offset: " + startingOffset.top + ", "
+//			+ startingOffset.left);
+
+	// get the target offset of the card for this table position
+	var endingOffset = cardpos[position];
+//	console.log("ending offset: " + endingOffset.top + ", "
+//			+ endingOffset.left);
+
+	// add card to #cardMat div
+	$card.appendTo('#cardMat');
+	// but set it's offset to player position (outside mat)
+	$card.offset(startingOffset);
+
+	// show #cardMat just in case it's hidden
+	$('#cardMat').show();
+
+	// build our move variables
+	var moveTop = Math.round(endingOffset.top - startingOffset.top);
+	var moveLeft = Math.round(endingOffset.left - startingOffset.left);
+//	console.log("move: " + moveTop + ", " + moveLeft);
+	
+	// move the card from player into #cardMat
+	$card.animate({
+		'margin-top' : moveTop + 'px',
+		'margin-left' : moveLeft + 'px'
+	}, 500);
+	
+	if(card === highestCard){
+		// remove previous
+		$('.highestCard').removeClass('highestCard');
+		// mark this as highest
+		$card.addClass('highestCard');
+	}
+		
+//		for(var e=0; e<8; e++)
+//			console.log("top, left coordinates of pos"+e+":"
+//					+ $('#pos'+e).offset().top + ", "
+//					+ $('#pos'+e).offset().left);
+//	
 }
 
 $(document).ready(function() {

@@ -36,12 +36,11 @@ table, th, td {
 	min-width: 600px;
 }
 
-#gameTable{
+#gameTable {
 	width: 100%;
 	height: 100%;
 	border-spacing: 0px;
 }
-
 
 .rightTop {
 	text-align: right;
@@ -53,7 +52,6 @@ table, th, td {
 	vertical-align: bottom;
 }
 
-
 #status {
 	background-color: transparent;
 	color: white;
@@ -63,20 +61,21 @@ table, th, td {
 	text-align: center;
 }
 
-#boardContainer{
+#boardContainer {
 	width: 100%;
 	height: 100%;
 	border-spacing: 0px;
 	min-width: 200px;
 }
 
-#boardTable{
+#boardTable {
 	width: 100%;
 	height: 100%;
 	border-spacing: 0px;
 }
 
-.boardTableRow{
+.boardTableRow {
+	
 }
 
 .logWindow {
@@ -164,50 +163,64 @@ table, th, td {
 }
 
 .turn {
-	border: 5px solid;
-	border-color: green;
+	box-shadow: 0 0 0 5px green;
 }
 
 #cardMat {
 	text-align: center;
+	height: 100%;
+}
+
+#tablePoints {
+	float: right;
+	margin-top: 5px;
+	margin-right: 5px;
+	color: white;
+	background-color: rgba(0,0,0,0);
+	border: 1px solid;
+	border-color: transparent;
+	border-radius: 3px;
+	width: 20px;
+	font-family: Verdana, sans-serif;
+	font-size: 14;
 }
 
 #myHand {
 	height: 100%;
 	margin-left: 25px;
 	display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    border-spacing: 0;
-    -webkit-box-direction: normal;
-    -moz-box-direction: normal;
-    -webkit-box-orient: horizontal;
-    -moz-box-orient: horizontal;
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -webkit-flex-wrap: wrap;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    -webkit-box-pack: center;
-    -moz-box-pack: center;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -moz-box-align: center;
-    -webkit-align-items: center;
-    -ms-flex-align: center;
-    align-items: center;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	border-spacing: 0;
+	-webkit-box-direction: normal;
+	-moz-box-direction: normal;
+	-webkit-box-orient: horizontal;
+	-moz-box-orient: horizontal;
+	-webkit-flex-direction: row;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: wrap;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	-webkit-justify-content: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-webkit-align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
 }
 
 .handCard {
 	height: 100px;
 	width: 69px;
 	float: left;
-	/* margin-left: -25px; */
+	margin-left: -25px;
 	border: 1px solid;
 	border-color: black;
 	border-radius: 5px;
@@ -216,6 +229,7 @@ table, th, td {
 }
 
 .tableCard {
+	position: absolute;
 	height: 100px;
 	width: 69px;
 	float: left;
@@ -224,17 +238,24 @@ table, th, td {
 	border-radius: 5px;
 	background-size: contain;
 	background-repeat: no-repeat;
+	height: 100px;
 }
 
-.unplayable:after{
+.unplayable:after {
 	content: "";
 	display: block;
 	height: 100px;
-	background-color:rgba(0,0,0,0.3);
+	background-color: rgba(0, 0, 0, 0.3);
 	z-index: 100;
 }
 
-.playable{
+.playable {
+	
+}
+
+.highestCard {
+	box-shadow: 0 0 0 2px #ff0;
+	border-radius: 5px;
 }
 
 .inactive {
@@ -245,18 +266,27 @@ table, th, td {
 }
 
 .divName {
+	text-align: center;
+	width: 150px;
+	float: left;
+	margin-left: 25px;
+}
+
+.nameContainer {
 	font-family: Verdana, sans-serif;
 	font-size: medium;
 	font-weight: bold;
-	text-align: center;
 	height: 20px;
 	border-bottom: 1px solid;
 	border-bottom-color: black;
 }
 
-.divPoints {
+.pointCardsContainer {
 	padding: 0;
-	margin: 0;
+	margin-left: 25px;
+	z-index: 50;
+	height: 60px;
+	
 }
 
 .tblPoints {
@@ -272,7 +302,10 @@ table, th, td {
 .points {
 	font-family: Verdana, sans-serif;
 	font-size: 12px;
-	text-align: left;
+	text-align: right;
+	float: right;
+	margin-right: 3px;
+	margin-top: 3px;
 }
 
 .bid {
@@ -307,6 +340,7 @@ td.right {
 	color: #FFFFFF;
 	text-decoration: none;
 	border-radius: 2px;
+	padding: 2px 2px;
 }
 
 .green {
@@ -366,7 +400,7 @@ td.right {
 	font-weight: bold;
 }
 
-#bidSpecContainer{
+#bidSpecContainer {
 	positive: relative;
 }
 
@@ -383,7 +417,7 @@ td.right {
 	margin-top: 26px;
 	margin-left: 60px;
 	width: 760px;
-	height: 435px; 
+	height: 435px;
 	z-index: 100;
 }
 
@@ -423,6 +457,17 @@ td.right {
 	padding-left: 5px;
 	border-left: 1px solid;
 	border-left-color: white;
+}
+
+img.pointCard {
+	height: 50px;
+	margin-left: -20px;
+	border: 1px solid;
+	border-color: black;
+	border-radius: 2px;
+	border: 1px solid;
+	float: left;
+	margin-top: 4px;
 }
 
 img.spec {

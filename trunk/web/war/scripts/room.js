@@ -13,7 +13,7 @@ var MessageType = {
 	BID : "bid",
 	SPEC : "spec",
 	PLAY : "play",
-	STATE : "state"
+	ROUND : "round"
 };
 
 var RoomStatus = {
@@ -33,6 +33,8 @@ function sessionOn() {
 
 function sessionOff() {
 	connected = false;
+	$('.pointCardsContainer').html("");
+	// $('.pointCardsContainer').hide("");
 	$('#joinInfo').show();
 	$('#lsChat').html("");
 	$('#lsNotif').html("");
@@ -50,8 +52,10 @@ function showError(errorMessage) {
 function setStatus(statusText) {
 	// clear all this whenever status changes
 
-	$('#cardMat').hide(""); // hide table(card mat)
-	$('#cardMat').html(""); // clear table(card mat)
+	$tablePoints = $('#tablePoints')
+	$tablePoints.html("");
+	$('#cardMat').html($tablePoints);
+	$('#cardMat').hide(); // hide table(card mat)
 
 	// bid control for making bids
 	$('#bidControl').hide();
@@ -59,7 +63,7 @@ function setStatus(statusText) {
 	$('#bidControl2').html(""); // don't hide this, parent is hidden
 
 	// overlay bid control shown to pick cards
-	// don't wipe this, contains hard coded card deck 
+	// don't wipe this, contains hard coded card deck
 	// to pick partner and trump from
 	$('#bidSpecSelector').hide();
 
@@ -70,14 +74,22 @@ function setStatus(statusText) {
 
 	$('.points').html(""); // clear points inside player divs
 	$('.bid').html(""); // clear bids inside player divs
-	$('.divPoints').hide(); // hide the points div
-	
+	$('.pointCardsContainer').hide(); // hide the points div
+
 	// clear hand only when new game is started
 	if (statusText === RoomStatus.READY_TO_DEAL
 			|| statusText === RoomStatus.WAITING_FOR_PLAYERS) {
 		$('#myHand').html(""); // clear hand
-
+	} else if (statusText === RoomStatus.BIDDING) {
+		$('.bid').show();
+		$('.pointCardsContainer').hide();
+		$('.points').hide();
+	} else if (statusText === RoomStatus.PLAYING) {
+		$('.bid').hide();
+		$('.pointCardsContainer').show();
+		$('.points').show();
 	}
+
 	status = statusText;
 	$('#status').html(status.replace(/_/g, " ")); // replace _ with space
 }
@@ -131,12 +143,16 @@ function onMessage(result) {
 		manageBidMessage(JSON.parse(message));
 		break;
 	case MessageType.SPEC:
-		// update bid information on the screen
+		// update bid spec on the screen
 		manageSpecMessage(JSON.parse(message));
 		break;
 	case MessageType.PLAY:
 		// update play information on the screen
 		managePlayMessage(JSON.parse(message));
+		break;
+	case MessageType.ROUND:
+		// update round information on the screen
+		showCardTable(JSON.parse(message));
 		break;
 	case MessageType.KICK:
 		// show notification, alert and close connection
@@ -216,9 +232,9 @@ $(document).ready(function() {
 		enter($('#txtName').val());
 	});
 
-//	var token = $('#token').val();
-//	if(token !== undefined)
-//		openChannel(token);
+	// var token = $('#token').val();
+	// if(token !== undefined)
+	// openChannel(token);
 
 	$('#txtChat').keydown(function(e) {
 		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;

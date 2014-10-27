@@ -146,7 +146,9 @@ public class Player {
 				if (!o1.getSuit().equals(o2.getSuit())) {
 					return o1.getSuit().compareTo(o2.getSuit());
 				} else
-					return o2.getValue() - o1.getValue();
+					// following should ensure QS is placed ahead of AS
+					return (o2.getValue()  + o2.getPoints()) - 
+							(o1.getValue() + o1.getPoints());
 			}
 		});
 
@@ -217,6 +219,12 @@ public class Player {
 				return i;
 		}
 		return -1;
+	}
+
+	public void winRound(List<Card> table) {
+		for(Card c: table)
+			if(c.getPoints() > 0)
+				pointCards.add(c);
 	}
 
 }
