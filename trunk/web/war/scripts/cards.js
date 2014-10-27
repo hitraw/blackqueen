@@ -80,8 +80,8 @@ function showCards(cardArray) {
 						var offset = $myCard.offset();
 
 						// adjust classes of the card 
-						$myCard.removeClass('handCard playable')
-							.addClass('tableCard');
+						$myCard.removeClass('handCard playable');
+						$myCard.addClass('tableCard');
 						
 						// detach $card from #myHand and attach it to #cardMat
 						$myCard.detach().appendTo('#cardMat');
@@ -333,8 +333,8 @@ function showCardTable(json){
 		for (var i = 0; i < cards.length; i++){ 
 			
 			var index = indices[i];
-			// TODO Replace following notification with card animation
-			addNotification(players[index].name + " played " + cards[i] + ".");
+			// TODO Remove following card play notification
+			//	addNotification(players[index].name + " played " + cards[i] + ".");
 			
 			// show played cards including my own played card
 			showPlayedCard(cards[i],indices[i]);
@@ -383,14 +383,16 @@ function managePlayMessage(json) {
 
 	players[nextIndex].setTurn();
 
-	console.log("card:" + card);
-	console.log("played by:" + players[playerIndex]);
-	console.log("next turn:" + players[nextIndex]);
-	console.log("points on table:" + points);
+//	console.log("card:" + card);
+//	console.log("played by:" + players[playerIndex]);
+//	console.log("next turn:" + players[nextIndex]);
+//	console.log("points on table:" + points);
 
-	// TODO Replace following notification with card animation
-	addNotification(players[playerIndex].name + " played " + card + ".");
-//	$('#tablePoints').html(points);
+	// TODO Remove following card play notification
+	// addNotification(players[playerIndex].name + " played " + card + ".");
+
+	// TODO: if you want to display total points of cards on table
+	//	$('#tablePoints').html(points);
 
 	// card animation and visibility manipulation
 	if (playerIndex !== myIndex)
