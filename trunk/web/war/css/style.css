@@ -220,7 +220,7 @@ table, th, td {
 	height: 100px;
 	width: 69px;
 	float: left;
-	margin-left: -25px;
+	margin-left: -30px;
 	border: 1px solid;
 	border-color: black;
 	border-radius: 5px;
@@ -268,9 +268,9 @@ table, th, td {
 
 .divName {
 	text-align: center;
-	width: 150px;
+	width: 140px;
 	float: left;
-	margin-left: 25px;
+	margin-left: 30px;
 }
 
 .nameContainer {
@@ -284,7 +284,7 @@ table, th, td {
 
 .pointCardsContainer {
 	padding: 0;
-	margin-left: 25px;
+	margin-left: 30px;
 	z-index: 50;
 	height: 60px;
 	
@@ -461,14 +461,14 @@ td.right {
 }
 
 img.pointCard {
-	height: 50px;
-	margin-left: -20px;
+	height: 52px;
+	margin-left: -25px;
 	border: 1px solid;
 	border-color: black;
 	border-radius: 2px;
 	border: 1px solid;
 	float: left;
-	margin-top: 4px;
+	margin-top: 2px;
 }
 
 img.spec {

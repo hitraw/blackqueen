@@ -67,7 +67,7 @@ function showCards(cardArray) {
 						i : myIndex
 					}, function(result) {
 						// remove 1 card from array at this position
-						console.log("played card successfully, now remove from hand");
+//						console.log("played card successfully, now remove from hand");
 						// do we even need to maintain myCardArray?? 
 						// YES!!! we use this in setPlayable to check which cards
 						// remain in our hand  
@@ -241,7 +241,7 @@ function setPlayableCards() {
 	// if startingSuit is null/undefined
 	// i.e. if I am starting this round
 	if (startingSuit === undefined || startingSuit === null) {
-		console.log("I am starting this round. cut="+isCut);
+//		console.log("I am starting this round. cut="+isCut);
 		// if it has been cut, everything is playable
 		if (isCut)
 			$('.handCard').removeClass('unplayable').addClass('playable');
@@ -285,7 +285,7 @@ function setPlayableCards() {
 	}
 	// and if i am not starting this round
 	else {
-		console.log("I am NOT starting this round");
+//		console.log("I am NOT starting this round");
 
 		// let's assume I don't have any card with starting suit
 		var hasStartingSuit = false;
