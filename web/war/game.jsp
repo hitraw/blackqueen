@@ -146,9 +146,12 @@
 								</td>
 								<td width="40%">
 									<div id="pos4" class="pos inactive">
-										<div id="name4" class="divName"></div>
-										<div id="points4" class="divPoints">
-											<table class="tblPoints">
+										<div class="nameContainer">
+											<div id="name4" class="divName"></div>
+											<div id="points4" class="points"></div>
+										</div>
+										<div id="pointCards4" class="pointCardsContainer">
+										<!-- 	<table class="tblPoints">
 												<tr class="top">
 													<td width="5%" class="suit top">&spades;</td>
 													<td width="45%" id="spades4" class="points top"></td>
@@ -161,7 +164,7 @@
 													<td width="5%" class="suit right">&diams;</td>
 													<td width="45%" id="diams4" class="points"></td>
 												</tr>
-											</table>
+											</table> -->
 										</div>
 										<div id="bid4" class="bid"></div>
 									</div>
@@ -178,9 +181,12 @@
 							<!-- Middle rows -->
 							<tr class="tblRow">
 								<td><div id="pos3" class="pos inactive">
-										<div id="name3" class="divName"></div>
-										<div id="points3" class="divPoints">
-											<table class="tblPoints">
+										<div class="nameContainer">
+											<div id="name3" class="divName"></div>
+											<div id="points3" class="points"></div>
+										</div>
+										<div id="pointCards3" class="pointCardsContainer">
+										<!-- 	<table class="tblPoints">
 												<tr class="top">
 													<td width="5%" class="suit top">&spades;</td>
 													<td width="45%" id="spades3" class="points top"></td>
@@ -193,21 +199,26 @@
 													<td width="5%" class="suit right">&diams;</td>
 													<td width="45%" id="diams3" class="points"></td>
 												</tr>
-											</table>
+											</table> -->
 										</div>
 										<div id="bid3" class="bid"></div>
 									</div></td>
 								<td rowspan="3">
-									<div id="cardMat"></div>
+									<div id="cardMat">
+										<div id="tablePoints"></div>
+									</div>
 									<div id="bidControl">
 										<div id="bidControl1" class="bidControl"></div>
 										<div id="bidControl2" class="bidControl"></div>
 									</div>
 								</td>
 								<td><div id="pos5" class="pos inactive">
-										<div id="name5" class="divName"></div>
-										<div id="points5" class="divPoints">
-											<table class="tblPoints">
+										<div class="nameContainer">
+											<div id="name5" class="divName"></div>
+											<div id="points5" class="points"></div>
+										</div>
+										<div id="pointCards5" class="pointCardsContainer">
+											<!-- <table class="tblPoints">
 												<tr class="top">
 													<td width="5%" class="suit top">&spades;</td>
 													<td width="45%" id="spades5" class="points top"></td>
@@ -220,16 +231,19 @@
 													<td width="5%" class="suit right">&diams;</td>
 													<td width="45%" id="diams5" class="points"></td>
 												</tr>
-											</table>
+											</table> -->
 										</div>
 										<div id="bid5" class="bid"></div>
 									</div></td>
 							</tr>
 							<tr class="tblRow">
 								<td><div id="pos2" class="pos inactive">
-										<div id="name2" class="divName"></div>
-										<div id="points2" class="divPoints">
-											<table class="tblPoints">
+										<div class="nameContainer">
+											<div id="name2" class="divName"></div>
+											<div id="points2" class="points"></div>
+										</div>
+										<div id="pointCards2" class="pointCardsContainer">
+											<!-- <table class="tblPoints">
 												<tr class="top">
 													<td width="5%" class="suit top">&spades;</td>
 													<td width="45%" id="spades2" class="points top"></td>
@@ -242,14 +256,17 @@
 													<td width="5%" class="suit right">&diams;</td>
 													<td width="45%" id="diams2" class="points"></td>
 												</tr>
-											</table>
+											</table> -->
 										</div>
 										<div id="bid2" class="bid"></div>
 									</div></td>
 								<td><div id="pos6" class="pos inactive">
-										<div id="name6" class="divName"></div>
-										<div id="points6" class="divPoints">
-											<table class="tblPoints">
+										<div class="nameContainer">
+											<div id="name6" class="divName"></div>
+											<div id="points6" class="points"></div>
+										</div>
+										<div id="pointCards6" class="pointCardsContainer">
+											<!-- <table class="tblPoints">
 												<tr class="top">
 													<td width="5%" class="suit top">&spades;</td>
 													<td width="45%" id="spades6" class="points top"></td>
@@ -262,16 +279,19 @@
 													<td width="5%" class="suit right">&diams;</td>
 													<td width="45%" id="diams6" class="points"></td>
 												</tr>
-											</table>
+											</table> -->
 										</div>
 										<div id="bid6" class="bid"></div>
 									</div></td>
 							</tr>
 							<tr class="tblRow">
 								<td><div id="pos1" class="pos inactive">
-										<div id="name1" class="divName"></div>
-										<div id="points1" class="divPoints">
-											<table class="tblPoints">
+										<div class="nameContainer">
+											<div id="name1" class="divName"></div>
+											<div id="points1" class="points"></div>
+										</div>
+										<div id="pointCards1" class="pointCardsContainer">
+											<!-- <table class="tblPoints">
 												<tr class="top">
 													<td width="5%" class="suit top">&spades;</td>
 													<td width="45%" id="spades1" class="points top"></td>
@@ -284,14 +304,17 @@
 													<td width="5%" class="suit right">&diams;</td>
 													<td width="45%" id="diams1" class="points"></td>
 												</tr>
-											</table>
+											</table> -->
 										</div>
 										<div id="bid1" class="bid"></div>
 									</div></td>
 								<td><div id="pos7" class="pos inactive">
-										<div id="name7" class="divName"></div>
-										<div id="points7" class="divPoints">
-											<table class="tblPoints">
+										<div class="nameContainer">
+											<div id="name7" class="divName"></div>
+											<div id="points7" class="points"></div>
+										</div>
+										<div id="pointCards7" class="pointCardsContainer">
+											<!-- <table class="tblPoints">
 												<tr class="top">
 													<td width="5%" class="suit top">&spades;</td>
 													<td width="45%" id="spades7" class="points top"></td>
@@ -304,7 +327,7 @@
 													<td width="5%" class="suit right">&diams;</td>
 													<td width="45%" id="diams7" class="points"></td>
 												</tr>
-											</table>
+											</table> -->
 										</div>
 										<div id="bid7" class="bid"></div>
 									</div></td>
@@ -314,9 +337,12 @@
 							<tr class="tblRow">
 								<td><div id="deal" align="right"></div></td>
 								<td><div id="pos0" class="pos inactive">
-										<div id="name0" class="divName"></div>
-										<div id="points0" class="divPoints">
-											<table class="tblPoints">
+										<div class="nameContainer">
+											<div id="name0" class="divName"></div>
+											<div id="points0" class="points"></div>
+										</div>
+										<div id="pointCards0" class="pointCardsContainer">
+											<!-- <table class="tblPoints">
 												<tr class="top">
 													<td width="5%" class="suit top">&spades;</td>
 													<td width="45%" id="spades0" class="points top"></td>
@@ -329,7 +355,7 @@
 													<td width="5%" class="suit right">&diams;</td>
 													<td width="45%" id="diams0" class="points"></td>
 												</tr>
-											</table>
+											</table> -->
 										</div>
 										<div id="bid0" class="bid"></div>
 									</div></td>
@@ -360,9 +386,9 @@
 								</ul>
 							</div>
 						</div>
-						<div id="pointsWindow" class="logWindow">
-							<div class="header">&nbsp;Points</div>
-							<div id="pointsLog" class="log">
+						<div id="scoreWindow" class="logWindow">
+							<div class="header">&nbsp;Scoreboard</div>
+							<div id="scoreLog" class="log">
 								<ul id="lsPoints" class="list">
 								</ul>
 							</div>
@@ -379,43 +405,11 @@
 								<input type="text" id="txtChat" />
 							</div>
 						</div>
-						<!-- 
-						<table id="boardTable">
-							<tr class="boardTableRow">
-								<td class="rightTop">
-									
-								</td>
-							</tr>
-							<tr>
-								<td>
-									
-								</td>
-							</tr>
-							<tr class="boardTableRow">
-								<td>
-																	</td>
-							</tr>
-						</table> -->
+
 					</div>
 				</td>
 			</tr>
-			<!-- 	<tr>
-				<td class="rightBottom">
-					<div align="right"></div>
-				</td>
-			</tr>
-			<tr>
-				<td class="rightBottom">
-					<div align="right"></div>
-				</td>
-			</tr> -->
 		</table>
-
-
-
-
-
-
 	</div>
 </body>
 </html>

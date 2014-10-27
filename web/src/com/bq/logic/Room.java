@@ -147,7 +147,7 @@ public class Room {
 		// reset player turn to false for all
 		for (Player player : players) {
 			player.removeTurn();
-			player.setLoyalty(Loyalty.NEUTRAL);
+			player.reset();
 		}
 		dealTurnIndex = (dealTurnIndex + 1) % players.size();
 
@@ -173,9 +173,7 @@ public class Room {
 		// check room status again to see if we can deal
 		if (Status.READY_TO_DEAL.equals(status)) {
 			// create new round object and point currRound to it
-			currGame = new Game((dealTurnIndex // + 1
-					)
-					% players.size());
+			currGame = new Game(dealTurnIndex); // + 1
 
 			// first step of the round: deal hand cards to all
 			currGame.dealHand();
@@ -215,20 +213,25 @@ public class Room {
 				// need to send status to this newly added player only
 				// for others no change in state in this case.
 				sendMessage(p, new Message(Message.Type.STATUS, getStatus()));
-				// if game has already begun, send the bid spec and other info
-				// e.g. cards on the table
+
+				// send updated player info to all players
+				sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayers()));
+
+				// and if game has already begun, send the bid spec and round
+				// info e.g. cards on the table, points, etc.
+				
 				if (Status.PLAYING.equals(status)) {
 					sendMessage(
 							p,
 							new Message(Message.Type.SPEC, currGame
 									.getBidSpec()));
-					// sendMessage(p,
-					// new Message(Message.Type.STATE,
-					// currGame.getRoundInfo()));
+					sendMessage(p, new Message(Message.Type.ROUND,
+							currGame.currRound.getRoundInfo()));
 				}
-				sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayers()));
+				// send cards to this player
 				sendMessage(p,
 						new Message(Message.Type.CARDS, p.getHandCardsJson()));
+
 			}
 		} else if (players.size() < MAX_PLAYERS) {
 			log.info("Adding " + playerName + " to game room:" + name);
@@ -355,7 +358,8 @@ public class Room {
 	public boolean play(String strPlayerIndex, String card) {
 		try {
 			int playerIndex = Integer.parseInt(strPlayerIndex);
-			return currGame.currRound.play(playerIndex, card);
+			return currGame.play(playerIndex, card);
+
 		} catch (Exception e) {
 			log.severe("Error in playing card");
 			e.printStackTrace();
@@ -394,6 +398,34 @@ public class Room {
 			for (Player p : players) {
 				p.reset();
 			}
+		}
+
+		public boolean play(int playerIndex, String card) {
+			boolean success = currRound.play(playerIndex, card);
+
+			if (success) {
+				// if round has been won
+				if (currRound.isRoundWon) {
+					// pause for few seconds then start new round, update
+					// player info: points, point cards, etc.
+					// try {
+					// Thread.sleep(4000);
+					// } catch (InterruptedException e) {
+					// log.severe("Error in pausing the game");
+					// e.printStackTrace();
+					// }
+
+					players.get(currRound.roundWinnerIndex).setTurn();
+					currRound = new Round(currRound.roundWinnerIndex);
+
+					sendMessageToAll(new Message(Message.Type.PLAYERS,
+							getPlayers()));
+					sendMessageToAll(new Message(Message.Type.ROUND,
+							currRound.getRoundInfo()));
+
+				}
+			}
+			return success;
 		}
 
 		private void dealHand() {
@@ -565,7 +597,7 @@ public class Room {
 			this.trumpSuit = Card.Suit.getSuitEnum(trumpSuit);
 			changeStatus(Status.PLAYING);
 			sendMessageToAll(new Message(Message.Type.SPEC, getBidSpec()));
-			currRound = new Round();
+			currRound = new Round(bidWinnerIndex);
 		}
 
 		private String getBidSpec() {
@@ -621,24 +653,56 @@ public class Room {
 			Suit startingSuit;
 			Card highestCard;
 			int roundWinnerIndex;
+			boolean isRoundWon;
 
 			// total no. of points till now in this round/hand
 			int points;
 
-			private Round() {
+			private Round(int startingTurnIndex) {
+				turnIndex = startingTurnIndex;
 				table = new ArrayList<Card>();
 				indices = new ArrayList<Integer>();
 				points = 0;
 				roundWinnerIndex = 0;
 				highestCard = null;
 				startingSuit = null;
+				isRoundWon = false;
+			}
+
+			public String getRoundInfo() {
+				JSONObject json = new JSONObject();
+
+				JSONArray tableJson = new JSONArray();
+				JSONArray indicesJson = new JSONArray();
+
+				for (int i = 0; i < table.size(); i++) {
+					tableJson.put(table.get(i).getCode());
+					indicesJson.put(indices.get(i).intValue());
+				}
+				try {
+					json.put("startingSuit", startingSuit == null ? null
+							: startingSuit.getShortCode());
+					json.put("highestCard", highestCard == null ? null
+							: highestCard.getCode());
+					json.put("points", points);
+					json.put("won", isRoundWon);
+					json.put("cut", isCut);
+					json.put("winnerIndex", roundWinnerIndex);
+					json.put("table", tableJson);
+					json.put("indices", indicesJson);
+
+				} catch (JSONException e) {
+					log.severe("Error in building ROUND json"
+							+ e.getStackTrace());
+				}
+				return json.toString();
 			}
 
 			private boolean play(int playerIndex, String card) {
 				Player p = players.get(playerIndex);
 
 				int cardIndex = p.getCardIndex(card);
-				log.info("cardIndex="+cardIndex);
+				log.info("cardIndex=" + cardIndex);
 				Card c = p.getHandCards().get(cardIndex);
 
 				/*
@@ -656,26 +720,30 @@ public class Room {
 					indices.add(playerIndex);
 					points += c.getPoints();
 
-					if(startingSuit == null)
+					if (startingSuit == null)
 						startingSuit = c.getSuit();
-					
+
 					if (isHigher(c, highestCard)) {
 						highestCard = c;
 						roundWinnerIndex = playerIndex;
 					}
 					
+					if(c.equals(partnerCard))
+						p.setLoyalty(Loyalty.PARTNER);
 
-					if (table.size() == players.size()) {
-						// declare round(hand) winner;
-						declareRoundWinner();
-					} else {
+					p.removeTurn();
+					// if round is still going on
+					if (table.size() != players.size()) {
 						// pass turn
-						p.removeTurn();
 						turnIndex = (playerIndex + 1) % players.size();
 						players.get(turnIndex).setTurn();
-						// send play message
-						sendPlayMessage(playerIndex, c);
+					} else {
+						isRoundWon = true;
+						players.get(roundWinnerIndex).winRound(table);
+						// give turn for next round to winner of this round.
+						// turnIndex = roundWinnerIndex;
 					}
+					sendPlayMessage(playerIndex, c);
 					return true;
 				} else
 					return false;
@@ -692,26 +760,24 @@ public class Room {
 					json.put("startingSuit", startingSuit.getShortCode());
 					json.put("points", points);
 					json.put("cut", isCut);
+					json.put("won", isRoundWon);
+					json.put("winnerIndex", roundWinnerIndex);
 
 					sendMessageToAll(new Message(Message.Type.PLAY,
 							json.toString()));
 				} catch (JSONException e) {
-					log.severe("Error in building PLAY json" + e.getStackTrace());
+					log.severe("Error in building PLAY json"
+							+ e.getStackTrace());
 				}
-			}
-
-			private void declareRoundWinner() {
-				// TODO Auto-generated method stub
-
 			}
 
 			private boolean validatePlay(Player p, Card c) {
 				if (c == null || p == null || !p.isTurn())
 					// check for null objects if it's player's turn
 					return false;
-				
-				// TODO: add more server side validation based on logic from 
-				// setPlayableCards in cards.js 
+
+				// TODO: add more server side validation based on logic from
+				// setPlayableCards in cards.js
 
 				return true;
 			}
@@ -740,9 +806,10 @@ public class Room {
 					// else i.e. if different suit
 					else {
 						// if c1 is trump suit, c1 is higher
-						if (c1.getSuit().equals(trumpSuit))
+						if (c1.getSuit().equals(trumpSuit)){
+							isCut = true;
 							return true;
-						// else lower
+						}// else lower
 						else
 							return false;
 					}

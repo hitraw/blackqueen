@@ -79,7 +79,6 @@ function showPlayers(playerJsonArray) {
 	$('.pos').hide();
 	$('.divName').html("");
 	$('.divPoints').html("");
-	// $('#cardMat').html("");
 
 	var playerCount = playerJsonArray.length;
 	switch (playerCount) {
@@ -289,7 +288,8 @@ function Player(jsonObj) {
 	this.turn = jsonObj["turn"];
 	this.bid = jsonObj["bid"];
 	this.screenPosition; // position of player on screen (slot 0 -> 7)
-	this.pointCards; // card array
+	this.points = jsonObj["points"];
+	this.pointCards = jsonObj["pointCards"]; // card array
 	this.connected;
 
 	this.setPosition = function(screenPos) {
@@ -302,17 +302,6 @@ function Player(jsonObj) {
 
 	this.disconnected = function() {
 		connected = false;
-	}
-
-	this.draw = function() {
-		$('#name' + this.screenPosition).html(this.name);
-		$('#pos' + this.screenPosition).removeClass('inactive').addClass(
-				this.loyalty).show();
-
-		if (this.turn) {
-			$('.pos').removeClass('turn');
-			$('#pos' + this.screenPosition).addClass('turn');
-		}
 	}
 
 	this.removeTurn = function() {
@@ -332,5 +321,33 @@ function Player(jsonObj) {
 		else if (this.bid == -1)
 			$('#bid' + this.screenPosition).html("PASS");
 		$('#bid' + this.screenPosition).fadeIn().fadeOut().fadeIn();
+	}
+
+	this.draw = function() {
+		$('#name' + this.screenPosition).html(this.name);
+		$('#pos' + this.screenPosition).removeClass('inactive').addClass(
+				this.loyalty).show();
+		if(this.points > 0)
+			$('#points' + this.screenPosition).html(this.points);
+//		console.log("pointCards:"+this.pointCards);
+		if(this.pointCards.length > 0)
+			this.drawPointCards(this.pointCards);
+
+		if (this.turn) {
+			$('.pos').removeClass('turn');
+			$('#pos' + this.screenPosition).addClass('turn');
+		}
+	}
+
+	this.drawPointCards = function(pointCards){
+		var $pointCard;
+		$('#pointCards' + this.screenPosition).html("");
+		// show if hidden
+		$('#pointCards' + this.screenPosition).show();
+		for (var i = 0; i < pointCards.length; i++) {
+			 $pointCard = $("<img class='pointCard' id='"+this.name+i+pointCards[i]+"' src='/images/cards/" + pointCards[i] + ".png' />");
+			 $('#pointCards' + this.screenPosition).append($pointCard);
+		}
+
 	}
 }
