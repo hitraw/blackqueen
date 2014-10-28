@@ -32,6 +32,7 @@ public class Player {
 	private Loyalty loyalty;
 	private boolean turn;
 	private int bid;
+	private int score;
 
 	public Player(String name) {
 		super();
@@ -71,6 +72,14 @@ public class Player {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 	@Override
@@ -204,7 +213,7 @@ public class Player {
 		}
 		playerJSON.put("points", points);
 		playerJSON.put("pointCards", cardArray);
-
+		playerJSON.put("score", score);
 		return playerJSON;
 	}
 
@@ -212,10 +221,10 @@ public class Player {
 		this.bid = bid;
 	}
 
-	public int getCardIndex(String card) {
+	public int getCardIndex(String cardCode) {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < handCards.size(); i++) {
-			if (card.equals(handCards.get(i).getCode()))
+			if (cardCode.equals(handCards.get(i).getCode()))
 				return i;
 		}
 		return -1;

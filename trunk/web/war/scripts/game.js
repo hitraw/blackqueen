@@ -18,6 +18,10 @@ function manageBidMessage(json) {
 	var playerIndex = json["currentIndex"];
 	var nextIndex = json["nextIndex"];
 
+	var gameIndex = json["gameNo"];
+	if (gameIndex !== undefined && gameIndex > 0)
+		$('#gameId').html("Game " + gameIndex);
+
 	var currPlayer = players[playerIndex];
 
 	currPlayer.bid = currentBid;
@@ -77,8 +81,9 @@ function showPlayers(playerJsonArray) {
 	// $('canvas').clearCanvas();
 	$('.pos').removeClass('turn bidder partner opponent');
 	$('.pos').hide();
-	$('.divName').html("");
-	$('.divPoints').html("");
+	$('.name').html("");
+	$('.points').html("");
+	$('.loyalty').html("");
 
 	var playerCount = playerJsonArray.length;
 	switch (playerCount) {
@@ -155,9 +160,12 @@ function manageControls() {
 		showEndBtn();
 		break;
 	case RoomStatus.PLAYING:
-		// if it's my turn allow me to play
-		// TODO: add code to allow play
+		// if it's my turn allow me to play - NOT REQD
+		// managed by showCardTable in cards.js
 		showEndBtn();
+		break;
+	case RoomStatus.GAME_OVER:
+		showFinalScore();
 		break;
 	default:
 		break;
@@ -178,27 +186,17 @@ function manageBid() {
 			highestBid = player.bid;
 		player.showBid();
 	}
-
 	determineBidWinner(turnIndex, highestBid);
 }
 
+function showFinalScore(){
+	$('.pointCardsContainer').html("").hide();
+	$('.points').html("").hide();
+	for (var i in players)
+		players[i].showScore();
+}
+
 function showDealBtn() {
-
-	// ok button not needed. no redeal option either, let's keep it simple
-	// var $btnOk = $(
-	// "<input type='button' id='btnOk' class='button green' value='Ok'/>")
-	// .click(function() {
-	// console.log("calling /state to move to next state");
-	// $.post('/state', {
-	// u : sessionStorage.username,
-	// g : sessionStorage.gameKey,
-	// m : "next"
-	// }, function(result) {
-	// //
-	// });
-	// $('#deal').html("");
-	// });
-
 	var $btnDeal = $(
 			"<input type='button' id='btnDeal' class='button green' value='Deal'/>")
 			.click(function() {
@@ -207,13 +205,8 @@ function showDealBtn() {
 					u : sessionStorage.username,
 					g : sessionStorage.gameKey
 				});
-				// $(this).val("Redeal");
-				// $('#deal').append($btnOk);
 				$('#deal').html("");
 			});
-
-	// $('#deal').html("<img src='/images/bq-deck.png' width='80'/>");
-	// $('#deal').append($btnDeal);
 	$('#deal').html($btnDeal);
 }
 
@@ -290,6 +283,7 @@ function Player(jsonObj) {
 	this.screenPosition; // position of player on screen (slot 0 -> 7)
 	this.points = jsonObj["points"];
 	this.pointCards = jsonObj["pointCards"]; // card array
+	this.score = jsonObj["score"];
 	this.connected;
 
 	this.setPosition = function(screenPos) {
@@ -323,27 +317,84 @@ function Player(jsonObj) {
 		$('#bid' + this.screenPosition).fadeIn().fadeOut().fadeIn();
 	}
 
+	/**
+	 * We are using the same control for score
+	 * as the one we used for bid
+	 */
+	this.showScore = function() {
+		$('#bid' + this.screenPosition).hide();
+		$('#bid' + this.screenPosition).html(this.score);
+		$('#bid' + this.screenPosition).fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
+	}
+
+	
 	this.draw = function() {
+		
+		// show name in center
 		$('#name' + this.screenPosition).html(this.name);
-		$('#pos' + this.screenPosition).removeClass('inactive').addClass(
-				this.loyalty).show();
+		
+		// show loyalty flag on the left
+		this.showLoyalty();
+		
+		// show collected points on the right
 		if(this.points > 0)
 			$('#points' + this.screenPosition).html(this.points);
 //		console.log("pointCards:"+this.pointCards);
+		
+		// show point cards below
 		if(this.pointCards.length > 0)
 			this.drawPointCards(this.pointCards);
 
+		// add border if it's the player's turn
 		if (this.turn) {
 			$('.pos').removeClass('turn');
 			$('#pos' + this.screenPosition).addClass('turn');
+		}
+	}
+	
+	this.showLoyalty = function(){
+		$('#pos' + this.screenPosition).removeClass('inactive').addClass(
+				this.loyalty).show();
+//		console.log("loyalty of " + this.name + ":" + this.loyalty);
+		switch(this.loyalty){
+		case LoyaltyType.BIDDER:
+			$('#loyalty' + this.screenPosition).html("B");
+			break;
+		case LoyaltyType.OPPONENT:
+			$('#loyalty' + this.screenPosition).html("O");
+			break;
+		case LoyaltyType.PARTNER:
+			var partner = partnerCard;
+			// some formatting
+			if(partner !== undefined){
+				
+//				console.log("Partner:"+partner);
+				
+				partner = partner.replace(/H/g, "&hearts;")
+				partner = partner.replace(/S/g, "&spades;");
+				partner = partner.replace(/C/g, "&clubs;");
+				partner = partner.replace(/D/g, "&diams;");
+	
+//				console.log("Formatted Partner:"+partner);
+				
+				if(partnerCard.endsWith("H") || partnerCard.endsWith("D"))
+					partner = "<span style='color: red'>"
+							+ partner + "</span>";
+				
+//				console.log("Colored Partner:"+partner);
+				$('#loyalty' + this.screenPosition).html(partner);
+			}
+			break;	
+		default: break;	
+		
 		}
 	}
 
 	this.drawPointCards = function(pointCards){
 		var $pointCard;
 		$('#pointCards' + this.screenPosition).html("");
-		// show if hidden
-		$('#pointCards' + this.screenPosition).show();
+		// show if hidden 
+		$('#pointCards' + this.screenPosition).fadeIn(1000);
 		for (var i = 0; i < pointCards.length; i++) {
 			 $pointCard = $("<img class='pointCard' id='"+this.name+i+pointCards[i]+"' src='/images/cards/" + pointCards[i] + ".png' />");
 			 $('#pointCards' + this.screenPosition).append($pointCard);
