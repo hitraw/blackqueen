@@ -15,11 +15,11 @@ var tableLeft = 400;
 var $myCard;
 
 var cardpos = [	// array of card positions for players 0 to 7
-           {top: 300, left: 415},
+           {top: 285, left: 415},
            {top: 250, left: 350},
            {top: 210, left: 350},
            {top: 170, left: 350},
-           {top: 145, left: 415},
+           {top: 130, left: 415},
            {top: 170, left: 480},
            {top: 210, left: 480},
            {top: 250, left: 480}
@@ -106,25 +106,28 @@ function showCards(cardArray) {
 							, 500);
 					}).error(function() {
 						console.log("error in playing card");
-						addNotification("You played an invalid card.");
 						// TODO display error message: invalid move
+						showPlayError("You played an invalid card.");
 					});
 					// TODO: show animation, card moving up slightly now
 					// and to the table on success above
-//					$(this).animate({'margin-top':'-50px'}, 500);
+					$(this).animate({'margin-top':'-30px'}, 300);
 					
 				} else {
-					// TODO display error message you can't play this card
+					// display error message you can't play this card
 					// if startingSuit is null, it could only mean you're
 					// playing trump and it's not cut yet. Show error accdly.
-					addNotification("You can't play this card.");
+					if(startingSuit === undefined || startingSuit === null)
+						showPlayError("It hasn't been cut yet. You can't start with cutting!");
 
 					// if starting suit is not null, it means you have that suit
 					// and are trying to play another suit. show error accdly.
+					else
+						showPlayError("You can't cut. You have this suit!");
 				}
 			} else {
-				// TODO display error message it's not your turn
-				addNotification("It's not your turn to play yet.");
+				// display error message it's not your turn
+				showPlayError("Don't get too excited, please wait for your turn!");
 			}
 		});
 
@@ -141,7 +144,10 @@ function showCards(cardArray) {
 
 	// show me End button (even if it's not my turn)
 	showEndBtn();
+}
 
+function showPlayError(error){
+	$('#playError').html(error).show().fadeOut(5000);
 }
 
 function initializeCardSpecs() {
@@ -194,23 +200,15 @@ function manageSpecMessage(json) {
 	trumpSuit = json["trump"];
 	bidTarget = json["bidTarget"];
 	oppTarget = json["oppTarget"];
+	
+	var gameIndex = json["gameNo"];
+	if (gameIndex !== undefined && gameIndex > 0)
+		$('#gameId').html("Game " + gameIndex);
 
 	var $imgPartner = $("<img class='spec' id='imgPartner' src='/images/cards/"
 			+ partnerCard + ".png'/>");
 	var $imgTrump = $("<img class='spec' id='imgTrump' src='/images/cards/"
 			+ trumpSuit + ".png'/>");
-
-	// some formatting
-	// partner = partner.replace(/S/g, "&spades;");
-	// partner = partner.replace(/H/g, "&hearts;");
-	// partner = partner.replace(/C/g, "&clubs;");
-	// partner = partner.replace(/D/g, "&diams;");
-	// trump = "&" + trump + ";";
-
-	// console.log("partner:" + partner);
-	// console.log("trump:" + trump);
-
-	// $('.handCard')
 
 	$('#partnerTrump').html($imgPartner).append(" | ").append($imgTrump);
 	$('#bidTarget').html(bidTarget + "/" + oppTarget).show();
@@ -316,6 +314,8 @@ function setPlayableCards() {
 }
 
 function showCardTable(json){
+	$('#cardMat').html("");
+	$('#tablePoints').html("");
 	highestCard = json["highestCard"];
 	startingSuit = json["startingSuit"];
 	isCut = json["cut"];
@@ -323,6 +323,10 @@ function showCardTable(json){
 	
 	var cards = json["table"]; // array might need parsing
 	var indices = json["indices"]; // array might need parsing
+
+	var gameIndex = json["gameNo"];
+	if (gameIndex !== undefined && gameIndex > 0)
+		$('#gameId').html("Game " + gameIndex);
 	
 //	console.log("table cards:" + cards);
 //	console.log("played by i:" + indices);
@@ -334,7 +338,7 @@ function showCardTable(json){
 			
 			var index = indices[i];
 			// TODO Remove following card play notification
-			//	addNotification(players[index].name + " played " + cards[i] + ".");
+			//	addGameNotification(players[index].name + " played " + cards[i] + ".");
 			
 			// show played cards including my own played card
 			showPlayedCard(cards[i],indices[i]);
@@ -342,19 +346,16 @@ function showCardTable(json){
 		}	
 		// show the total points on the table if more than 0
 		// if(points > 0)	// for now show 0 as well
-//		$('#tablePoints').html(points);
+		$('#tablePoints').html(points).show();
 	}
 	// else i.e if no cards on the table, it means new round
 	else{
+		console.log("No cards on the table");
 		// wait for 2 seconds before clearing card mat
-		window.setTimeout(function(){
-			$tablePoints = $('#tablePoints');
-			$tablePoints.html("");
-			// this will remove tablePoints also
+		$('.tableCard').fadeOut(1000, function(){
 			$('#cardMat').html("");
-			// so put tablePoints back on the mat
-			$('#cardMat').html($tablePoints);
-		}, 2000);
+		});
+		$('#tablePoints').html("");
 	}
 	
 	// disable cards in my hand
@@ -373,7 +374,7 @@ function managePlayMessage(json) {
 	highestCard = json["highestCard"];
 	isCut = json["cut"];
 	points = json["points"];
-	var isWon = json["won"];
+	var isRoundOver = json["roundOver"];
 	var roundWinnerIndex = json["winnerIndex"];
 
 	var currPlayer = players[playerIndex];
@@ -389,10 +390,10 @@ function managePlayMessage(json) {
 //	console.log("points on table:" + points);
 
 	// TODO Remove following card play notification
-	// addNotification(players[playerIndex].name + " played " + card + ".");
+	// addGameNotification(players[playerIndex].name + " played " + card + ".");
 
 	// TODO: if you want to display total points of cards on table
-	//	$('#tablePoints').html(points);
+	$('#tablePoints').html(points).show();
 
 	// card animation and visibility manipulation
 	if (playerIndex !== myIndex)
@@ -406,8 +407,9 @@ function managePlayMessage(json) {
 			$myCard.addClass('highestCard');
 		}
 
-	if(isWon)
-		addNotification(players[roundWinnerIndex].name + " wins the round: " + points + " points");
+	if(isRoundOver)
+		addGameNotification(players[roundWinnerIndex].name 
+				+ " wins the round: " + points + " points");
 	
 	// disable cards in my hand
 	disableHandCards();

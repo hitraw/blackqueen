@@ -13,7 +13,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class Message {
 
 	public enum Type {
-		NOTIFICATION, CHAT, STATUS, KICK, PLAYERS, CARDS, BID, SPEC, PLAY, ROUND, 
+		ROOM_NOTIFICATION, GAME_NOTIFICATION, CHAT, STATUS, KICK, PLAYERS, CARDS, BID, SPEC, PLAY, ROUND, SCORE
 	};
 
 	private Type type;

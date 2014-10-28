@@ -4,7 +4,8 @@ var status;
 var connected = false;
 
 var MessageType = {
-	NOTIFICATION : "notification",
+	ROOM_NOTIFICATION : "room_notification",
+	GAME_NOTIFICATION : "game_notification",
 	CHAT : "chat",
 	STATUS : "status",
 	KICK : "kick",
@@ -13,7 +14,8 @@ var MessageType = {
 	BID : "bid",
 	SPEC : "spec",
 	PLAY : "play",
-	ROUND : "round"
+	ROUND : "round",
+	SCORE : "score"
 };
 
 var RoomStatus = {
@@ -34,7 +36,8 @@ function sessionOn() {
 function sessionOff() {
 	connected = false;
 	$('.pointCardsContainer').html("");
-	// $('.pointCardsContainer').hide("");
+	$('#playError').html("").hide();
+	$('#tablePoints').html("");
 	$('#joinInfo').show();
 	$('#lsChat').html("");
 	$('#lsNotif').html("");
@@ -52,10 +55,11 @@ function showError(errorMessage) {
 function setStatus(statusText) {
 	// clear all this whenever status changes
 
-	$tablePoints = $('#tablePoints')
-	$tablePoints.html("");
-	$('#cardMat').html($tablePoints);
+
+	$('#cardMat').html("");
 	$('#cardMat').hide(); // hide table(card mat)
+	$('#tablePoints').html("");
+	
 
 	// bid control for making bids
 	$('#bidControl').hide();
@@ -83,11 +87,9 @@ function setStatus(statusText) {
 	} else if (statusText === RoomStatus.BIDDING) {
 		$('.bid').show();
 		$('.pointCardsContainer').hide();
-		$('.points').hide();
 	} else if (statusText === RoomStatus.PLAYING) {
 		$('.bid').hide();
 		$('.pointCardsContainer').show();
-		$('.points').show();
 	}
 
 	status = statusText;
@@ -102,12 +104,28 @@ function addChatMessage(message) {
 	chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-function addNotification(message) {
+function addGameNotification(message) {
 	// add notifications to notifications window
-	$('#lsNotif').append("<li>" + message + "</li>");
-	// scroll to bottom of notif window
-	var notifLog = document.getElementById('notifLog');
-	notifLog.scrollTop = notifLog.scrollHeight;
+	message = "<span style='color: blue'>" + message +"</span>";
+	addChatMessage(message);
+}	
+
+function addRoomNotification(message) {
+	// add notifications to notifications window
+	message = "<span style='color: red'>" + message +"</span>";
+	addChatMessage(message);
+//	$('#lsNotif').append("<li>" + message + "</li>");
+//	// scroll to bottom of notif window
+//	var notifLog = document.getElementById('notifLog');
+//	notifLog.scrollTop = notifLog.scrollHeight;
+}
+
+function showScore(message) {
+	// add score json to score window for now
+	$('#lsScore').append("<li>" + message + "</li>");
+	// scroll to bottom of score window
+	var scoreLog = document.getElementById('scoreLog');
+	scoreLog.scrollTop = scoreLog.scrollHeight;
 }
 
 function onOpened() {
@@ -123,16 +141,24 @@ function onMessage(result) {
 	case MessageType.CHAT:
 		addChatMessage(message);
 		break;
-	case MessageType.NOTIFICATION:
-		addNotification(message);
+	case MessageType.ROOM_NOTIFICATION:
+		addRoomNotification(message);
 		break;
+	case MessageType.GAME_NOTIFICATION:
+		addGameNotification(message);
+		break;	
 	case MessageType.STATUS:
 		// update status on status bar
 		setStatus(message);
 		break;
 	case MessageType.PLAYERS:
 		// use players information redraw players on table
-		showPlayers(JSON.parse(message));
+		if(status === RoomStatus.GAME_OVER)
+			window.setTimeout(function(){
+				showPlayers(JSON.parse(message));
+			}, 2000);
+		else
+			showPlayers(JSON.parse(message));
 		break;
 	case MessageType.CARDS:
 		// $('#lsNotif').append("<li>" + cards + "</li>");
@@ -154,9 +180,13 @@ function onMessage(result) {
 		// update round information on the screen
 		showCardTable(JSON.parse(message));
 		break;
+	case MessageType.SCORE:
+		// update round information on the screen
+		showScore(JSON.parse(message));
+		break;	
 	case MessageType.KICK:
 		// show notification, alert and close connection
-		addNotification(message);
+		addRoomNotification(message);
 		alert(message);
 		socket.close();
 		window.close();

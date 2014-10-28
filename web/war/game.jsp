@@ -43,7 +43,7 @@
 		<table id="roomTable">
 			<tr>
 				<td width="900">
-
+					<div id="tablePoints"></div>
 					<div id="bidSpecContainer" align="center">
 						<div id="bidSpecSelector">
 
@@ -131,7 +131,7 @@
 
 						<table id="gameTable">
 							<tr class="header">
-								<td width="30%"><div id="gameId"></div></td>
+								<td width="30%"><div id="gameId" align="left"></div></td>
 								<td width="40%"><div id="status"></div></td>
 								<td width="30%"><div id="endBtn" align="right"></div></td>
 							</tr>
@@ -147,7 +147,8 @@
 								<td width="40%">
 									<div id="pos4" class="pos inactive">
 										<div class="nameContainer">
-											<div id="name4" class="divName"></div>
+											<div id="loyalty4" class="loyalty"></div>
+											<div id="name4" class="name"></div>
 											<div id="points4" class="points"></div>
 										</div>
 										<div id="pointCards4" class="pointCardsContainer">
@@ -182,7 +183,8 @@
 							<tr class="tblRow">
 								<td><div id="pos3" class="pos inactive">
 										<div class="nameContainer">
-											<div id="name3" class="divName"></div>
+											<div id="loyalty3" class="loyalty"></div>
+											<div id="name3" class="name"></div>
 											<div id="points3" class="points"></div>
 										</div>
 										<div id="pointCards3" class="pointCardsContainer">
@@ -204,9 +206,7 @@
 										<div id="bid3" class="bid"></div>
 									</div></td>
 								<td rowspan="3">
-									<div id="cardMat">
-										<div id="tablePoints"></div>
-									</div>
+									<div id="cardMat"></div>
 									<div id="bidControl">
 										<div id="bidControl1" class="bidControl"></div>
 										<div id="bidControl2" class="bidControl"></div>
@@ -214,7 +214,8 @@
 								</td>
 								<td><div id="pos5" class="pos inactive">
 										<div class="nameContainer">
-											<div id="name5" class="divName"></div>
+											<div id="loyalty5" class="loyalty"></div>
+											<div id="name5" class="name"></div>
 											<div id="points5" class="points"></div>
 										</div>
 										<div id="pointCards5" class="pointCardsContainer">
@@ -239,7 +240,8 @@
 							<tr class="tblRow">
 								<td><div id="pos2" class="pos inactive">
 										<div class="nameContainer">
-											<div id="name2" class="divName"></div>
+											<div id="loyalty2" class="loyalty"></div>
+											<div id="name2" class="name"></div>
 											<div id="points2" class="points"></div>
 										</div>
 										<div id="pointCards2" class="pointCardsContainer">
@@ -262,7 +264,8 @@
 									</div></td>
 								<td><div id="pos6" class="pos inactive">
 										<div class="nameContainer">
-											<div id="name6" class="divName"></div>
+											<div id="loyalty6" class="loyalty"></div>
+											<div id="name6" class="name"></div>
 											<div id="points6" class="points"></div>
 										</div>
 										<div id="pointCards6" class="pointCardsContainer">
@@ -287,7 +290,8 @@
 							<tr class="tblRow">
 								<td><div id="pos1" class="pos inactive">
 										<div class="nameContainer">
-											<div id="name1" class="divName"></div>
+											<div id="loyalty1" class="loyalty"></div>
+											<div id="name1" class="name"></div>
 											<div id="points1" class="points"></div>
 										</div>
 										<div id="pointCards1" class="pointCardsContainer">
@@ -310,7 +314,8 @@
 									</div></td>
 								<td><div id="pos7" class="pos inactive">
 										<div class="nameContainer">
-											<div id="name7" class="divName"></div>
+											<div id="loyalty7" class="loyalty"></div>
+											<div id="name7" class="name"></div>
 											<div id="points7" class="points"></div>
 										</div>
 										<div id="pointCards7" class="pointCardsContainer">
@@ -338,7 +343,8 @@
 								<td><div id="deal" align="right"></div></td>
 								<td><div id="pos0" class="pos inactive">
 										<div class="nameContainer">
-											<div id="name0" class="divName"></div>
+											<div id="loyalty0" class="loyalty"></div>
+											<div id="name0" class="name"></div>
 											<div id="points0" class="points"></div>
 										</div>
 										<div id="pointCards0" class="pointCardsContainer">
@@ -368,6 +374,7 @@
 							<tr height="110px">
 								<td colspan="3">
 									<div id="myHand"></div>
+									<div id="playError"></div>
 								</td>
 							</tr>
 
@@ -379,31 +386,31 @@
 				<td>
 					<div id="boardContainer" align="right">
 
-						<div id="notifWindow" class="logWindow">
+						<!-- <div id="notifWindow" class="logWindow">
 							<div class="header">&nbsp;Notifications</div>
 							<div id="notifLog" class="log">
 								<ul id="lsNotif" class="list">
 								</ul>
 							</div>
-						</div>
+						</div> -->
 						<div id="scoreWindow" class="logWindow">
 							<div class="header">&nbsp;Scoreboard</div>
 							<div id="scoreLog" class="log">
-								<ul id="lsPoints" class="list">
+								<ul id="lsScore" class="list">
 								</ul>
 							</div>
 						</div>
 
 						<div id="chatWindow" class="logWindow">
-							<div class="header">&nbsp;Chat</div>
-							<div id="chatLog">
+							<div class="header">&nbsp;Message Board</div>
+							<div id="chatLog" class="log">
 								<ul id="lsChat" class="list">
 
 								</ul>
 							</div>
-							<div id="chatText">
+						</div>
+						<div id="chatText">
 								<input type="text" id="txtChat" />
-							</div>
 						</div>
 
 					</div>
