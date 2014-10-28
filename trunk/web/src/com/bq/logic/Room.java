@@ -554,7 +554,7 @@ public class Room {
 
 					// tell everyone this player has won the bid
 					sendMessageToAll(new Message(Message.Type.NOTIFICATION,
-							nextPlayer.getName() + " has won the bid at "
+							nextPlayer.getName() + " wins the bid at "
 									+ nextPlayer.getBid() + "."));
 
 				}
@@ -728,8 +728,10 @@ public class Room {
 						roundWinnerIndex = playerIndex;
 					}
 					
-					if(c.equals(partnerCard))
+					if(c.getCode().equals(partnerCard)){
 						p.setLoyalty(Loyalty.PARTNER);
+						sendMessageToAll(new Message(Message.Type.NOTIFICATION, p.getName() + " is Partner."));
+					}	
 
 					p.removeTurn();
 					// if round is still going on
