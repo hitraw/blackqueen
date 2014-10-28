@@ -167,7 +167,7 @@ table, th, td {
 
 #tablePoints {
 	position: absolute;
-	margin-top: 248px;
+	margin-top: 275px;
 	margin-left: 430px;
 	color: white;
 	/* background-color: rgba(0,0,0,0.6);
@@ -251,7 +251,7 @@ table, th, td {
 }
 
 #playError{
-	background-color: rgba(0, 0, 0, 0.6);
+	background-color: rgba(0, 0, 0, 0.8);
 	color: white;
 	border: 1px solid;
 	border-color: white;

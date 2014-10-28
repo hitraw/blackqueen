@@ -182,7 +182,7 @@ function onMessage(result) {
 		break;
 	case MessageType.SCORE:
 		// update round information on the screen
-		showScore(JSON.parse(message));
+//		showScore(JSON.parse(message));
 		break;	
 	case MessageType.KICK:
 		// show notification, alert and close connection

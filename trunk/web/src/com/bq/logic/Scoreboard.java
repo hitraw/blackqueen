@@ -75,7 +75,7 @@ public class Scoreboard {
 				scorecard.put("bidSpec", bidSpec);
 				scorecard.put("bidTarget", bidTarget);
 				scorecard.put("bidder", bidder);
-				scorecard.put("scores", new JSONArray(scores));
+				scorecard.put("scores", new JSONObject(scores));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
