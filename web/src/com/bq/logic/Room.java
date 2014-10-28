@@ -379,14 +379,6 @@ public class Room {
 
 				if (currGame.isGameOver) {
 
-					// Thread gameEnd = new Thread(new Runnable() {
-					//
-					// @Override
-					// public void run() {
-					// try {
-					// if ("gameEnd".equals(Thread.currentThread()
-					// .getName()))
-					// Thread.sleep(2000);
 					currGame.assignPoints();
 
 					Room.this.changeStatus(Status.GAME_OVER);
@@ -397,20 +389,9 @@ public class Room {
 						Thread.sleep(2000);
 					currGame.addToScoreboard();
 
-					sendMessageToAll(new Message(Message.Type.SCORE,
-							scoreboard.getJSON()));
+//					sendMessageToAll(new Message(Message.Type.SCORE,
+//							scoreboard.getJSON()));
 					// endGame();
-					// } catch (InterruptedException e) {
-					// // TODO Auto-generated catch block
-					// e.printStackTrace();
-					// }
-					//
-					// }
-					//
-					// });
-					// gameEnd.setName("gameEnd");
-					// gameEnd.start();
-
 				}
 
 				/*
@@ -688,6 +669,7 @@ public class Room {
 			changeStatus(Status.PLAYING);
 			sendMessageToAll(new Message(Message.Type.SPEC, getBidSpec()));
 			currRound = new Round(bidWinnerIndex);
+			sendMessageToAll(new Message(Message.Type.ROUND, currRound.getRoundInfo()));
 		}
 
 		private String getBidSpec() {

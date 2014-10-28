@@ -15,14 +15,14 @@ var tableLeft = 400;
 var $myCard;
 
 var cardpos = [	// array of card positions for players 0 to 7
-           {top: 285, left: 415},
-           {top: 250, left: 350},
-           {top: 210, left: 350},
-           {top: 170, left: 350},
-           {top: 130, left: 415},
-           {top: 170, left: 480},
-           {top: 210, left: 480},
-           {top: 250, left: 480}
+           {top: 310, left: 415},
+           {top: 270, left: 350},
+           {top: 230, left: 350},
+           {top: 190, left: 350},
+           {top: 155, left: 415},
+           {top: 190, left: 480},
+           {top: 230, left: 480},
+           {top: 270, left: 480}
           ];
 
 // defining endsWith function for strings
