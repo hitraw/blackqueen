@@ -57,7 +57,7 @@ function declareBidWinner(winnerIndex) {
 		showBidSpecSelector(bidWinner);
 	} else {
 		$('#bidControl1').html(
-				bidWinner.name + " has won the bid at " + bidWinner.bid);
+				bidWinner.name + " wins the bid at " + bidWinner.bid);
 		$('#bidControl1').append(
 				"<br/><br/>" + bidWinner.name
 						+ " is selecting Partner and Trump");

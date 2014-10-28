@@ -79,8 +79,8 @@ function showCards(cardArray) {
 						// because it's gonna change after moving it to #cardMat
 						var offset = $myCard.offset();
 
-						// adjust classes of the card 
-						$myCard.removeClass('handCard playable');
+						// adjust classes of the card and remove click event
+						$myCard.removeClass('handCard unplayable playable').off();
 						$myCard.addClass('tableCard');
 						
 						// detach $card from #myHand and attach it to #cardMat
@@ -407,7 +407,7 @@ function managePlayMessage(json) {
 		}
 
 	if(isWon)
-		addNotification(players[roundWinnerIndex].name + " has won this round: " + points + " points");
+		addNotification(players[roundWinnerIndex].name + " wins the round: " + points + " points");
 	
 	// disable cards in my hand
 	disableHandCards();

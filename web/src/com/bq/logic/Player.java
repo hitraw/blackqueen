@@ -99,8 +99,8 @@ public class Player {
 		handCards = new ArrayList<Card>();
 	}
 
-	public void orderHandCards() {
-		Collections.sort(handCards, new Comparator<Card>() {
+	public void sort(List<Card> cards) {
+		Collections.sort(cards, new Comparator<Card>() {
 
 			@Override
 			public int compare(Card o1, Card o2) {
@@ -113,14 +113,13 @@ public class Player {
 	}
 
 	public List<Card> getHandCards() {
-		// arrange cards in order
-		orderHandCards();
+		sort(handCards);// needed??
 		return handCards;
 	}
 
 	public String getHandCardsJson() {
-
-		orderHandCards();
+		// arrange cards in order
+		sort(handCards);
 
 		// form JSON array of cards
 		JSONArray cards = new JSONArray();
@@ -139,18 +138,19 @@ public class Player {
 	}
 
 	public String getPointCards() throws JSONException {
-		Collections.sort(pointCards, new Comparator<Card>() {
-
-			@Override
-			public int compare(Card o1, Card o2) {
-				if (!o1.getSuit().equals(o2.getSuit())) {
-					return o1.getSuit().compareTo(o2.getSuit());
-				} else
-					// following should ensure QS is placed ahead of AS
-					return (o2.getValue()  + o2.getPoints()) - 
-							(o1.getValue() + o1.getPoints());
-			}
-		});
+//		Collections.sort(pointCards, new Comparator<Card>() {
+//
+//			@Override
+//			public int compare(Card o1, Card o2) {
+//				if (!o1.getSuit().equals(o2.getSuit())) {
+//					return o1.getSuit().compareTo(o2.getSuit());
+//				} else
+//					// following should ensure QS is placed ahead of AS
+//					return (o2.getValue()  + o2.getPoints()) - 
+//							(o1.getValue() + o1.getPoints());
+//			}
+//		});
+		sort(pointCards);
 
 		JSONArray cards = new JSONArray();
 		int points = 0;
