@@ -192,8 +192,8 @@ function manageBid() {
 function showFinalScore(){
 	for (var i in players)
 		players[i].showScore();
-	$('.pointCardsContainer').fadeOut(1000, function(){
-		$('.bid').fadeIn();
+	$('.pointCardsContainer').fadeOut(500, function(){
+		$('.bid').fadeIn().fadeOut().fadeIn();
 	});
 }
 

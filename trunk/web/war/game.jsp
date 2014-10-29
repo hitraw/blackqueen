@@ -394,7 +394,7 @@
 							</div>
 						</div> -->
 						<div id="scoreWindow" class="logWindow">
-							<div class="header">&nbsp;Scoreboard</div>
+							<div class="header">&nbsp;Score Board</div>
 							<div id="scoreLog" class="log">
 								<ul id="lsScore" class="list">
 								</ul>

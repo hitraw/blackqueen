@@ -110,8 +110,9 @@ function showCards(cardArray) {
 						showPlayError("You played an invalid card.");
 					});
 					// TODO: show animation, card moving up slightly now
-					// and to the table on success above
-					$(this).animate({'margin-top':'-30px'}, 300);
+					// and to the table on success above,
+					// commenting this as it's creating a jitter
+					// $(this).animate({'margin-top':'-30px'}, 300);
 					
 				} else {
 					// display error message you can't play this card
@@ -354,10 +355,11 @@ function showCardTable(json){
 		// wait for 1 second (previous card animations to complete)
 		// before clearing card mat
 		window.setTimeout(function() {
+//			$('#cardMat').fadeOut(500, function() {
 			$('.tableCard').fadeOut(500, function() {
 				$('#cardMat').html("");
 			});
-		}, 1000);
+		}, 2000);
 		$('#tablePoints').html("");
 	}
 	

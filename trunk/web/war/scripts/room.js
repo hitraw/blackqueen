@@ -77,7 +77,7 @@ function setStatus(statusText) {
 		$('#partnerTrump').html(""); // don't hide this, parent is hidden
 		$('#bidTarget').html(""); // don't hide this, parent is hidden
 		$('.points').html(""); // clear points inside player divs
-		$('.pointCardsContainer').hide(); // hide the points div
+		$('.pointCardsContainer').html("").hide(); // clear n hide the point cards div
 	}
 
 	
