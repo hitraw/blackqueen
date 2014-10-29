@@ -133,8 +133,10 @@ function showScore(message) {
 	var players = message["players"];
 	var totals = new Array();
 	var scorecards = message["scorecards"];
-	
-	if(players !== undefined && scorecards !== undefined){
+
+	if (players !== undefined && players.length > 0 
+			&& scorecards !== undefined
+			&& scorecards.length > 0) {
 	
 		var scoreHTML = "<table id='scoreTable' border='1'>"
 			

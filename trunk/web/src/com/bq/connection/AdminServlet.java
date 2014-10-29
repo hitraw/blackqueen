@@ -59,6 +59,11 @@ public class AdminServlet extends HttpServlet {
 				resp.getWriter().println("Player could not be removed");
 			}
 			break;
+		case "reset":
+			room.resetScoreboard();
+			resp.setStatus(200);
+			resp.getWriter().println("Scoreboard successfully reset!");
+			break;	
 		default:
 			break;
 		}
