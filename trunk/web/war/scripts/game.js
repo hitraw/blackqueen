@@ -190,10 +190,11 @@ function manageBid() {
 }
 
 function showFinalScore(){
-	$('.pointCardsContainer').html("").hide();
-	$('.points').html("").hide();
 	for (var i in players)
 		players[i].showScore();
+	$('.pointCardsContainer').fadeOut(1000, function(){
+		$('.bid').fadeIn();
+	});
 }
 
 function showDealBtn() {
@@ -324,7 +325,6 @@ function Player(jsonObj) {
 	this.showScore = function() {
 		$('#bid' + this.screenPosition).hide();
 		$('#bid' + this.screenPosition).html(this.score);
-		$('#bid' + this.screenPosition).fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
 	}
 
 	

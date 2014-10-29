@@ -71,14 +71,18 @@ function setStatus(statusText) {
 	// to pick partner and trump from
 	$('#bidSpecSelector').hide();
 
-	// left and right ear positioned spec controls
-	$('.bidSpec').hide(); // don't wipe this, contains title
-	$('#partnerTrump').html(""); // don't hide this, parent is hidden
-	$('#bidTarget').html(""); // don't hide this, parent is hidden
+	if (statusText !== RoomStatus.GAME_OVER){
+		// left and right ear positioned spec controls
+		$('.bidSpec').hide(); // don't wipe this, contains title
+		$('#partnerTrump').html(""); // don't hide this, parent is hidden
+		$('#bidTarget').html(""); // don't hide this, parent is hidden
+		$('.points').html(""); // clear points inside player divs
+		$('.pointCardsContainer').hide(); // hide the points div
+	}
 
-	$('.points').html(""); // clear points inside player divs
+	
 	$('.bid').html(""); // clear bids inside player divs
-	$('.pointCardsContainer').hide(); // hide the points div
+	
 
 	// clear hand only when new game is started
 	if (statusText === RoomStatus.READY_TO_DEAL
@@ -174,7 +178,7 @@ function onMessage(result) {
 		break;
 	case MessageType.PLAY:
 		// update play information on the screen
-		managePlayMessage(JSON.parse(message));
+			managePlayMessage(JSON.parse(message));
 		break;
 	case MessageType.ROUND:
 		// update round information on the screen

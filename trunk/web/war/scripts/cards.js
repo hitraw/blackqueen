@@ -15,14 +15,14 @@ var tableLeft = 400;
 var $myCard;
 
 var cardpos = [	// array of card positions for players 0 to 7
-           {top: 310, left: 415},
-           {top: 270, left: 350},
-           {top: 230, left: 350},
-           {top: 190, left: 350},
-           {top: 155, left: 415},
-           {top: 190, left: 480},
-           {top: 230, left: 480},
-           {top: 270, left: 480}
+           {top: 300, left: 415},
+           {top: 260, left: 350},
+           {top: 220, left: 350},
+           {top: 180, left: 350},
+           {top: 145, left: 415},
+           {top: 180, left: 480},
+           {top: 220, left: 480},
+           {top: 260, left: 480}
           ];
 
 // defining endsWith function for strings
@@ -351,10 +351,13 @@ function showCardTable(json){
 	// else i.e if no cards on the table, it means new round
 	else{
 		console.log("No cards on the table");
-		// wait for 2 seconds before clearing card mat
-		$('.tableCard').fadeOut(1000, function(){
-			$('#cardMat').html("");
-		});
+		// wait for 1 second (previous card animations to complete)
+		// before clearing card mat
+		window.setTimeout(function() {
+			$('.tableCard').fadeOut(500, function() {
+				$('#cardMat').html("");
+			});
+		}, 1000);
 		$('#tablePoints').html("");
 	}
 	
