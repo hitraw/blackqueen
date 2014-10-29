@@ -30,7 +30,7 @@ public class Scoreboard {
 			String bidTarget, String bidder) {
 
 		for (Player p : players)
-			if (names.contains(p.getName()))
+			if (!names.contains(p.getName()))
 				names.add(p.getName());
 
 		scorecards.add(new Scorecard(players, bidSpec, bidTarget, bidder));
@@ -43,7 +43,7 @@ public class Scoreboard {
 			JSONArray scorecardsJSON = new JSONArray();
 			for(Scorecard scorecard: scorecards)
 				scorecardsJSON.put(scorecard.getJSON());
-			scoreboard.put("scorecards", new JSONArray(scorecardsJSON));
+			scoreboard.put("scorecards", scorecardsJSON);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

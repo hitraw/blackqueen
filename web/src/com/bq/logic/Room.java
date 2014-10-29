@@ -246,7 +246,6 @@ public class Room {
 				// send cards to this player
 				sendMessage(p,
 						new Message(Message.Type.CARDS, p.getHandCardsJson()));
-
 			}
 		} else if (players.size() < MAX_PLAYERS) {
 			log.info("Adding " + playerName + " to game room:" + name);
@@ -265,6 +264,7 @@ public class Room {
 			}
 			sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayersJSON()));
 		}
+		sendMessage(p, new Message(Message.Type.SCORE, scoreboard.getJSON()));
 		return p;
 	}
 
@@ -386,12 +386,11 @@ public class Room {
 					sendMessageToAll(new Message(Message.Type.PLAYERS,
 							getPlayersJSON()));
 
-					if ("gameEnd".equals(Thread.currentThread().getName()))
-						Thread.sleep(2000);
 					currGame.addToScoreboard();
+					gameCount++;
 
-					// sendMessageToAll(new Message(Message.Type.SCORE,
-					// scoreboard.getJSON()));
+					sendMessageToAll(new Message(Message.Type.SCORE,
+					 scoreboard.getJSON()));
 					// endGame();
 				}
 
@@ -452,7 +451,6 @@ public class Room {
 			for (Player p : players) {
 				p.reset();
 			}
-			gameCount++;
 			isCut = false;
 			isGameOver = false;
 			trumpSuit = null;

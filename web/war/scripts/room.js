@@ -129,8 +129,75 @@ function addRoomNotification(message) {
 }
 
 function showScore(message) {
-	// add score json to score window for now
-	$('#lsScore').append("<li>" + message + "</li>");
+	console.log(message);
+	var players = message["players"];
+	var totals = new Array();
+	var scorecards = message["scorecards"];
+	
+	if(players !== undefined && scorecards !== undefined){
+	
+		var scoreHTML = "<table id='scoreTable' border='1'>"
+			
+		scoreHTML += ("<tr>");
+		
+		
+		// header
+		var width = Math.round(65/players.length);
+		scoreHTML += ("<th width='5%'>#</th>");
+		scoreHTML += ("<th width='15%'>B/O</th>");
+		scoreHTML += ("<th width='15%'>P/T</th>");
+		for(var i in players){
+			scoreHTML += ("<th width='"+width+"%'>"+players[i].substring(0,3)+"</th>");
+			totals.push(0);
+		}	
+		scoreHTML += ("</tr>");
+		
+		var scorecard, scores, bidSpec, bidTarget, bidder, score;
+		for(var j in scorecards){
+			
+			scorecard = scorecards[j];
+			scores = scorecard["scores"];
+			bidSpec = scorecard["bidSpec"];
+			bidTarget = scorecard["bidTarget"];
+			bidder = scorecard["bidder"];
+			
+			bidSpec = bidSpec.replace(/H/g, "&hearts;")
+							.replace(/S/g, "&spades;")
+							.replace(/C/g, "&clubs;")
+							.replace(/D/g, "&diams;");
+			
+			scoreHTML += ("<tr>");
+			scoreHTML += ("<td>"+j+"</td>");
+			scoreHTML += ("<td>"+bidTarget+"</td>");
+			scoreHTML += ("<td>"+bidSpec+"</td>");
+			
+			for(var i in players){
+				
+				score = scores[players[i]];
+				if(score === undefined)
+					score = "-";
+				else totals[i] += score;
+				
+				if(players[i] === bidder)
+					score = "<b>" + score + "</b>";
+				scoreHTML += ("<td>" + score + "</td>");
+			}	
+			
+			scoreHTML += ("</tr>");
+		}
+		
+		// total
+		scoreHTML += ("<tr>");
+		scoreHTML += ("<th colspan='3' align='center'>Total</th>");
+
+		for(var i in players)
+			scoreHTML += ("<th>"+totals[i]+"</th>");
+		scoreHTML += ("</tr>");
+		
+		scoreHTML += ("</table>");
+		$('#scoreLog').html(scoreHTML);
+		
+	}
 	// scroll to bottom of score window
 	var scoreLog = document.getElementById('scoreLog');
 	scoreLog.scrollTop = scoreLog.scrollHeight;
@@ -194,7 +261,7 @@ function onMessage(result) {
 		break;
 	case MessageType.SCORE:
 		// update round information on the screen
-//		showScore(JSON.parse(message));
+		showScore(JSON.parse(message));
 		break;	
 	case MessageType.KICK:
 		// show notification, alert and close connection
@@ -253,6 +320,7 @@ function enter(name) {
 
 $(document).ready(function() {
 	sessionOff();
+//	sessionOn();
 	// $('#txtName').focus();
 
 	$('#txtName').focus(function() {

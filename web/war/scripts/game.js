@@ -171,6 +171,7 @@ function manageControls() {
 		showEndBtn();
 		break;
 	case RoomStatus.GAME_OVER:
+		$('#btnEnd').val("New Game");
 		showFinalScore();
 		break;
 	default:
@@ -198,9 +199,9 @@ function manageBid() {
 function showFinalScore(){
 	for (var i in players)
 		players[i].showScore();
-	$('.pointCardsContainer').fadeOut(1000).fadeIn(500).fadeOut(1000,
+	$('.pointCardsContainer').fadeOut(1000).fadeIn(500).fadeOut(100,
 			function() {
-				// show score in place of point cards, but after 3 seconds
+				//	show score in place of point cards, but after fading out
 				// till then let points flash
 				$('.bid').fadeIn(500);
 			});

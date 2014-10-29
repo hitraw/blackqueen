@@ -451,9 +451,14 @@ function declareRoundWinner(json){
 			// when done,
 			// show the pointCards in player objects on screen
 			// (already drawn by this time) by Player object
-			roundWinner.drawPointCards(roundWinnerPointCards);
-			$('.pointCardsContainer').fadeIn({duration:'slow'});
-			roundWinner.setPoints(roundWinnerPoints);
+			// but only if there were any points in this round :)
+			if (roundPoints > 0){
+				roundWinner.drawPointCards(roundWinnerPointCards);
+				$('.pointCardsContainer').fadeIn({
+					duration : 500
+				});
+				roundWinner.setPoints(roundWinnerPoints);
+			}
 			// finally clear out #cardMat and #tablePoints controls
 			$('#cardMat').html("");
 			$('#tablePoints').html("");
