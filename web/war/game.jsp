@@ -43,7 +43,7 @@
 		<table id="roomTable">
 			<tr>
 				<td width="900">
-					<div id="tablePoints"></div>
+					<!-- <div id="tablePoints"></div> -->
 					<div id="bidSpecContainer" align="center">
 						<div id="bidSpecSelector">
 

@@ -222,7 +222,7 @@ public class Room {
 				// Imp: spec message has to be sent before players, but
 				// round info only after players, bcoz of processing order on JS
 				// ***
-				if (Status.PLAYING.equals(status)) {
+				if (Status.PLAYING.equals(status) || Status.GAME_OVER.equals(status)) {
 					sendMessage(
 							p,
 							new Message(Message.Type.SPEC, currGame
@@ -708,7 +708,7 @@ public class Room {
 			if (bidScore >= bidTarget) {
 				// declare bidding team has won
 				sendMessageToAll(new Message(Message.Type.GAME_NOTIFICATION,
-						"Game over. Bidding team has made " + bidScore
+						"Game over. Bidding team made " + bidScore
 								+ " points."));
 				isGameOver = true;
 				bidScore = bidTarget;
@@ -719,7 +719,7 @@ public class Room {
 			else if (oppScore >= oppTarget) {
 				// declare opponents team has won
 				sendMessageToAll(new Message(Message.Type.GAME_NOTIFICATION,
-						"Game over. Opposition team has made " + oppScore
+						"Game over. Opposition team made " + oppScore
 								+ " points."));
 				isGameOver = true;
 				oppScore = oppTarget;
