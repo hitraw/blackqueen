@@ -134,6 +134,12 @@ function showPlayers(playerJsonArray) {
 		players[i].setPosition(positions[positionIndex++]);
 		players[i].draw();
 	}
+	
+	if(status === RoomStatus.PLAYING){
+		// set point cards visible
+		$('.pointCardsContainer').show();
+	}
+	
 	manageControls();
 }
 
@@ -192,9 +198,12 @@ function manageBid() {
 function showFinalScore(){
 	for (var i in players)
 		players[i].showScore();
-	$('.pointCardsContainer').fadeOut(500, function(){
-		$('.bid').fadeIn().fadeOut().fadeIn();
-	});
+	$('.pointCardsContainer').fadeOut(1000).fadeIn(500).fadeOut(1000,
+			function() {
+				// show score in place of point cards, but after 3 seconds
+				// till then let points flash
+				$('.bid').fadeIn(500);
+			});
 }
 
 function showDealBtn() {
@@ -275,6 +284,16 @@ function showEndBtn() {
 	$('#endBtn').html($btnEnd);
 }
 
+function updateLoyalties(loyalties){
+	var loyaltyObj, playerIndex, player;
+	for(var i in loyalties){
+		loyaltyObj = loyalties[i];
+		playerIndex = loyaltyObj["index"];
+		player = players[playerIndex];
+		player.setLoyalty(loyaltyObj["loyalty"]);
+	}
+}
+
 function Player(jsonObj) {
 	// console.log("119:jsonObj:"+jsonObj);
 	this.name = jsonObj["name"];
@@ -308,6 +327,16 @@ function Player(jsonObj) {
 		this.turn = true;
 		$('#pos' + this.screenPosition).addClass('turn');
 	}
+	
+	this.setLoyalty = function(newLoyalty) {
+		this.loyalty = newLoyalty;
+		this.showLoyalty();
+	}
+	
+	this.setPoints = function(newPoints) {
+		this.points = newPoints;
+		this.showPoints();
+	}
 
 	this.showBid = function() {
 		$('#bid' + this.screenPosition).hide();
@@ -337,11 +366,9 @@ function Player(jsonObj) {
 		this.showLoyalty();
 		
 		// show collected points on the right
-		if(this.points > 0)
-			$('#points' + this.screenPosition).html(this.points);
-//		console.log("pointCards:"+this.pointCards);
+		this.showPoints();
 		
-		// show point cards below
+		// draw point cards below
 		if(this.pointCards.length > 0)
 			this.drawPointCards(this.pointCards);
 
@@ -352,8 +379,13 @@ function Player(jsonObj) {
 		}
 	}
 	
+	this.showPoints = function(){
+		if(this.points > 0)
+			$('#points' + this.screenPosition).html(this.points);
+	}
+	
 	this.showLoyalty = function(){
-		$('#pos' + this.screenPosition).removeClass('inactive').addClass(
+		$('#pos' + this.screenPosition).removeClass('inactive neutral').addClass(
 				this.loyalty).show();
 //		console.log("loyalty of " + this.name + ":" + this.loyalty);
 		switch(this.loyalty){
@@ -369,36 +401,33 @@ function Player(jsonObj) {
 			if(partner !== undefined){
 				
 //				console.log("Partner:"+partner);
-				
 				partner = partner.replace(/H/g, "&hearts;")
 				partner = partner.replace(/S/g, "&spades;");
 				partner = partner.replace(/C/g, "&clubs;");
 				partner = partner.replace(/D/g, "&diams;");
-	
 //				console.log("Formatted Partner:"+partner);
-				
 				if(partnerCard.endsWith("H") || partnerCard.endsWith("D"))
 					partner = "<span style='color: red'>"
 							+ partner + "</span>";
-				
 //				console.log("Colored Partner:"+partner);
 				$('#loyalty' + this.screenPosition).html(partner);
 			}
 			break;	
 		default: break;	
-		
 		}
 	}
 
 	this.drawPointCards = function(pointCards){
 		var $pointCard;
 		$('#pointCards' + this.screenPosition).html("");
-		// show if hidden 
-		$('#pointCards' + this.screenPosition).fadeIn(1000);
+
 		for (var i = 0; i < pointCards.length; i++) {
 			 $pointCard = $("<img class='pointCard' id='"+this.name+i+pointCards[i]+"' src='/images/cards/" + pointCards[i] + ".png' />");
 			 $('#pointCards' + this.screenPosition).append($pointCard);
 		}
+		
+		// just draw don't show, let them be shown together from calling function
+		$('#pointCards' + this.screenPosition).hide();
 
 	}
 }

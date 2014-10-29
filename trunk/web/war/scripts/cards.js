@@ -102,7 +102,8 @@ function showCards(cardArray) {
 						
 						// move the card
 						$myCard.animate(
-							{'margin-top': moveTop + 'px', 'margin-left': moveLeft + 'px'}
+//							{'margin-top': moveTop + 'px', 'margin-left': moveLeft + 'px'}
+							{top: cardpos[0].top, left: cardpos[0].left}
 							, 500);
 					}).error(function() {
 						console.log("error in playing card");
@@ -124,7 +125,7 @@ function showCards(cardArray) {
 					// if starting suit is not null, it means you have that suit
 					// and are trying to play another suit. show error accdly.
 					else
-						showPlayError("You can't cut. You have this suit!");
+						showPlayError("You can't play different suit. You have this suit!");
 				}
 			} else {
 				// display error message it's not your turn
@@ -251,8 +252,6 @@ function setPlayableCards() {
 			// let's assume I have don't have non trump cards
 			var hasNonTrump = false;
 			
-			console.log("myCardArray:"+myCardArray);
-
 			// iterate through each card in hand
 			for (var i in myCardArray) {
 
@@ -315,7 +314,7 @@ function setPlayableCards() {
 }
 
 function showCardTable(json){
-	$('#cardMat').html("");
+//	$('#cardMat').html("");
 	$('#tablePoints').html("");
 	highestCard = json["highestCard"];
 	startingSuit = json["startingSuit"];
@@ -352,15 +351,7 @@ function showCardTable(json){
 	// else i.e if no cards on the table, it means new round
 	else{
 		console.log("No cards on the table");
-		// wait for 1 second (previous card animations to complete)
-		// before clearing card mat
-		window.setTimeout(function() {
-//			$('#cardMat').fadeOut(500, function() {
-			$('.tableCard').fadeOut(500, function() {
-				$('#cardMat').html("");
-			});
-		}, 2000);
-		$('#tablePoints').html("");
+		// clearing out code moved to end of round in managePlayMessage()
 	}
 	
 	// disable cards in my hand
@@ -378,9 +369,8 @@ function managePlayMessage(json) {
 	startingSuit = json["startingSuit"];
 	highestCard = json["highestCard"];
 	isCut = json["cut"];
-	points = json["points"];
+	var points = json["points"];
 	var isRoundOver = json["roundOver"];
-	var roundWinnerIndex = json["winnerIndex"];
 
 	var currPlayer = players[playerIndex];
 
@@ -412,9 +402,11 @@ function managePlayMessage(json) {
 			$myCard.addClass('highestCard');
 		}
 
-	if(isRoundOver)
-		addGameNotification(players[roundWinnerIndex].name 
-				+ " wins the round: " + points + " points");
+	if (isRoundOver) {
+		declareRoundWinner(json);
+		startingSuit = undefined;
+		highestCard = undefined;
+	}
 	
 	// disable cards in my hand
 	disableHandCards();
@@ -422,6 +414,52 @@ function managePlayMessage(json) {
 	// if it's my turn now, set my playable cards
 	if (myIndex === nextIndex)
 		setPlayableCards();
+}
+
+function declareRoundWinner(json){
+	
+	var roundWinnerIndex = json["winnerIndex"];
+//	var roundWinnerPoints = json["winnerPoints"];
+//	var roundWinnerPointCards = json["winnerPointCards"];
+	var pointCardsJsonObj = JSON.parse(json["winnerPointCards"]);
+	console.log(pointCardsJsonObj);
+	var roundWinnerPoints = pointCardsJsonObj["points"];
+	var roundWinnerPointCards = pointCardsJsonObj["cards"];
+	var roundPoints = json["points"];
+	
+	var roundWinner = players[roundWinnerIndex];
+	addGameNotification(roundWinner.name
+			+ " wins the round: " + roundPoints + " points");
+	
+	// show animation for cards on table going to winner
+	var positionIndex = roundWinner.screenPosition;
+	var position = $('#pos' + positionIndex).offset();
+	
+	// first let's wait for 1 sec for all card animations to complete
+	window.setTimeout(function() {
+		// then let's fade out cards on the table slowly
+		$('.tableCard').fadeOut({
+			// queue: false so fadeOut and animate happen in parallel
+			queue : false,	
+			duration : 'slow'
+		});
+		// and animate them at same time towards the winner
+		$('.tableCard').animate({
+			left : position.left,
+			top : position.top
+		}, 'slow', function() {
+			// when done,
+			// show the pointCards in player objects on screen
+			// (already drawn by this time) by Player object
+			roundWinner.drawPointCards(roundWinnerPointCards);
+			$('.pointCardsContainer').fadeIn({duration:'slow'});
+			roundWinner.setPoints(roundWinnerPoints);
+			// finally clear out #cardMat and #tablePoints controls
+			$('#cardMat').html("");
+			$('#tablePoints').html("");
+		});
+	}, 1000);
+		
 }
 	
 function showPlayedCard(card, playerIndex){
@@ -462,10 +500,9 @@ function showPlayedCard(card, playerIndex){
 //	console.log("move: " + moveTop + ", " + moveLeft);
 	
 	// move the card from player into #cardMat
-	$card.animate({
-		'margin-top' : moveTop + 'px',
-		'margin-left' : moveLeft + 'px'
-	}, 500);
+	$card.animate(
+		{top : endingOffset.top, left : endingOffset.left}
+		, 500);
 	
 	if(card === highestCard){
 		// remove previous
