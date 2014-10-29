@@ -222,7 +222,8 @@ public class Room {
 				// Imp: spec message has to be sent before players, but
 				// round info only after players, bcoz of processing order on JS
 				// ***
-				if (Status.PLAYING.equals(status) || Status.GAME_OVER.equals(status)) {
+				if (Status.PLAYING.equals(status)
+						|| Status.GAME_OVER.equals(status)) {
 					sendMessage(
 							p,
 							new Message(Message.Type.SPEC, currGame
@@ -389,8 +390,8 @@ public class Room {
 						Thread.sleep(2000);
 					currGame.addToScoreboard();
 
-//					sendMessageToAll(new Message(Message.Type.SCORE,
-//							scoreboard.getJSON()));
+					// sendMessageToAll(new Message(Message.Type.SCORE,
+					// scoreboard.getJSON()));
 					// endGame();
 				}
 
@@ -473,23 +474,16 @@ public class Room {
 			if (success) {
 				// if round has been won
 				if (currRound.isRoundOver) {
-					// pause for few seconds then start new round, update
-					// player info: points, point cards, etc.
-					// try {
-					// Thread.sleep(4000);
-					// } catch (InterruptedException e) {
-					// log.severe("Error in pausing the game");
-					// e.printStackTrace();
-					// }
 					calculatePoints();
 
 					players.get(currRound.roundWinnerIndex).setTurn();
 					currRound = new Round(currRound.roundWinnerIndex);
 
-					sendMessageToAll(new Message(Message.Type.PLAYERS,
-							getPlayersJSON()));
-					sendMessageToAll(new Message(Message.Type.ROUND,
-							currRound.getRoundInfo()));
+					// no need to send this any more TODO: check
+//					sendMessageToAll(new Message(Message.Type.PLAYERS,
+//							getPlayersJSON()));
+//					sendMessageToAll(new Message(Message.Type.ROUND,
+//							currRound.getRoundInfo()));
 
 				}
 			}
@@ -669,7 +663,8 @@ public class Room {
 			changeStatus(Status.PLAYING);
 			sendMessageToAll(new Message(Message.Type.SPEC, getBidSpec()));
 			currRound = new Round(bidWinnerIndex);
-			sendMessageToAll(new Message(Message.Type.ROUND, currRound.getRoundInfo()));
+			sendMessageToAll(new Message(Message.Type.ROUND,
+					currRound.getRoundInfo()));
 		}
 
 		private String getBidSpec() {
@@ -708,8 +703,7 @@ public class Room {
 			if (bidScore >= bidTarget) {
 				// declare bidding team has won
 				sendMessageToAll(new Message(Message.Type.GAME_NOTIFICATION,
-						"Game over. Bidding team made " + bidScore
-								+ " points."));
+						"Game over. Bidding team made " + bidScore + " points."));
 				isGameOver = true;
 				bidScore = bidTarget;
 				oppScore = 0;
@@ -853,17 +847,43 @@ public class Room {
 
 					if (c.getCode().equals(partnerCard)) {
 						p.setLoyalty(Loyalty.PARTNER);
-						sendMessageToAll(new Message(
-								Message.Type.GAME_NOTIFICATION, p.getName()
-										+ " is revealed as Partner."));
-						partnerCount++;
+						JSONArray loyalties = new JSONArray();
+						JSONObject updatedLoyalty = new JSONObject();
+						try {
+							updatedLoyalty.put("index", playerIndex);
+							updatedLoyalty.put("loyalty", Loyalty.PARTNER
+									.toString().toLowerCase());
+							loyalties.put(updatedLoyalty);
 
-						// if max partners are declared
-						if (partnerCount == maxPartnerCount)
-							// declare all neutral players as opponents
-							for (Player other : players)
-								if (Loyalty.NEUTRAL.equals(other.getLoyalty()))
-									other.setLoyalty(Loyalty.OPPONENT);
+							sendMessageToAll(new Message(
+									Message.Type.GAME_NOTIFICATION, p.getName()
+											+ " is revealed as Partner."));
+							partnerCount++;
+
+							// if max partners are declared
+							if (partnerCount == maxPartnerCount)
+								// declare all neutral players as opponents
+								for (int i = 0; i < players.size(); i++) {
+									Player other = players.get(i);
+									if (Loyalty.NEUTRAL.equals(other
+											.getLoyalty())) {
+										other.setLoyalty(Loyalty.OPPONENT);
+										updatedLoyalty = new JSONObject();
+										updatedLoyalty.put("index", i);
+										updatedLoyalty.put("loyalty",
+												Loyalty.OPPONENT.toString()
+														.toLowerCase());
+										loyalties.put(updatedLoyalty);
+									}
+								}
+
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						// mid round update declaring change in loyalties (partial/complete)
+						sendMessageToAll(new Message(Message.Type.LOYALTIES,
+								loyalties.toString()));
 					}
 
 					p.removeTurn();
@@ -874,6 +894,7 @@ public class Room {
 						players.get(turnIndex).setTurn();
 					} else {
 						isRoundOver = true;
+						turnIndex = roundWinnerIndex;
 						players.get(roundWinnerIndex).winRound(table);
 						// give turn for next round to winner of this round.
 						// turnIndex = roundWinnerIndex;
@@ -896,7 +917,15 @@ public class Room {
 					json.put("points", tablePoints);
 					json.put("cut", isCut);
 					json.put("roundOver", isRoundOver);
-					json.put("winnerIndex", roundWinnerIndex);
+
+					if (isRoundOver) {
+						json.put("winnerIndex", roundWinnerIndex);
+						json.put("winnerPoints", players.get(roundWinnerIndex)
+								.getPoints());
+						json.put("winnerPointCards",
+								players.get(roundWinnerIndex)
+										.getPointCardsJSON());
+					}
 
 					sendMessageToAll(new Message(Message.Type.PLAY,
 							json.toString()));

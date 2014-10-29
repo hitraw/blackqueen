@@ -146,7 +146,7 @@ public class Player {
 		return points;
 	}
 
-	public String getPointCards() throws JSONException {
+	public String getPointCardsJSON() throws JSONException {
 //		Collections.sort(pointCards, new Comparator<Card>() {
 //
 //			@Override

@@ -14,6 +14,7 @@ var MessageType = {
 	BID : "bid",
 	SPEC : "spec",
 	PLAY : "play",
+	LOYALTIES: "loyalties",
 	ROUND : "round",
 	SCORE : "score"
 };
@@ -43,7 +44,7 @@ function sessionOff() {
 	$('#lsNotif').html("");
 	$('#room').hide();
 	$('#bidControl').hide(); // hide bid control(card mat)
-	$('#cardMat').hide(); // hide table(card mat)
+	$('#cardMat').html("").hide(); // wipe n hide table(card mat)
 	$('#bidSpecSelector').hide();
 	$('.bidSpec').hide();
 }
@@ -53,14 +54,22 @@ function showError(errorMessage) {
 }
 
 function setStatus(statusText) {
-	// clear all this whenever status changes
-
-
-	$('#cardMat').html("");
-	$('#cardMat').hide(); // hide table(card mat)
-	$('#tablePoints').html("");
 	
-
+	status = statusText;
+	$('#status').html(status.replace(/_/g, " ")); // replace _ with space
+	
+	// clear card mat and points when game over, but after 3 seconds
+	// let everyone absorb the fact that the game is over!
+	if(status === RoomStatus.GAME_OVER){
+		window.setTimeout(function(){
+			$('#cardMat').html("").hide(); // wipe n hide table(card mat)
+			$('#tablePoints').html("");
+		}, 3000);
+	}
+	
+	
+	// clear all this whenever status changes
+	
 	// bid control for making bids
 	$('#bidControl').hide();
 	$('#bidControl1').html(""); // don't hide this, parent is hidden
@@ -79,10 +88,8 @@ function setStatus(statusText) {
 		$('.points').html(""); // clear points inside player divs
 		$('.pointCardsContainer').html("").hide(); // clear n hide the point cards div
 	}
-
 	
 	$('.bid').html(""); // clear bids inside player divs
-	
 
 	// clear hand only when new game is started
 	if (statusText === RoomStatus.READY_TO_DEAL
@@ -95,9 +102,6 @@ function setStatus(statusText) {
 		$('.bid').hide();
 		$('.pointCardsContainer').show();
 	}
-
-	status = statusText;
-	$('#status').html(status.replace(/_/g, " ")); // replace _ with space
 }
 
 function addChatMessage(message) {
@@ -180,6 +184,10 @@ function onMessage(result) {
 		// update play information on the screen
 			managePlayMessage(JSON.parse(message));
 		break;
+	case MessageType.LOYALTIES:
+		// update play information on the screen
+			updateLoyalties(JSON.parse(message));
+		break;	
 	case MessageType.ROUND:
 		// update round information on the screen
 		showCardTable(JSON.parse(message));
