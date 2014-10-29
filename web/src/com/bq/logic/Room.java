@@ -264,7 +264,10 @@ public class Room {
 			}
 			sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayersJSON()));
 		}
-		sendMessage(p, new Message(Message.Type.SCORE, scoreboard.getJSON()));
+		if (scoreboard.hasData())
+			sendMessage(p,
+					new Message(Message.Type.SCORE, scoreboard.getJSON()));
+
 		return p;
 	}
 
@@ -390,7 +393,7 @@ public class Room {
 					gameCount++;
 
 					sendMessageToAll(new Message(Message.Type.SCORE,
-					 scoreboard.getJSON()));
+							scoreboard.getJSON()));
 					// endGame();
 				}
 
@@ -478,10 +481,10 @@ public class Room {
 					currRound = new Round(currRound.roundWinnerIndex);
 
 					// no need to send this any more TODO: check
-//					sendMessageToAll(new Message(Message.Type.PLAYERS,
-//							getPlayersJSON()));
-//					sendMessageToAll(new Message(Message.Type.ROUND,
-//							currRound.getRoundInfo()));
+					// sendMessageToAll(new Message(Message.Type.PLAYERS,
+					// getPlayersJSON()));
+					// sendMessageToAll(new Message(Message.Type.ROUND,
+					// currRound.getRoundInfo()));
 
 				}
 			}
@@ -879,7 +882,8 @@ public class Room {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						// mid round update declaring change in loyalties (partial/complete)
+						// mid round update declaring change in loyalties
+						// (partial/complete)
 						sendMessageToAll(new Message(Message.Type.LOYALTIES,
 								loyalties.toString()));
 					}
@@ -979,5 +983,10 @@ public class Room {
 					return true;
 			}
 		}
+	}
+
+	public void resetScoreboard() {
+		scoreboard = new Scoreboard();
+		sendMessageToAll(new Message(Message.Type.SCORE, scoreboard.getJSON()));
 	}
 }

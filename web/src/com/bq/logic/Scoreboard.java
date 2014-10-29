@@ -35,13 +35,17 @@ public class Scoreboard {
 
 		scorecards.add(new Scorecard(players, bidSpec, bidTarget, bidder));
 	}
-	
-	public String getJSON(){
+
+	public boolean hasData() {
+		return (names.size() > 0 && scorecards.size() > 0);
+	}
+
+	public String getJSON() {
 		JSONObject scoreboard = new JSONObject();
 		try {
 			scoreboard.put("players", new JSONArray(names));
 			JSONArray scorecardsJSON = new JSONArray();
-			for(Scorecard scorecard: scorecards)
+			for (Scorecard scorecard : scorecards)
 				scorecardsJSON.put(scorecard.getJSON());
 			scoreboard.put("scorecards", scorecardsJSON);
 		} catch (JSONException e) {

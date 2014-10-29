@@ -30,6 +30,7 @@
 					}
 				%>
 			</select> <input type="submit" id="btnLookup" value="Show Players" />
+			<input type="button" id="btnReset" value="Reset Scoreboard" />
 		</div>
 		<div id="result">
 			<!-- 

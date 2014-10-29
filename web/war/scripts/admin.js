@@ -10,6 +10,17 @@ $(document).ready(function() {
 			$('#error').html("Error in getting list of players").fadeOut(5000);
 		});
 	});
+	
+	$('#btnReset').click(function() {
+		$.post('/admin', {
+			room : $('#slRooms').val(),
+			action : "reset"
+		}, function(result) {
+			$('#error').html("Scoreboard reset!").fadeOut(5000);
+		}).error(function() {
+			$('#error').html("Error in getting list of players").fadeOut(5000);
+		});
+	});
 });
 
 function list(players) {
