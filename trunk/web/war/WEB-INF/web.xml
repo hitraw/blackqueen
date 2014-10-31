@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns="http://java.sun.com/xml/ns/javaee"
-xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
 	<welcome-file-list>
 		<welcome-file>game.jsp</welcome-file>
 	</welcome-file-list>
@@ -32,12 +32,12 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/_ah/channel/disconnected/</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>StateServlet</servlet-name>
-		<servlet-class>com.bq.connection.StateServlet</servlet-class>
+		<servlet-name>Game</servlet-name>
+		<jsp-file>/game.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>StateServlet</servlet-name>
-		<url-pattern>/state</url-pattern>
+		<servlet-name>Game</servlet-name>
+		<url-pattern>/game</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DealServlet</servlet-name>
@@ -63,7 +63,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>BidSpecServlet</servlet-name>
 		<url-pattern>/spec</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>PlayServlet</servlet-name>
 		<servlet-class>com.bq.connection.PlayServlet</servlet-class>
@@ -79,6 +79,22 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet-mapping>
 		<servlet-name>EndServlet</servlet-name>
 		<url-pattern>/end</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ScoreboardServlet</servlet-name>
+		<servlet-class>com.bq.connection.ScoreboardServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ScoreboardServlet</servlet-name>
+		<url-pattern>/scoreboard</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>History</servlet-name>
+		<jsp-file>/history.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>History</servlet-name>
+		<url-pattern>/history</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ChatServlet</servlet-name>

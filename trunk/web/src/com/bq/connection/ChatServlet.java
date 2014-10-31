@@ -33,7 +33,7 @@ public class ChatServlet extends HttpServlet {
 	private void processRequest(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		String roomName = req.getParameter("g");
+		String roomName = req.getParameter("r");
 		String username = req.getParameter("u");
 		String m = req.getParameter("m");
 		log.info("game="+roomName +": username=" + username + " :message=" + m );

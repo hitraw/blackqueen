@@ -5,7 +5,6 @@
 <head>
 <meta charset="utf-8">
 <title>Black Queen</title>
-
 <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 <link rel="stylesheet"
@@ -40,7 +39,7 @@
 			<div class="dataContainer">
 				<div class="data">
 					<input type="text" id="txtName" value="Name" size="30"
-						maxlength="12" /> <input type="hidden" id="slGames" value="vdppl" />
+						maxlength="12" /> <input type="hidden" id="slRooms" value="vdppl" />
 					<input type="submit" id="btnEnter" value="Enter" />
 				</div>
 			</div>
@@ -278,8 +277,15 @@
 					<div id="boardContainer" align="right">
 
 						<div id="scoreWindow" class="logWindow">
-							<div style='height: 60px;'></div>
-							<div class="papyrusHeader">&nbsp;Score Board</div>
+							<div id="iconTray" style='height: 60px; text-align: right;'>
+								<img id='historyIcon' class='scoreboardIcon' 
+									src='/images/history.png' title='View previous scoresheets'/> 
+								<img id='archiveIcon' class='scoreboardIcon'
+									src='/images/archive.png' title='Archive and create new scoresheet' />
+								<div id="scoreboardError"></div>
+
+							</div>
+							<div class="papyrusHeader">&nbsp;Scores</div>
 							<div id="scoreLog" class="log">
 <!-- 
 								<table class="scorecard">

@@ -38,7 +38,7 @@ function sessionOn() {
 function sessionOff() {
 	connected = false;
 	
-	$('#chatWindow').draggable();
+//	$('#chatWindow').draggable();
 //	$('#chatLog').resizable();
 	
 	$('.pointCardsContainer').html("");
@@ -149,6 +149,8 @@ function showScore(message) {
 	if (players !== undefined && players.length > 0 
 			&& scorecards !== undefined
 			&& scorecards.length > 0) {
+		
+		$('#archiveIcon').show();
 	
 		var scoreHTML = "<table id='scoreTable' class='scorecard'>"
 			
@@ -217,6 +219,8 @@ function showScore(message) {
 		scoreHTML += ("</table>");
 		$('#scoreLog').html(scoreHTML);
 		
+	} else {
+		$('#scoreLog').html("");
 	}
 	// scroll to bottom of score window
 	var scoreLog = document.getElementById('scoreLog');
@@ -308,7 +312,7 @@ function onError(error) {
 function openNewChannel() {
 	$.post('/getToken', {
 		u : sessionStorage.username,
-		g : sessionStorage.gameKey
+		r : sessionStorage.roomName
 	}, function(result) {
 		sessionStorage.token = result.trim();
 		sessionStorage.tokenTS = new Date().getTime();
@@ -330,7 +334,7 @@ function openChannel(token) {
 
 function enter(name) {
 	if (name.length >= 3 && name !== 'Name') {
-		sessionStorage.gameKey = $('#slGames').val();
+		sessionStorage.roomName = $('#slRooms').val();
 		sessionStorage.username = name;
 		openNewChannel();
 	} else {
@@ -345,7 +349,35 @@ $(document).ready(function() {
 	
 	$('#chatHeader').click(function(){
 		$('.chat').toggle();
-	})
+	});
+	
+	$('#historyIcon').click(function(){
+		window.open('/history', '_blank');
+	});	
+	
+	$('#archiveIcon').click(function(){
+		// post to /scoreboard, action: archive
+		var canArchive = (status !== RoomStatus.PLAYING);
+		if(!canArchive)
+			canArchive = confirm("Game is in progress, scores not added to this sheet." +
+					" \nAre you sure you want to archive?");
+		else
+			canArchive = confirm("This will archive current score sheet and " +
+					"create a new one. Are you sure you want to do this?");
+		if(canArchive){
+			$.post("/scoreboard", {
+				r : sessionStorage.roomName,
+				action: 'archive'
+			}, function(result) {
+				// display success message
+				$('#scoreboardError').html(result).show().fadeOut(5000);
+			}).fail(function(error) {
+				// display error message
+				console.log("Error:"+error.responseText);
+				$('#scoreboardError').html(error.responseText).show().fadeOut(5000);
+			});
+		}
+	});
 
 	$('#txtName').focus(function() {
 		if ($(this).val() == "Name")
@@ -377,7 +409,7 @@ $(document).ready(function() {
 			if (msg.length > 0)
 				$.post('/chat', {
 					u : sessionStorage.username,
-					g : sessionStorage.gameKey,
+					r : sessionStorage.roomName,
 					m : msg
 				});
 			$('#txtChat').val("");

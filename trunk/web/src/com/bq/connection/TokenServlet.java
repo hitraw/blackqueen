@@ -33,7 +33,7 @@ public class TokenServlet extends HttpServlet {
 	private void processLogin(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		String roomName = req.getParameter("g");
+		String roomName = req.getParameter("r");
 		String username = req.getParameter("u");
 		resp.setContentType("text/plain");
 		String token;

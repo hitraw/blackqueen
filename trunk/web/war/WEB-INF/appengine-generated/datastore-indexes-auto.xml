@@ -1,4 +1,10 @@
-<!-- Indices written at Mon, 6 Oct 2014 17:37:53 UTC -->
+<!-- Indices written at Sat, 1 Nov 2014 00:28:50 IST -->
 
-<datastore-indexes/>
+<datastore-indexes>
 
+    <!-- Used 4 times in query history -->
+    <datastore-index kind="Scoreboard" ancestor="true" source="auto">
+        <property name="date" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>

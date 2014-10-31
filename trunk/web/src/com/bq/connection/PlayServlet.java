@@ -32,7 +32,7 @@ public class PlayServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String username = req.getParameter("u");
-		String roomName = req.getParameter("g");
+		String roomName = req.getParameter("r");
 		String playerIndex = req.getParameter("i");
 		String card = req.getParameter("c");
 		

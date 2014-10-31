@@ -32,7 +32,7 @@ public class BidServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String username = req.getParameter("u");
-		String roomName = req.getParameter("g");
+		String roomName = req.getParameter("r");
 		String index = req.getParameter("i");
 		String message = req.getParameter("m");
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);

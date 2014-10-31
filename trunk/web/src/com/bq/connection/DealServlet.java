@@ -32,7 +32,7 @@ public class DealServlet extends HttpServlet {
 	private void processRequest(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		String roomName = req.getParameter("g");
+		String roomName = req.getParameter("r");
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
 
 		log.info("Dealing...");

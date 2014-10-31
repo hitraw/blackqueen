@@ -62,7 +62,7 @@ function showCards(cardArray) {
 					var cardCode = splitArray[1]; 
 					$.post('/play', {
 						u : sessionStorage.username,
-						g : sessionStorage.gameKey,
+						r : sessionStorage.roomName,
 						c : cardCode,
 						i : myIndex
 					}, function(result) {
@@ -111,7 +111,7 @@ function showCards(cardArray) {
 						showPlayError("You played an invalid card.");
 					});
 					// TODO: show animation, card moving up slightly now
-					// and to the table on success above,
+					// and to the table on success above,	
 					// commenting this as it's creating a jitter
 					// $(this).animate({'margin-top':'-30px'}, 300);
 					
@@ -189,7 +189,7 @@ function checkShowDoneBtn() {
 
 					$.post('/spec', {
 						u : sessionStorage.username,
-						g : sessionStorage.gameKey,
+						r : sessionStorage.roomName,
 						p : partnerCard,
 						t : trumpSuit
 					}, function(result) {
