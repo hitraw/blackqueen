@@ -38,8 +38,9 @@ function sessionOn() {
 function sessionOff() {
 	connected = false;
 	
-//	$('#chatWindow').draggable();
-//	$('#chatLog').resizable();
+	$('#chatWindow').draggable();
+	// following not desirable, hence commented.
+//	$('#chatWindow').resizable();
 	
 	$('.pointCardsContainer').html("");
 	$('#playError').html("").hide();
@@ -363,7 +364,7 @@ $(document).ready(function() {
 					" \nAre you sure you want to archive?");
 		else
 			canArchive = confirm("This will archive current score sheet and " +
-					"create a new one. Are you sure you want to do this?");
+					"create a new one. \nAre you sure you want to do this?");
 		if(canArchive){
 			$.post("/scoreboard", {
 				r : sessionStorage.roomName,
