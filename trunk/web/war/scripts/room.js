@@ -32,21 +32,29 @@ function sessionOn() {
 	connected = true;
 	$('#joinInfo').hide();
 	$('#room').show();
+	$('#chatWindow').show();
 }
 
 function sessionOff() {
 	connected = false;
+	
+	$('#chatWindow').show().draggable().resizable();
+	
 	$('.pointCardsContainer').html("");
 	$('#playError').html("").hide();
 	$('#tablePoints').html("");
-	$('#joinInfo').show();
+	
 	$('#lsChat').html("");
 	$('#lsNotif').html("");
-	$('#room').hide();
+	
 	$('#bidControl').hide(); // hide bid control(card mat)
 	$('#cardMat').html("").hide(); // wipe n hide table(card mat)
 	$('#bidSpecSelector').hide();
 	$('.bidSpec').hide();
+	
+	$('#chatWindow').hide();
+	$('#room').hide();
+	$('#joinInfo').show();
 }
 
 function showError(errorMessage) {
@@ -57,6 +65,9 @@ function setStatus(statusText) {
 	
 	status = statusText;
 	$('#status').html(status.replace(/_/g, " ")); // replace _ with space
+	
+	// disable all playing cards
+	$('.playable').removeClass('playable').addClass('unplayable');
 	
 	// clear card mat and points when game over, but after 3 seconds
 	// let everyone absorb the fact that the game is over!
@@ -138,20 +149,22 @@ function showScore(message) {
 			&& scorecards !== undefined
 			&& scorecards.length > 0) {
 	
-		var scoreHTML = "<table id='scoreTable' border='1'>"
+		var scoreHTML = "<table id='scoreTable' class='scorecard'>"
 			
 		scoreHTML += ("<tr>");
 		
 		
 		// header
-		var width = Math.round(65/players.length);
-		scoreHTML += ("<th width='5%'>#</th>");
-		scoreHTML += ("<th width='15%'>B/O</th>");
-		scoreHTML += ("<th width='15%'>P/T</th>");
+		var width = Math.round(60/players.length);
+		scoreHTML += ("<td class='score' width='5%'>#</td>");
+		
 		for(var i in players){
-			scoreHTML += ("<th width='"+width+"%'>"+players[i].substring(0,3)+"</th>");
+			scoreHTML += ("<td class='score' width='"+width+"%'>"+players[i]+"</td>");
 			totals.push(0);
-		}	
+		}
+		scoreHTML += ("<td class='score' width='15%'>Bid / Opp</td>");
+		scoreHTML += ("<td class='score' width='20%'>Partner Trump</td>");
+		
 		scoreHTML += ("</tr>");
 		
 		var scorecard, scores, bidSpec, bidTarget, bidder, score;
@@ -169,9 +182,7 @@ function showScore(message) {
 							.replace(/D/g, "&diams;");
 			
 			scoreHTML += ("<tr>");
-			scoreHTML += ("<td>"+j+"</td>");
-			scoreHTML += ("<td>"+bidTarget+"</td>");
-			scoreHTML += ("<td>"+bidSpec+"</td>");
+			scoreHTML += ("<td class='score'>"+j+"</td>");
 			
 			for(var i in players){
 				
@@ -182,18 +193,24 @@ function showScore(message) {
 				
 				if(players[i] === bidder)
 					score = "<b>" + score + "</b>";
-				scoreHTML += ("<td>" + score + "</td>");
+				scoreHTML += ("<td class='score number'>" + score + "</td>");
 			}	
+
+			scoreHTML += ("<td class='score'>"+bidTarget+"</td>");
+			scoreHTML += ("<td class='score'>"+bidSpec+"</td>");
 			
 			scoreHTML += ("</tr>");
 		}
 		
 		// total
 		scoreHTML += ("<tr>");
-		scoreHTML += ("<th colspan='3' align='center'>Total</th>");
+		scoreHTML += ("<th class='score'></th>");
 
 		for(var i in players)
-			scoreHTML += ("<th>"+totals[i]+"</th>");
+			scoreHTML += ("<th class='score number'>"+totals[i]+"</th>");
+		
+		scoreHTML += ("<th colspan='2' class='score'>TOTAL</th>");
+		
 		scoreHTML += ("</tr>");
 		
 		scoreHTML += ("</table>");
@@ -324,6 +341,10 @@ $(document).ready(function() {
 	sessionOff();
 //	sessionOn();
 	// $('#txtName').focus();
+	
+	$('#chatHeader').click(function(){
+		$('.chat').toggle();
+	})
 
 	$('#txtName').focus(function() {
 		if ($(this).val() == "Name")

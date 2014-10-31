@@ -938,7 +938,7 @@ public class Room {
 			}
 
 			private boolean validatePlay(Player p, Card c) {
-				if (c == null || p == null || !p.isTurn())
+				if (!status.equals(Status.PLAYING) || c == null || p == null || !p.isTurn())
 					// check for null objects if it's player's turn
 					return false;
 
