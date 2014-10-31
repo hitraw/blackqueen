@@ -160,19 +160,17 @@ th.number, td.number{
 
 #chatWindow {
 	position: absolute;
-	right: 0;
-	bottom: 0;
+	right: 20px;
+	bottom: 5px;
 	border-spacing: 0;
-	height: 200px;
-	width: 300px;
+	height: 250px;
+	width: 310px;
 }
 
 #chatLog {
 	color: black;
 	background-color: white;
-	
-	height: 100px;
-	max-height: 155px;
+	height: 200px;
 	width: 100%;
 	overflow-y: auto;
 	font-family: Verdana, sans-serif;
