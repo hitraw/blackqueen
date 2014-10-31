@@ -38,7 +38,8 @@ function sessionOn() {
 function sessionOff() {
 	connected = false;
 	
-	$('#chatWindow').show().draggable().resizable();
+	$('#chatWindow').draggable();
+//	$('#chatLog').resizable();
 	
 	$('.pointCardsContainer').html("");
 	$('#playError').html("").hide();
