@@ -214,7 +214,7 @@ function showDealBtn() {
 				console.log("calling /deal to deal cards");
 				$.post('/deal', {
 					u : sessionStorage.username,
-					g : sessionStorage.gameKey
+					r : sessionStorage.roomName
 				});
 				$('#deal').html("");
 			});
@@ -239,7 +239,7 @@ function showBidControl(highestBid) {
 				console.log("calling /bid to PASS");
 				$.post('/bid', {
 					u : sessionStorage.username,
-					g : sessionStorage.gameKey,
+					r : sessionStorage.roomName,
 					i : myIndex,
 					m : -1
 				});
@@ -257,7 +257,7 @@ function showBidControl(highestBid) {
 			console.log("calling /bid: " + $(this).val());
 			$.post('/bid', {
 				u : sessionStorage.username,
-				g : sessionStorage.gameKey,
+				r : sessionStorage.roomName,
 				i : myIndex,
 				m : $(this).val()
 			});
@@ -275,12 +275,12 @@ function showEndBtn() {
 			.click(function() {
 				var startNew = (status === RoomStatus.GAME_OVER);
 				if(!startNew)
-					startNew = confirm("Game in progress. \nAre you sure you want to end this and start new game?") 
+					startNew = confirm("Game is in progress. Points will not be recorded. \nAre you sure you want to end this game and start new one?") 
 				if (startNew) {
 					console.log("calling /end to end game");
 					$.post('/end', {
 						u : sessionStorage.username,
-						g : sessionStorage.gameKey
+						r : sessionStorage.roomName
 					});
 					// $('#myHand').html("");
 				}
@@ -394,10 +394,10 @@ function Player(jsonObj) {
 //		console.log("loyalty of " + this.name + ":" + this.loyalty);
 		switch(this.loyalty){
 		case LoyaltyType.BIDDER:
-			$('#loyalty' + this.screenPosition).html("B");
+			$('#loyalty' + this.screenPosition).html("Bidder");
 			break;
 		case LoyaltyType.OPPONENT:
-			$('#loyalty' + this.screenPosition).html("O");
+			$('#loyalty' + this.screenPosition).html("Opp");
 			break;
 		case LoyaltyType.PARTNER:
 			var partner = partnerCard;

@@ -57,6 +57,14 @@ public class Room {
 		scoreboard = new Scoreboard();
 	}
 
+	public String getName(){
+		return this.name;
+	}
+	
+	public Scoreboard getScoreboard() {
+		return scoreboard;
+	}
+
 	/**
 	 * Method to generate a unique key for a socket connection (channel)
 	 * 

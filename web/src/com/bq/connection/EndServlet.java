@@ -33,7 +33,7 @@ public class EndServlet extends HttpServlet {
 	private void processRequest(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		String roomName = req.getParameter("g");
+		String roomName = req.getParameter("r");
 		String username = req.getParameter("u");
 		
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
