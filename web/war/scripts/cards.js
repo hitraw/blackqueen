@@ -116,6 +116,11 @@ function showCards(cardArray) {
 					// $(this).animate({'margin-top':'-30px'}, 300);
 					
 				} else {
+					
+					if(status === RoomStatus.GAME_OVER){
+						showPlayError("This Game is Over! Please start New Game!");
+					}
+					else{
 					// display error message you can't play this card
 					// if startingSuit is null, it could only mean you're
 					// playing trump and it's not cut yet. Show error accdly.
@@ -126,6 +131,7 @@ function showCards(cardArray) {
 					// and are trying to play another suit. show error accdly.
 					else
 						showPlayError("You can't play different suit. You have this suit!");
+					}
 				}
 			} else {
 				// display error message it's not your turn

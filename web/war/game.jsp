@@ -7,10 +7,15 @@
 <title>Black Queen</title>
 <link rel='stylesheet'
 	href='http://fonts.googleapis.com/css?family=Trochut:700'>
+<link href='http://fonts.googleapis.com/css?family=Just+Another+Hand'
+	rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/home.css">
 <link rel="stylesheet" href="css/style.css">
 <script src="/_ah/channel/jsapi" type="text/javascript"></script>
-<script src="/scripts/jquery-2.1.1.min.js" type="text/javascript"></script>
+<!-- <script src="/scripts/jquery-2.1.1.min.js" type="text/javascript"></script> -->
+
+<script src="//code.jquery.com/jquery-2.0.2.js"></script>
+<script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script src="/scripts/room.js" type="text/javascript"></script>
 <script src="/scripts/game.js" type="text/javascript"></script>
 <script src="/scripts/cards.js" type="text/javascript"></script>
@@ -151,22 +156,7 @@
 											<div id="name4" class="name"></div>
 											<div id="points4" class="points"></div>
 										</div>
-										<div id="pointCards4" class="pointCardsContainer">
-										<!-- 	<table class="tblPoints">
-												<tr class="top">
-													<td width="5%" class="suit top">&spades;</td>
-													<td width="45%" id="spades4" class="points top"></td>
-													<td width="5%" class="suit right top">&hearts;</td>
-													<td width="40%" id="hearts4" class="points top"></td>
-												</tr>
-												<tr>
-													<td width="5%" class="suit">&clubs;</td>
-													<td width="45%" id="clubs4" class="points"></td>
-													<td width="5%" class="suit right">&diams;</td>
-													<td width="45%" id="diams4" class="points"></td>
-												</tr>
-											</table> -->
-										</div>
+										<div id="pointCards4" class="pointCardsContainer"></div>
 										<div id="bid4" class="bid"></div>
 									</div>
 								</td>
@@ -187,22 +177,7 @@
 											<div id="name3" class="name"></div>
 											<div id="points3" class="points"></div>
 										</div>
-										<div id="pointCards3" class="pointCardsContainer">
-										<!-- 	<table class="tblPoints">
-												<tr class="top">
-													<td width="5%" class="suit top">&spades;</td>
-													<td width="45%" id="spades3" class="points top"></td>
-													<td width="5%" class="suit right top">&hearts;</td>
-													<td width="40%" id="hearts3" class="points top"></td>
-												</tr>
-												<tr>
-													<td width="5%" class="suit">&clubs;</td>
-													<td width="45%" id="clubs3" class="points"></td>
-													<td width="5%" class="suit right">&diams;</td>
-													<td width="45%" id="diams3" class="points"></td>
-												</tr>
-											</table> -->
-										</div>
+										<div id="pointCards3" class="pointCardsContainer"></div>
 										<div id="bid3" class="bid"></div>
 									</div></td>
 								<td rowspan="3">
@@ -218,22 +193,7 @@
 											<div id="name5" class="name"></div>
 											<div id="points5" class="points"></div>
 										</div>
-										<div id="pointCards5" class="pointCardsContainer">
-											<!-- <table class="tblPoints">
-												<tr class="top">
-													<td width="5%" class="suit top">&spades;</td>
-													<td width="45%" id="spades5" class="points top"></td>
-													<td width="5%" class="suit right top">&hearts;</td>
-													<td width="40%" id="hearts5" class="points top"></td>
-												</tr>
-												<tr>
-													<td width="5%" class="suit">&clubs;</td>
-													<td width="45%" id="clubs5" class="points"></td>
-													<td width="5%" class="suit right">&diams;</td>
-													<td width="45%" id="diams5" class="points"></td>
-												</tr>
-											</table> -->
-										</div>
+										<div id="pointCards5" class="pointCardsContainer"></div>
 										<div id="bid5" class="bid"></div>
 									</div></td>
 							</tr>
@@ -244,22 +204,7 @@
 											<div id="name2" class="name"></div>
 											<div id="points2" class="points"></div>
 										</div>
-										<div id="pointCards2" class="pointCardsContainer">
-											<!-- <table class="tblPoints">
-												<tr class="top">
-													<td width="5%" class="suit top">&spades;</td>
-													<td width="45%" id="spades2" class="points top"></td>
-													<td width="5%" class="suit right top">&hearts;</td>
-													<td width="40%" id="hearts2" class="points top"></td>
-												</tr>
-												<tr>
-													<td width="5%" class="suit">&clubs;</td>
-													<td width="45%" id="clubs2" class="points"></td>
-													<td width="5%" class="suit right">&diams;</td>
-													<td width="45%" id="diams2" class="points"></td>
-												</tr>
-											</table> -->
-										</div>
+										<div id="pointCards2" class="pointCardsContainer"></div>
 										<div id="bid2" class="bid"></div>
 									</div></td>
 								<td><div id="pos6" class="pos inactive">
@@ -268,22 +213,7 @@
 											<div id="name6" class="name"></div>
 											<div id="points6" class="points"></div>
 										</div>
-										<div id="pointCards6" class="pointCardsContainer">
-											<!-- <table class="tblPoints">
-												<tr class="top">
-													<td width="5%" class="suit top">&spades;</td>
-													<td width="45%" id="spades6" class="points top"></td>
-													<td width="5%" class="suit right top">&hearts;</td>
-													<td width="40%" id="hearts6" class="points top"></td>
-												</tr>
-												<tr>
-													<td width="5%" class="suit">&clubs;</td>
-													<td width="45%" id="clubs6" class="points"></td>
-													<td width="5%" class="suit right">&diams;</td>
-													<td width="45%" id="diams6" class="points"></td>
-												</tr>
-											</table> -->
-										</div>
+										<div id="pointCards6" class="pointCardsContainer"></div>
 										<div id="bid6" class="bid"></div>
 									</div></td>
 							</tr>
@@ -294,22 +224,7 @@
 											<div id="name1" class="name"></div>
 											<div id="points1" class="points"></div>
 										</div>
-										<div id="pointCards1" class="pointCardsContainer">
-											<!-- <table class="tblPoints">
-												<tr class="top">
-													<td width="5%" class="suit top">&spades;</td>
-													<td width="45%" id="spades1" class="points top"></td>
-													<td width="5%" class="suit right top">&hearts;</td>
-													<td width="40%" id="hearts1" class="points top"></td>
-												</tr>
-												<tr>
-													<td width="5%" class="suit">&clubs;</td>
-													<td width="45%" id="clubs1" class="points"></td>
-													<td width="5%" class="suit right">&diams;</td>
-													<td width="45%" id="diams1" class="points"></td>
-												</tr>
-											</table> -->
-										</div>
+										<div id="pointCards1" class="pointCardsContainer"></div>
 										<div id="bid1" class="bid"></div>
 									</div></td>
 								<td><div id="pos7" class="pos inactive">
@@ -318,22 +233,7 @@
 											<div id="name7" class="name"></div>
 											<div id="points7" class="points"></div>
 										</div>
-										<div id="pointCards7" class="pointCardsContainer">
-											<!-- <table class="tblPoints">
-												<tr class="top">
-													<td width="5%" class="suit top">&spades;</td>
-													<td width="45%" id="spades7" class="points top"></td>
-													<td width="5%" class="suit right top">&hearts;</td>
-													<td width="40%" id="hearts7" class="points top"></td>
-												</tr>
-												<tr>
-													<td width="5%" class="suit">&clubs;</td>
-													<td width="45%" id="clubs7" class="points"></td>
-													<td width="5%" class="suit right">&diams;</td>
-													<td width="45%" id="diams7" class="points"></td>
-												</tr>
-											</table> -->
-										</div>
+										<div id="pointCards7" class="pointCardsContainer"></div>
 										<div id="bid7" class="bid"></div>
 									</div></td>
 							</tr>
@@ -347,22 +247,7 @@
 											<div id="name0" class="name"></div>
 											<div id="points0" class="points"></div>
 										</div>
-										<div id="pointCards0" class="pointCardsContainer">
-											<!-- <table class="tblPoints">
-												<tr class="top">
-													<td width="5%" class="suit top">&spades;</td>
-													<td width="45%" id="spades0" class="points top"></td>
-													<td width="5%" class="suit right top">&hearts;</td>
-													<td width="40%" id="hearts0" class="points top"></td>
-												</tr>
-												<tr>
-													<td width="5%" class="suit">&clubs;</td>
-													<td width="45%" id="clubs0" class="points"></td>
-													<td width="5%" class="suit right">&diams;</td>
-													<td width="45%" id="diams0" class="points"></td>
-												</tr>
-											</table> -->
-										</div>
+										<div id="pointCards0" class="pointCardsContainer"></div>
 										<div id="bid0" class="bid"></div>
 									</div></td>
 								<td>
@@ -386,35 +271,86 @@
 				<td>
 					<div id="boardContainer" align="right">
 
+						<div id="scoreWindow" class="logWindow">
+							<div style='height: 60px;'></div>
+							<div class="papyrusHeader">&nbsp;Score Board</div>
+							<div id="scoreLog" class="log">
+<!-- 
+								<table class="scorecard">
+									<tr>
+										<td class='score' width="5%">#</td>
+										<td class='score' width="15%">Bid / Opp</td>
+										<td class='score' width="20%">Partner Trump</td>
+										<td class='score' width="10%">Hitesh</td>
+										<td class='score' width="10%">Vedavyas</td>
+										<td class='score' width="10%">Barkha</td>
+										<td class='score' width="10%">Aarti</td>
+										<td class='score' width="10%">Handsome Hunk</td>
+										<td class='score' width="10%">Giant Robot</td>
+									</tr>
+									<tr>
+										<td class='score'>0</td>
+										<td class='score'>888/888</td>
+										<td class='score'>A&spades;/&clubs;</td>
+										<td class='score number'><b>160</b></td>
+										<td class='score number'>0</td>
+										<td class='score number'>160</td>
+										<td class='score number'>0</td>
+										<td class='score number'>160</td>
+										<td class='score number'>0</td>
+									</tr>
+									<tr>
+										<th class='score' colspan="3">TOTAL</th>
+										<th class='score number'><b>160</b></th>
+										<th class='score number'>0</th>
+										<th class='score number'>160</th>
+										<th class='score number'>0</th>
+										<th class='score number'>160</th>
+										<th class='score number'>0</th>
+									</tr>
+								</table>
+
+ -->
+							</div>
+						</div>
+
 						<!-- <div id="notifWindow" class="logWindow">
-							<div class="header">&nbsp;Notifications</div>
+							<div class="papyrusHeader">&nbsp;Notifications</div>
 							<div id="notifLog" class="log">
 								<ul id="lsNotif" class="list">
 								</ul>
 							</div>
 						</div> -->
-						<div id="scoreWindow" class="logWindow">
-							<div class="header">&nbsp;Score Board</div>
-							<div id="scoreLog" class="log">
-							</div>
-						</div>
 
-						<div id="chatWindow" class="logWindow">
-							<div class="header">&nbsp;Message Board</div>
-							<div id="chatLog" class="log">
-								<ul id="lsChat" class="list">
-
-								</ul>
-							</div>
-						</div>
-						<div id="chatText">
-								<input type="text" id="txtChat" />
-						</div>
 
 					</div>
 				</td>
 			</tr>
 		</table>
+	</div>
+	<div id="chatWindow" class="logWindow">
+		<table style="width: 100%; height: 100%;">
+			<tr>
+				<td style="vertical-align: bottom; text-align: center">
+					<div id="chatHeader" class="header">&nbsp;Message Board</div>
+					<div class="chat">
+						<div id="chatLog" class="log">
+							<ul id="lsChat" class="list">
+
+							</ul>
+						</div>
+						<div id="chatText">
+							<input type="text" id="txtChat" />
+						</div>
+					</div>
+
+
+
+				</td>
+			</tr>
+		</table>
+
+
 	</div>
 </body>
 </html>

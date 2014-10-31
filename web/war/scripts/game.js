@@ -273,7 +273,10 @@ function showEndBtn() {
 	var $btnEnd = $(
 			"<input type='button' id='btnEnd' class='button red' value='End Game'/>")
 			.click(function() {
-				if (confirm("Are you sure you want to end the game?")) {
+				var startNew = (status === RoomStatus.GAME_OVER);
+				if(!startNew)
+					startNew = confirm("Game in progress. \nAre you sure you want to end this and start new game?") 
+				if (startNew) {
 					console.log("calling /end to end game");
 					$.post('/end', {
 						u : sessionStorage.username,
