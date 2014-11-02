@@ -33,7 +33,7 @@ public class Room {
 	private String name;
 	private List<Player> players;
 	private List<Player> robots;
-	// private List<Player> spectators;
+	private List<Player> spectators;
 	private Status status;
 	private int dealTurnIndex;
 	private Scoreboard scoreboard;
@@ -50,7 +50,7 @@ public class Room {
 		this.name = roomName;
 		players = new ArrayList<Player>();
 		robots = new ArrayList<Player>();
-		// spectators = new ArrayList<Player>();
+		spectators = new ArrayList<Player>();
 		status = Status.WAITING_FOR_PLAYERS;
 		dealTurnIndex = 0;
 		gameCount = 0;

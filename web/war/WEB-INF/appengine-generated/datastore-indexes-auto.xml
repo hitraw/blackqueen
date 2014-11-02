@@ -1,8 +1,8 @@
-<!-- Indices written at Sat, 1 Nov 2014 00:28:50 IST -->
+<!-- Indices written at Mon, 3 Nov 2014 01:54:43 IST -->
 
 <datastore-indexes>
 
-    <!-- Used 4 times in query history -->
+    <!-- Used 1 time in query history -->
     <datastore-index kind="Scoreboard" ancestor="true" source="auto">
         <property name="date" direction="desc"/>
     </datastore-index>

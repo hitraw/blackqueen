@@ -105,6 +105,9 @@ function showCards(cardArray) {
 //							{'margin-top': moveTop + 'px', 'margin-left': moveLeft + 'px'}
 							{top: cardpos[0].top, left: cardpos[0].left}
 							, 500);
+						
+						// change title back to normal
+						turnOver();
 					}).error(function() {
 						console.log("error in playing card");
 						// TODO display error message: invalid move
@@ -364,8 +367,10 @@ function showCardTable(json){
 	disableHandCards();
 	
 	// if it's my turn now, set & enable my playable cards
-	if (players[myIndex].turn)
+	if (players[myIndex].turn && status === RoomStatus.PLAYING){
 		setPlayableCards();
+		highlightTurn();
+	}	
 }
 
 function managePlayMessage(json) {
@@ -374,7 +379,7 @@ function managePlayMessage(json) {
 	var nextIndex = json["nextIndex"];
 	startingSuit = json["startingSuit"];
 	highestCard = json["highestCard"];
-	isCut = json["cut"];
+	var isCutNow = json["cut"];
 	var points = json["points"];
 	var isRoundOver = json["roundOver"];
 
@@ -400,14 +405,21 @@ function managePlayMessage(json) {
 	if (playerIndex !== myIndex)
 		//if it's not my card show played card
 		showPlayedCard(card,playerIndex);
-	else // if it's my card, the set highest
+	// else it's my card being played
+	else {// if it's my card, then set highest
 		if(card === highestCard){
 			// remove previous
 			$('.highestCard').removeClass('highestCard');
 			// mark this as highest
 			$myCard.addClass('highestCard');
 		}
-
+	}
+	
+	if(!isCut && isCutNow){
+		cuttingSound.play();
+		isCut = isCutNow;
+	}
+	
 	if (isRoundOver) {
 		declareRoundWinner(json);
 		startingSuit = undefined;
@@ -418,8 +430,10 @@ function managePlayMessage(json) {
 	disableHandCards();
 	
 	// if it's my turn now, set my playable cards
-	if (myIndex === nextIndex)
+	if (myIndex === nextIndex && status === RoomStatus.PLAYING){
 		setPlayableCards();
+		highlightTurn();	
+	}	
 }
 
 function declareRoundWinner(json){
@@ -514,6 +528,8 @@ function showPlayedCard(card, playerIndex){
 	$card.animate(
 		{top : endingOffset.top, left : endingOffset.left}
 		, 500);
+	
+	// TODO: if being cut for first time, play the cut sound
 	
 	if(card === highestCard){
 		// remove previous

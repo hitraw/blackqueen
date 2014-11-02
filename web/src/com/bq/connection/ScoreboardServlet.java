@@ -19,6 +19,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -97,8 +98,8 @@ public class ScoreboardServlet extends HttpServlet {
 
 			Entity sbEntity = new Entity("Scoreboard", roomKey);
 			sbEntity.setProperty("date", System.currentTimeMillis());
-			sbEntity
-					.setProperty("scoreboard", scoreboard.getJSON());
+			Text scoreboardText = new Text(scoreboard.getJSON());
+			sbEntity.setProperty("scoreboard", scoreboardText);
 
 			DatastoreService datastore = DatastoreServiceFactory
 					.getDatastoreService();
@@ -134,7 +135,7 @@ public class ScoreboardServlet extends HttpServlet {
 		        try {
 		        	scoreboardJSON = new JSONObject();
 					scoreboardJSON.put("date", scoreboard.getProperty("date"));
-					scoreboardJSON.put("scoreboard", scoreboard.getProperty("scoreboard"));
+					scoreboardJSON.put("scoreboard", ((Text)scoreboard.getProperty("scoreboard")).getValue());
 				    scoreboardsJSON.put(scoreboardJSON);
 				} catch (JSONException e) {
 					log.severe("Error in building scoreboard json from the datastore entity");
