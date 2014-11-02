@@ -4,6 +4,8 @@ var radius = 260;
 var players; // array of object players currently on screen
 var positions; // array of positions these players are on.
 var myIndex = 0; // default 0
+var title = 'Black Queen';
+var turnTitle = title + ' - Your Turn!';
 
 var LoyaltyType = {
 	NEUTRAL : "neutral",
@@ -33,6 +35,22 @@ function manageBidMessage(json) {
 	determineBidWinner(nextIndex, highestBid);
 }
 
+function highlightTurn(){
+	turnSound.play();
+	document.title = turnTitle;
+	window.setTimeout(function(){
+		// if after 10 seconds user has still not played
+		if(document.title === turnTitle)
+//		if(document.hidden)
+			// alert the user
+			alert("REMINDER: It's your turn!");
+	}, 10000); 
+}
+
+function turnOver(){
+	document.title = title;
+}
+
 function determineBidWinner(turnIndex, highestBid) {
 	Player
 	player = players[turnIndex];
@@ -42,11 +60,11 @@ function determineBidWinner(turnIndex, highestBid) {
 		declareBidWinner(turnIndex);
 	} else { // bidding is going on
 		// if this next player having turn is me
-		if (myIndex === turnIndex)
+		if (myIndex === turnIndex){
 			showBidControl(highestBid);
-		else {
-			$('#bidControl1').html("");
-			$('#bidControl2').html("");
+			highlightTurn();
+		} else {
+			$('.bidControl1').html("");
 			$('#bidControl').hide();
 		}
 	}
@@ -56,6 +74,8 @@ function declareBidWinner(winnerIndex) {
 	var bidWinner = players[winnerIndex];
 	bidWinner.loyalty = LoyaltyType.BIDDER;
 	bidWinner.draw();
+	//TODO: Play winning bid/round sound
+	
 	// if this next player having won the bid is me
 	if (myIndex === winnerIndex) {
 		showBidSpecSelector(bidWinner);
@@ -122,15 +142,18 @@ function showPlayers(playerJsonArray) {
 			myIndex = i;
 	}
 
+	// startIndex should be either myIndex or in case of spectators, 0
+	var startIndex = myIndex !== undefined? myIndex: 0;
+	
 	// this loop starts from my index i.e. my position in array
 	// and continues up to end of array i.e. players added after me
-	for (var i = myIndex; i < playerCount; i++) {
+	for (var i = startIndex; i < playerCount; i++) {
 		players[i].setPosition(positions[positionIndex++]);
 		players[i].draw();
 	}
 
 	// this loop starts from 0 up to index i.e. players added before me.
-	for (var i = 0; i < myIndex; i++) {
+	for (var i = 0; i < startIndex; i++) {
 		players[i].setPosition(positions[positionIndex++]);
 		players[i].draw();
 	}
@@ -245,6 +268,7 @@ function showBidControl(highestBid) {
 				});
 				$('.bidControl').html("");
 				$('#bidControl').hide();
+				document.title = title;
 			});
 	$('#bidControl1').append($img);
 	$('#bidControl1').append("<br/>");
@@ -261,10 +285,13 @@ function showBidControl(highestBid) {
 				i : myIndex,
 				m : $(this).val()
 			});
+			$('.bidControl').html("");
+			$('#bidControl').hide();
+			document.title(title);
 		});
 		$('#bidControl2').append($img);
-		$('#bidControl').show();
 	}
+	$('#bidControl').show();
 }
 
 function showEndBtn() {
@@ -290,6 +317,7 @@ function showEndBtn() {
 
 function updateLoyalties(loyalties){
 	var loyaltyObj, playerIndex, player;
+	partnerSound.play();
 	for(var i in loyalties){
 		loyaltyObj = loyalties[i];
 		playerIndex = loyaltyObj["index"];

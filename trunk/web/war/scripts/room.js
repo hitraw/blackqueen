@@ -3,6 +3,11 @@ var socket;
 var status;
 var connected = false;
 
+//sound variables;
+var turnSound;
+var cutSound;
+var partnerSound;
+
 var MessageType = {
 	ROOM_NOTIFICATION : "room_notification",
 	GAME_NOTIFICATION : "game_notification",
@@ -28,17 +33,24 @@ var RoomStatus = {
 	GAME_OVER : "GAME_OVER"
 }
 
+function loadSounds(){
+	// buffers automatically when created
+	turnSound = new Audio("sounds/Tejat.ogg"); 
+	cuttingSound = new Audio("sounds/cut.mp3"); 
+	partnerSound = new Audio("sounds/partner.mp3"); 
+}
+
 function sessionOn() {
 	connected = true;
 	$('#joinInfo').hide();
 	$('#room').show();
 	$('#chatWindow').show();
+	loadSounds();
 }
 
 function sessionOff() {
 	connected = false;
 	
-	$('#chatWindow').draggable();
 	// following not desirable, hence commented.
 //	$('#chatWindow').resizable();
 	
@@ -303,7 +315,11 @@ function onMessage(result) {
 }
 
 function onClose() {
-	sessionOff();
+//	sessionOff();
+//	if(confirm("You are disconnected. Do you wish to re-connect?"))
+		openNewChannel();
+//	else
+//		sessionOff();
 }
 
 function onError(error) {
@@ -344,42 +360,12 @@ function enter(name) {
 }
 
 $(document).ready(function() {
+	
 	sessionOff();
+		
 //	sessionOn();
 	// $('#txtName').focus();
 	
-	$('#chatHeader').click(function(){
-		$('.chat').toggle();
-	});
-	
-	$('#historyIcon').click(function(){
-		window.open('/history', '_blank');
-	});	
-	
-	$('#archiveIcon').click(function(){
-		// post to /scoreboard, action: archive
-		var canArchive = (status !== RoomStatus.PLAYING);
-		if(!canArchive)
-			canArchive = confirm("Game is in progress, scores not added to this sheet." +
-					" \nAre you sure you want to archive?");
-		else
-			canArchive = confirm("This will archive current score sheet and " +
-					"create a new one. \nAre you sure you want to do this?");
-		if(canArchive){
-			$.post("/scoreboard", {
-				r : sessionStorage.roomName,
-				action: 'archive'
-			}, function(result) {
-				// display success message
-				$('#scoreboardError').html(result).show().fadeOut(5000);
-			}).fail(function(error) {
-				// display error message
-				console.log("Error:"+error.responseText);
-				$('#scoreboardError').html(error.responseText).show().fadeOut(5000);
-			});
-		}
-	});
-
 	$('#txtName').focus(function() {
 		if ($(this).val() == "Name")
 			$(this).val("");
@@ -421,6 +407,40 @@ $(document).ready(function() {
 	$(window).on('beforeunload', function(e) {
 		if (connected)
 			return 'You are in the middle of the game.';
+	});
+	
+	$('#chatHeader').click(function(){
+		$('.chat').toggle();
+	});
+	
+	$('#chatWindow').draggable();
+	
+	$('#historyIcon').click(function(){
+		window.open('/history', '_blank');
+	});	
+	
+	$('#archiveIcon').click(function(){
+		// post to /scoreboard, action: archive
+		var canArchive = (status !== RoomStatus.PLAYING);
+		if(!canArchive)
+			canArchive = confirm("Game is in progress, scores not added to this sheet." +
+					" \nAre you sure you want to archive?");
+		else
+			canArchive = confirm("This will archive current score sheet and " +
+					"create a new one. \nAre you sure you want to do this?");
+		if(canArchive){
+			$.post("/scoreboard", {
+				r : sessionStorage.roomName,
+				action: 'archive'
+			}, function(result) {
+				// display success message
+				$('#scoreboardError').html(result).show().fadeOut(5000);
+			}).fail(function(error) {
+				// display error message
+				console.log("Error:"+error.responseText);
+				$('#scoreboardError').html(error.responseText).show().fadeOut(5000);
+			});
+		}
 	});
 
 });
