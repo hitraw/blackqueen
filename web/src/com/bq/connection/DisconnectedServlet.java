@@ -47,8 +47,15 @@ public class DisconnectedServlet extends HttpServlet {
 		String roomName = splits[0];
 		String playerName = splits[1];
 
-		Room game = RoomManagerFactory.getInstance().getRoom(roomName);
-		log.info(game.removePlayer(playerName) + " took place");
+		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
+		
+		// first check & remove from spectator list
+		if(room.removeSpectator(playerName) != null){
+			log.info(playerName + "(S) left.");
+		} else // if not found in there, remove from player list
+			if(room.removePlayer(playerName) != null){
+			log.info(playerName + " left.");
+		}	
 
 	}
 

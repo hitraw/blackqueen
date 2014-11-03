@@ -42,6 +42,7 @@ function list(scoreboards) {
 					"<a id='" + i + "' href='#'>"+ new Date(longDate).toLocaleString()  +"</a>").click(function() {
 						showScore(JSON.parse(scoreboards[$(this).prop('id')]["scoreboard"]));
 			});
+			$('#sbList').append("<br/>");
 			$('#sbList').append($lnkScoreboard);
 		}
 		$('#sbListContainer').show();

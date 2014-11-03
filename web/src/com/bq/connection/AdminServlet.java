@@ -51,7 +51,8 @@ public class AdminServlet extends HttpServlet {
 			resp.getWriter().println(room.getPlayerList());
 			break;
 		case "remove":
-			if (room.removePlayer(username) != null) {
+			if (room.removeSpectator(username)!=null 
+					|| room.removePlayer(username) != null) {
 				resp.setStatus(200);
 				resp.getWriter().println(room.getPlayerList());
 			} else {

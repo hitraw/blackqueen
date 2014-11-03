@@ -57,10 +57,10 @@ public class Room {
 		scoreboard = new Scoreboard();
 	}
 
-	public String getName(){
+	public String getName() {
 		return this.name;
 	}
-	
+
 	public Scoreboard getScoreboard() {
 		return scoreboard;
 	}
@@ -99,6 +99,12 @@ public class Room {
 		ChannelService channelService = ChannelServiceFactory
 				.getChannelService();
 		for (Player p : players)
+			channelService.sendMessage(new ChannelMessage(getChannelKey(p
+					.getName()), message.toString()));
+		
+		// also send message to all spectators, both chat and game messages 
+		// for spectators to view the game being played.
+		for (Player p : spectators)
 			channelService.sendMessage(new ChannelMessage(getChannelKey(p
 					.getName()), message.toString()));
 	}
@@ -201,6 +207,14 @@ public class Room {
 		}
 		return null;
 	}
+	
+	public Player getSpectator(String name){
+		for (Player p: spectators){
+			if (name.equals(p.getName()))
+				return p;
+		}
+		return null;
+	}
 
 	public boolean isFull() {
 		return (robots.isEmpty() && (players.size() >= MAX_PLAYERS || (!status
@@ -218,42 +232,20 @@ public class Room {
 				String robotName = p.getName();
 				log.info(playerName + " replaced " + robotName);
 				p.setName(playerName);
-				sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
-						playerName + " joined, replacing " + robotName + "."));
-				// need to send status to this newly added player only
-				// for others no change in state in this case.
-				sendMessage(p, new Message(Message.Type.STATUS, getStatus()));
-
-				// and if game has already begun, send the bid spec and round
-				// info e.g. cards on the table, points, etc.
-				// ***
-				// Imp: spec message has to be sent before players, but
-				// round info only after players, bcoz of processing order on JS
-				// ***
-				if (Status.PLAYING.equals(status)
-						|| Status.GAME_OVER.equals(status)) {
-					sendMessage(
-							p,
-							new Message(Message.Type.SPEC, currGame
-									.getBidSpec()));
-				}
-
-				// send updated player info to all players
-				sendMessageToAll(new Message(Message.Type.PLAYERS,
-						getPlayersJSON()));
-
-				// and if game has already begun, send the round
-				// info e.g. cards on the table, points, etc.
-				// *** Imp: round message has to be sent after
-				// players, but before cards ***
-				if (Status.PLAYING.equals(status)) {
-					sendMessage(p, new Message(Message.Type.ROUND,
-							currGame.currRound.getRoundInfo()));
-				}
-
+				
+				// catchup player to current state of the game
+				catchupPlayer(p);
+				
 				// send cards to this player
 				sendMessage(p,
 						new Message(Message.Type.CARDS, p.getHandCardsJson()));
+
+				// sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
+				// playerName + " joined, replacing " + robotName + "."));
+				
+				// the above is now done by replacement message below, 
+				// to improve performance, by sending only incremental info
+				sendReplacementMessage("player", p, robotName);
 			}
 		} else if (players.size() < MAX_PLAYERS) {
 			log.info("Adding " + playerName + " to game room:" + name);
@@ -277,6 +269,61 @@ public class Room {
 					new Message(Message.Type.SCORE, scoreboard.getJSON()));
 
 		return p;
+	}
+
+	public void catchupPlayer(Player p) {
+		// need to send status to this newly added player only
+		// for others no change in state in this case.
+		sendMessage(p, new Message(Message.Type.STATUS, getStatus()));
+
+		// and if game has already begun, send the bid spec and round
+		// info e.g. cards on the table, points, etc.
+		// ***
+		// Imp: spec message has to be sent before players, but
+		// round info only after players, bcoz of processing order on JS
+		// ***
+		if (Status.PLAYING.equals(status)
+				|| Status.GAME_OVER.equals(status)) {
+			sendMessage(
+					p,
+					new Message(Message.Type.SPEC, currGame
+							.getBidSpec()));
+		}
+
+		// send other players info to this player
+		sendMessage(p, new Message(Message.Type.PLAYERS,
+				getPlayersJSON()));
+
+		// and if game has already begun, send the round
+		// info e.g. cards on the table, points, etc.
+		// *** Imp: round message has to be sent after
+		// players, but before cards ***
+		if (Status.PLAYING.equals(status)) {
+			sendMessage(p, new Message(Message.Type.ROUND,
+					currGame.currRound.getRoundInfo()));
+		}
+		
+		if (scoreboard.hasData())
+			sendMessage(p,
+					new Message(Message.Type.SCORE, scoreboard.getJSON()));
+	}
+
+	private void sendReplacementMessage(String type, Player p, String previous) {
+		JSONObject replacement = new JSONObject();
+		try {
+			replacement.put("type", type);
+			replacement.put("index", players.indexOf(p));
+			replacement.put("name", p.getName());
+			replacement.put("previous", previous);
+		} catch (JSONException e) {
+			log.severe("Error in building replacement JSON");
+			e.printStackTrace();
+		}
+
+		// send replaced player info to all players
+		sendMessageToAll(new Message(Message.Type.REPLACEMENT,
+				replacement.toString()));
+
 	}
 
 	public Player removePlayer(String playerName) {
@@ -313,20 +360,22 @@ public class Room {
 					// means admin kicked the player out.
 					sendMessage(p, new Message(Message.Type.KICK,
 							"You have been kicked out by the Admin."));
+					sendMessageToAll(new Message(Message.Type.PLAYERS, 
+							getPlayersJSON()));
 				}
 			} else { // else (when game in progress) player is replaced by robot
 				String robotName = "Robot " + (robots.size() + 1);
 				p.setName(robotName);
 				robots.add(p);
-				sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
-						playerName + " left, replaced by " + robotName + "."));
+				sendReplacementMessage("robot", p, playerName);
+//				sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
+//						playerName + " left, replaced by " + robotName + "."));
 				// if player left on his own, won't see this message
 				// will see this only if window is still open, which
 				// means admin kicked the player out.
 				sendMessage(p, new Message(Message.Type.KICK,
 						"You have been kicked out by the Admin."));
 			}
-			sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayersJSON()));
 		}
 		return p;
 	}
@@ -354,6 +403,8 @@ public class Room {
 		if (players != null) {
 			JSONArray playersJson = new JSONArray();
 			for (Player p : players)
+				playersJson.put(p.getName());
+			for (Player p : spectators)
 				playersJson.put(p.getName());
 			json = playersJson.toString();
 		}
@@ -946,7 +997,8 @@ public class Room {
 			}
 
 			private boolean validatePlay(Player p, Card c) {
-				if (!status.equals(Status.PLAYING) || c == null || p == null || !p.isTurn())
+				if (!status.equals(Status.PLAYING) || c == null || p == null
+						|| !p.isTurn())
 					// check for null objects if it's player's turn
 					return false;
 
@@ -996,5 +1048,22 @@ public class Room {
 	public void resetScoreboard() {
 		scoreboard = new Scoreboard();
 		sendMessageToAll(new Message(Message.Type.SCORE, scoreboard.getJSON()));
+	}
+
+	public void addSpectator(String username) {
+		spectators.add(new Player(username));
+	}
+	
+	public Player removeSpectator(String username){
+		for(Player s: spectators){
+			if(s.getName().equals(username)){
+				if(spectators.remove(s)){
+					sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION, 
+							username + " left."));
+					return s;
+				}
+			}
+		}
+		return null;
 	}
 }

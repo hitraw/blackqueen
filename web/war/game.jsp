@@ -5,18 +5,17 @@
 <head>
 <meta charset="utf-8">
 <title>Black Queen</title>
-<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<link rel="stylesheet"
-	href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-<link rel='stylesheet'
+<link rel="stylesheet" type='text/css'
+	href="/css/jquery-ui.css">
+<link rel='stylesheet' type='text/css'
 	href='http://fonts.googleapis.com/css?family=Trochut:700'>
 <link rel='stylesheet' type='text/css'
 	href='http://fonts.googleapis.com/css?family=Just+Another+Hand'>
-<link rel="stylesheet" href="css/home.css">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" type='text/css' href="css/home.css">
+<link rel="stylesheet" type='text/css' href="css/style.css">
 
-<!-- <script src="/scripts/jquery-2.1.1.min.js" type="text/javascript"></script> -->
+<script src="/scripts/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script src="/scripts/jquery-ui.js" type="text/javascript"></script>
 
 <script src="/_ah/channel/jsapi" type="text/javascript"></script>
 <script src="/scripts/room.js" type="text/javascript"></script>

@@ -51,9 +51,10 @@ function showCards(cardArray) {
 				"<div id='" + id
 						+ "' " // style='z-index:" + i + "'
 						+ "class='handCard' style='background-image:url(/images/cards/"
-						+ cardArray[i] + ".png);'/>").click(function() {
+						+ cardArray[i] + ".png);'/>")
+						.click(function() {
 			// if it's my turn
-			if (players[myIndex].turn) {
+			if (myIndex !== undefined && players[myIndex].turn) {
 				// if I've clicked on a playable card
 				if ($(this).hasClass('playable')) {
 					$myCard = $(this);
@@ -121,7 +122,7 @@ function showCards(cardArray) {
 				} else {
 					
 					if(status === RoomStatus.GAME_OVER){
-						showPlayError("This Game is Over! Please start New Game!");
+						showPlayError("This game is over! Please start new game!");
 					}
 					else{
 					// display error message you can't play this card
@@ -150,7 +151,8 @@ function showCards(cardArray) {
 	// startBidding();
 
 	disableHandCards();
-	if (status === RoomStatus.PLAYING && players[myIndex].turn)
+	if (status === RoomStatus.PLAYING && myIndex !== undefined 
+			&& players[myIndex].turn)
 		setPlayableCards();
 
 	// show me End button (even if it's not my turn)
@@ -367,7 +369,9 @@ function showCardTable(json){
 	disableHandCards();
 	
 	// if it's my turn now, set & enable my playable cards
-	if (players[myIndex].turn && status === RoomStatus.PLAYING){
+	if (status === RoomStatus.PLAYING && myIndex !== undefined 
+			&& players[myIndex].turn){
+		console.log("showCardTable::: status="+status+", myIndex="+myIndex);
 		setPlayableCards();
 		highlightTurn();
 	}	
@@ -416,7 +420,7 @@ function managePlayMessage(json) {
 	}
 	
 	if(!isCut && isCutNow){
-		cuttingSound.play();
+		playSound(cuttingSound);
 		isCut = isCutNow;
 	}
 	
@@ -430,7 +434,8 @@ function managePlayMessage(json) {
 	disableHandCards();
 	
 	// if it's my turn now, set my playable cards
-	if (myIndex === nextIndex && status === RoomStatus.PLAYING){
+	if (status === RoomStatus.PLAYING && nextIndex === myIndex){
+		console.log("managePlayMessage::: status="+status+", nextIndex="+nextIndex + ", myIndex="+myIndex);
 		setPlayableCards();
 		highlightTurn();	
 	}	
