@@ -19,6 +19,7 @@ var MessageType = {
 	BID : "bid",
 	SPEC : "spec",
 	PLAY : "play",
+	REPLACEMENT: "replacement",
 	LOYALTIES: "loyalties",
 	ROUND : "round",
 	SCORE : "score"
@@ -33,11 +34,24 @@ var RoomStatus = {
 	GAME_OVER : "GAME_OVER"
 }
 
+function playSound(tone){
+	try{
+		if(tone!== undefined)
+			tone.play();
+	}catch(error){
+		console.log("Error in playing sounds:"+error);
+	}
+}
+
 function loadSounds(){
 	// buffers automatically when created
-	turnSound = new Audio("sounds/Tejat.ogg"); 
-	cuttingSound = new Audio("sounds/cut.mp3"); 
-	partnerSound = new Audio("sounds/partner.mp3"); 
+	try{
+		turnSound = new Audio("sounds/Tejat.ogg"); 
+		cuttingSound = new Audio("sounds/cut.mp3"); 
+		partnerSound = new Audio("sounds/partner.mp3");
+	}catch(error){
+		console.log("Error in loading sounds:"+error);
+	}
 }
 
 function sessionOn() {
@@ -154,7 +168,7 @@ function addRoomNotification(message) {
 }
 
 function showScore(message) {
-	console.log(message);
+//	console.log(message);
 	var players = message["players"];
 	var totals = new Array();
 	var scorecards = message["scorecards"];
@@ -263,6 +277,10 @@ function onMessage(result) {
 		// update status on status bar
 		setStatus(message);
 		break;
+	case MessageType.REPLACEMENT:
+		// update replaced player information on the screen
+		replacePlayer(JSON.parse(message));
+		break;	
 	case MessageType.PLAYERS:
 		// use players information redraw players on table
 		if(status === RoomStatus.GAME_OVER)
@@ -326,17 +344,39 @@ function onError(error) {
 	console.log("Error:" + error.code + ":" + error.description);
 }
 
-function openNewChannel() {
+function openNewChannel(isSpectator) {
 	$.post('/getToken', {
 		u : sessionStorage.username,
-		r : sessionStorage.roomName
+		r : sessionStorage.roomName,
+		s : isSpectator
 	}, function(result) {
 		sessionStorage.token = result.trim();
 		sessionStorage.tokenTS = new Date().getTime();
 		openChannel(sessionStorage.token);
 	}).fail(function(error) {
-		showError(error.responseText);
-		console.log("Error in obtaining token:" + error.responseText);
+		console.log("Error in obtaining token: " + error.status + ":" + error.responseText)
+		
+		switch(error.status){
+		// Authentication Error: name already in use, show error
+		case 401: 	
+			showError(error.responseText); 
+			break;
+		
+		// Forbidden: room full, or game in progress, show option to 
+		// join as spectator
+		case 403: 	
+			showError(error.responseText);
+			if(confirm("It seems game has already started or " +
+					"there isn't room for more players. Would you like " +
+					"to join as a spectator?"))
+			// if user clicks on Yes, open channel as spectator
+				openNewChannel(true);
+			break;
+		
+		default: // show error
+			showError(error.responseText);
+		}
+		
 	});
 }
 

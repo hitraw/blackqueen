@@ -3,7 +3,7 @@ var centreY = 270;
 var radius = 260;
 var players; // array of object players currently on screen
 var positions; // array of positions these players are on.
-var myIndex = 0; // default 0
+var myIndex = undefined; // default undefined, 0 will create controls for spectators
 var title = 'Black Queen';
 var turnTitle = title + ' - Your Turn!';
 
@@ -36,14 +36,19 @@ function manageBidMessage(json) {
 }
 
 function highlightTurn(){
-	turnSound.play();
+	console.log("playing sound");
+	playSound(turnSound);
 	document.title = turnTitle;
 	window.setTimeout(function(){
-		// if after 10 seconds user has still not played
-		if(document.title === turnTitle)
-//		if(document.hidden)
-			// alert the user
-			alert("REMINDER: It's your turn!");
+		// if after 20 seconds user has still not played
+		// and status is still bidding/playing 
+		if(document.title === turnTitle){ 
+			if(status === RoomStatus.BIDDING)
+				alert("It's your turn, please Bid!");
+			else if(status === RoomStatus.PLAYING)
+				alert("It's your turn, please Play!");
+			else turnOver();
+		}
 	}, 10000); 
 }
 
@@ -60,7 +65,7 @@ function determineBidWinner(turnIndex, highestBid) {
 		declareBidWinner(turnIndex);
 	} else { // bidding is going on
 		// if this next player having turn is me
-		if (myIndex === turnIndex){
+		if (turnIndex === myIndex){
 			showBidControl(highestBid);
 			highlightTurn();
 		} else {
@@ -77,7 +82,7 @@ function declareBidWinner(winnerIndex) {
 	//TODO: Play winning bid/round sound
 	
 	// if this next player having won the bid is me
-	if (myIndex === winnerIndex) {
+	if (winnerIndex === myIndex) {
 		showBidSpecSelector(bidWinner);
 	} else {
 		$('#bidControl1').html(
@@ -180,7 +185,7 @@ function manageControls() {
 		break;
 	case RoomStatus.READY_TO_DEAL:
 		// show me deal button if it's my turn
-		if (players[myIndex].turn)
+		if (myIndex!== undefined && players[myIndex].turn)
 			showDealBtn();
 		$('#endBtn').html('');
 		break;
@@ -268,7 +273,7 @@ function showBidControl(highestBid) {
 				});
 				$('.bidControl').html("");
 				$('#bidControl').hide();
-				document.title = title;
+				turnOver();
 			});
 	$('#bidControl1').append($img);
 	$('#bidControl1').append("<br/>");
@@ -287,7 +292,7 @@ function showBidControl(highestBid) {
 			});
 			$('.bidControl').html("");
 			$('#bidControl').hide();
-			document.title(title);
+			turnOver();
 		});
 		$('#bidControl2').append($img);
 	}
@@ -315,9 +320,30 @@ function showEndBtn() {
 	$('#endBtn').html($btnEnd);
 }
 
+function replacePlayer(replacement){
+	var	type = replacement["type"];
+	var	playerIndex = replacement["index"];
+	var oldName = replacement["previous"];
+	var newName = replacement["name"];
+
+	if(type === "player")
+		addRoomNotification(newName + " joined, replacing " + oldName);
+	else
+		addRoomNotification(oldName + " left, replaced by " + newName);
+
+	// if it's not me, update the name on screen
+	if(newName !== sessionStorage.username){
+		var	player = players[playerIndex];
+		player.setName(newName);
+	}
+	// what if it's me? well entire screen will be drawn afresh
+	// no need to update it then.
+	
+}
+
 function updateLoyalties(loyalties){
 	var loyaltyObj, playerIndex, player;
-	partnerSound.play();
+	playSound(partnerSound);
 	for(var i in loyalties){
 		loyaltyObj = loyalties[i];
 		playerIndex = loyaltyObj["index"];
@@ -358,6 +384,11 @@ function Player(jsonObj) {
 	this.setTurn = function() {
 		this.turn = true;
 		$('#pos' + this.screenPosition).addClass('turn');
+	}
+	
+	this.setName = function(newName) {
+		this.name = newName;
+		$('#name' + this.screenPosition).html(this.name);
 	}
 	
 	this.setLoyalty = function(newLoyalty) {

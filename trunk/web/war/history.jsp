@@ -6,7 +6,7 @@
 <meta charset="utf-8">
 <title>Black Queen</title>
 
-<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="/scripts/jquery-2.1.1.min.js" type="text/javascript"></script>
 <link rel='stylesheet' type='text/css'
 	href='http://fonts.googleapis.com/css?family=Just+Another+Hand'>
 <link rel="stylesheet" href="css/scoreboard.css">

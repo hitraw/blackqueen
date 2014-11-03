@@ -35,55 +35,71 @@ public class TokenServlet extends HttpServlet {
 
 		String roomName = req.getParameter("r");
 		String username = req.getParameter("u");
+		String isSpectator = req.getParameter("s");
 		resp.setContentType("text/plain");
 		String token;
 
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
 		// The 'room' object exposes a method which creates a unique string
 		// based on the room name and user name
-		
-		if (!room.isFull()) { // if room is not full i.e. guest or new
-			// and if player with same name doesn't exist
-			if (room.getPlayer(username) == null) {
-				// grant token
-				ChannelService channelService = ChannelServiceFactory
-						.getChannelService();
-				token = channelService.createChannel(room.getChannelKey(username));
-				log.info("token="+token);
-				
-//				req.setAttribute("token", token.trim());
-//				req.getRequestDispatcher("/game.jsp").forward(req, resp);
-				resp.getWriter().println(token);
-			} // else return error - user already exists
-			else {
-				resp.setStatus(401);
-				resp.getWriter().println("User already exists. Please try another Name.");
-			}
-		} // else return error - room full
-		else {
-			resp.setStatus(401);
-			resp.getWriter().println("Game in progress. Please try again later.");
-		}	
-		
-/*		Player p = game.getPlayer(username);
 
-		if (p != null) {	// if player with this name already exists
-			if (!p.isConnected()) {		// if that player is disconnected, allow to reconnect
-				token = getToken(game.getChannelKey(username));
-				resp.getWriter().println(token);
-			}else{	// if that player is connected, refuse connection for this name
-				resp.setStatus(403);
-				resp.getWriter().println("User already exists. Try another Name.");
-			}
-		} else {	//if player with this name doesn't exist
-			if (game.addPlayer(username)) {
-				token = getToken(game.getChannelKey(username));
-				resp.getWriter().println(token);
-			} else {
-				resp.setStatus(401);
-				resp.getWriter().println("Room full. Try another Room.");
-			}
+		// if player/spectator with same name already exists, 
+		if (room.getPlayer(username) != null 
+				|| room.getSpectator(username) != null) {
+			// raise error
+			resp.setStatus(401);
+			resp.getWriter().println(
+					"User already exists. Please try another Name.");
+		} else // check if user trying to enter as spectator
+		if ("true".equals(isSpectator)) {
+			// add this user as spectator to the room
+			room.addSpectator(username);
+			
+			// grant token
+			ChannelService channelService = ChannelServiceFactory
+					.getChannelService();
+			token = channelService.createChannel(room.getChannelKey(username));
+			log.info("token=" + token);
+
+			// req.setAttribute("token", token.trim());
+			// req.getRequestDispatcher("/game").forward(req, resp);
+			resp.getWriter().println(token);
+
+		} else // check if room is full or game in progress
+		if (!room.isFull()) { // if room is not full i.e. guest or new
+
+			// grant token
+			ChannelService channelService = ChannelServiceFactory
+					.getChannelService();
+			token = channelService.createChannel(room.getChannelKey(username));
+			log.info("token=" + token);
+
+			// req.setAttribute("token", token.trim());
+			// req.getRequestDispatcher("/game").forward(req, resp);
+			resp.getWriter().println(token);
+
+		} // else return error code/message - room full/game in progress
+		else {
+			resp.setStatus(403);
+			resp.getWriter().println(
+					"Game in progress. Please join as spectator.");
 		}
-*/	}
+
+		/*
+		 * Player p = game.getPlayer(username);
+		 * 
+		 * if (p != null) { // if player with this name already exists if
+		 * (!p.isConnected()) { // if that player is disconnected, allow to
+		 * reconnect token = getToken(game.getChannelKey(username));
+		 * resp.getWriter().println(token); }else{ // if that player is
+		 * connected, refuse connection for this name resp.setStatus(403);
+		 * resp.getWriter().println("User already exists. Try another Name."); }
+		 * } else { //if player with this name doesn't exist if
+		 * (game.addPlayer(username)) { token =
+		 * getToken(game.getChannelKey(username));
+		 * resp.getWriter().println(token); } else { resp.setStatus(401);
+		 * resp.getWriter().println("Room full. Try another Room."); } }
+		 */
+	}
 
 }
