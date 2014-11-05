@@ -113,7 +113,6 @@ function setStatus(statusText) {
 		}, 3000);
 	}
 	
-	
 	// clear all this whenever status changes
 	
 	// bid control for making bids
@@ -126,24 +125,26 @@ function setStatus(statusText) {
 	// to pick partner and trump from
 	$('#bidSpecSelector').hide();
 
-	if (statusText !== RoomStatus.GAME_OVER){
-		// left and right ear positioned spec controls
-		$('.bidSpec').hide(); // don't wipe this, contains title
-//		$('#partnerTrump').html(""); // don't hide this, parent is hidden
-		$('#bidTarget').html(""); // don't hide this, parent is hidden
-		
-		$('.loyalty').html(""); // clear loyalty inside player divs
-		$('.pCard').html(""); // clear partner card inside player divs
-		$('.points').html(""); // clear points inside player divs
-		$('.pointCardsContainer').html("").hide(); // clear n hide the point cards div
-	}
-	
 	$('.bid').html(""); // clear bids inside player divs
 
 	// clear hand only when new game is started
 	if (statusText === RoomStatus.READY_TO_DEAL
 			|| statusText === RoomStatus.WAITING_FOR_PLAYERS) {
 		$('#myHand').html(""); // clear hand
+		
+		// left and right ear positioned spec controls
+		$('.bidSpec').hide(); // don't wipe this, contains child elements
+		$('#bidTarget').html(""); // don't hide this, parent is hidden
+		$('#partner').html(""); // don't hide this, parent is hidden
+		$('#trump').html(""); // don't hide this, parent is hidden
+
+		$('.loyalty').html(""); // clear loyalty
+		$('.pCard').html(""); // clear partner card
+		$('.points').html(""); // clear points inside player divs
+		$('.pointCardsContainer').html("").hide(); // clear n hide the point cards div
+		
+		resetGame();
+
 	} else if (statusText === RoomStatus.BIDDING) {
 		$('.bid').show();
 		$('.pointCardsContainer').hide();
@@ -151,6 +152,10 @@ function setStatus(statusText) {
 		$('.bid').hide();
 		$('.pointCardsContainer').show();
 	}
+}
+
+function clearControls(){
+	
 }
 
 function addChatMessage(message) {

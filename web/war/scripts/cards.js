@@ -8,20 +8,36 @@ var startingSuit;
 var isCut;
 var points;
 var myCardArray;
-var tableCardArray;
 var highestCard;
-var tableTop = 200;
-var tableLeft = 400;
 var $myCard;
 var disableAlert = false;
 var posDefined = false;
-
 var cardpos; 
+
+function resetGame() {
+	posDefined = false;
+	cardpos = undefined;
+	isCut = false;
+	partnerCard = undefined;
+	trumpSuit = undefined;
+	resetRound();
+}
+
+function resetRound() {
+	startingSuit = undefined;
+	highestCard = undefined;
+	disableAlert = false;
+}
+
+
 function defineCardPos(){
 	
-	if(!posDefined){
+	if(!posDefined || cardpos === undefined){
+		
+		// need this to be visible because all positions are relative to this
+		$('#cardMat').show();
 		console.log("defining Card Pos on table...");
-	   	console.log("mat width="+$('#cardMat').show().width());
+	   	console.log("mat width="+$('#cardMat').width());
 	   	var margin0 = 120 - 35;
 	   	var matWidth = $('#cardMat').width();
 	   	var matLeft = $('#cardMat').offset().left;
@@ -260,7 +276,7 @@ function checkShowDoneBtn() {
 					}, function(result) {
 						$('#bidSpec').hide(600);
 						$('#room').removeClass('curtain');
-						initializeRound();
+						resetRound();
 						setPlayableCards(trumpSuit);
 					});
 
@@ -290,17 +306,6 @@ function manageSpecMessage(json) {
 	
 	$('#bidTarget').html(bidTarget + "/" + oppTarget).show();
 	
-}
-
-function initializeGame() {
-	isCut = false;
-	disableAlert = false;
-}
-
-function initializeRound() {
-	startingSuit = undefined;
-	highestCard = undefined;
-	disableAlert = false;
 }
 
 function disableHandCards() {
@@ -476,7 +481,7 @@ function managePlayMessage(json) {
 	// TODO Remove following card play notification
 	// addGameNotification(players[playerIndex].name + " played " + card + ".");
 
-	// TODO: if you want to display total points of cards on table
+	// if you want to display total points of cards on table
 	$('#tablePoints').html(points).show();
 
 	// card animation and visibility manipulation
@@ -493,14 +498,21 @@ function managePlayMessage(json) {
 		}
 	}
 	
+	// if hasn't been cut before and been cut now
 	if(!isCut && isCutNow){
+		// play the cutting sound
 		playSound(cuttingSound);
+		
+		// save that it's been cut now, so sound not played again
 		isCut = isCutNow;
 	}
 	
 	if (isRoundOver) {
+		// declare the winner of this round
 		declareRoundWinner(json);
-		initializeRound();
+		
+		// reset round level variables and controls
+		resetRound();
 	}
 	
 	// disable cards in my hand
@@ -517,8 +529,6 @@ function managePlayMessage(json) {
 function declareRoundWinner(json){
 	
 	var roundWinnerIndex = json["winnerIndex"];
-//	var roundWinnerPoints = json["winnerPoints"];
-//	var roundWinnerPointCards = json["winnerPointCards"];
 	var pointCardsJsonObj = JSON.parse(json["winnerPointCards"]);
 	var roundWinnerPoints = pointCardsJsonObj["points"];
 	var roundWinnerPointCards = pointCardsJsonObj["cards"];
@@ -547,8 +557,8 @@ function declareRoundWinner(json){
 		}, 'slow', function() {
 			// when done,
 			// show the pointCards in player objects on screen
-			// (already drawn by this time) by Player object
-			// but only if there were any points in this round :)
+			// (already drawn by this time by Player object)
+			// but only if there are any points in this round :)
 			if (roundPoints > 0){
 				roundWinner.drawPointCards(roundWinnerPointCards);
 				roundWinner.setPoints(roundWinnerPoints);
@@ -570,9 +580,10 @@ function declareRoundWinner(json){
 	
 function showPlayedCard(card, playerIndex){
 
+	// make sure card positions are defined
 	defineCardPos();
+	
 	// create non clickable card object at player position
-
 	var id = "p" + playerIndex + "card" + card;
 	var $card = $("<div id='" + id + "' "
 			+ "class='tableCard' style='background-image:url(/images/cards/"
