@@ -21,16 +21,21 @@ function defineCardPos(){
 	
 	if(!posDefined){
 		console.log("defining Card Pos on table...");
-	   	console.log($('#pos0').offset());
+	   	console.log("mat width="+$('#cardMat').show().width());
+	   	var margin0 = 120 - 35;
+	   	var matWidth = $('#cardMat').width();
+	   	var matLeft = $('#cardMat').offset().left;
+	   	var matRight = matLeft + matWidth; 
+	   	
 		cardpos = [	// array of card positions for players 0 to 7
-		            {top: $('#pos0').offset().top - 120, left: $('#pos0').offset().left + 120 - 35},
-		            {top: $('#pos1').offset().top, left: $('#pos1').offset().left + 330},
-		            {top: $('#pos2').offset().top, left: $('#pos2').offset().left + 330},
-		            {top: $('#pos3').offset().top, left: $('#pos3').offset().left + 330},
-		            {top: $('#pos4').offset().top + 120, left: $('#pos4').offset().left + 120 - 35},
-		            {top: $('#pos5').offset().top, left: $('#pos5').offset().left - 160},
-		            {top: $('#pos6').offset().top, left: $('#pos6').offset().left - 160},
-		            {top: $('#pos7').offset().top, left: $('#pos7').offset().left - 160}
+		            {top: $('#pos0').offset().top - 120, left: $('#pos0').offset().left + margin0},
+		            {top: $('#pos1').offset().top, left: matLeft + matWidth/2 - 90},
+		            {top: $('#pos2').offset().top - 10, left: matLeft + matWidth/2 - 90},
+		            {top: $('#pos3').offset().top - 20, left: matLeft + matWidth/2 - 90},
+		            {top: $('#pos4').offset().top + 120, left: $('#pos4').offset().left + margin0},
+		            {top: $('#pos5').offset().top - 20, left: matRight - matWidth/2 + 20},
+		            {top: $('#pos6').offset().top - 10, left: matRight - matWidth/2 + 20},
+		            {top: $('#pos7').offset().top, left: matRight - matWidth/2 + 20}
 		           ];
 		posDefined = true;
 	}
@@ -272,7 +277,7 @@ function manageSpecMessage(json) {
 	
 	var gameIndex = json["gameNo"];
 	if (gameIndex !== undefined && gameIndex > 0)
-		$('#gameId').html("Game " + gameIndex);
+		$('#gameId').html("Game " + (gameIndex + 1));
 
 	var $imgPartner = $("<img class='spec' id='imgPartner' src='/images/cards/"
 			+ partnerCard + ".png'/>");
@@ -399,7 +404,7 @@ function showCardTable(json){
 
 	var gameIndex = json["gameNo"];
 	if (gameIndex !== undefined && gameIndex > 0)
-		$('#gameId').html("Game " + gameIndex);
+		$('#gameId').html("Game " + (gameIndex + 1));
 	
 //	console.log("table cards:" + cards);
 //	console.log("played by i:" + indices);

@@ -44,10 +44,10 @@ h4{
 	top: 0px;
 	border-spacing: 0;
 	margin-left: 50px;
-	height: 610px;
-	width: 400px;
+	height: 600px;
+	width: 900px;
 	text-align: center;
-	background: url("/images/papyrus.png") no-repeat;
+	background: url("/images/papyrus-landscape.png") no-repeat;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -57,24 +57,25 @@ h4{
 
 .papyrusHeader {
 	color: black;
-	width: 95%;
+	width: 85%;
 	height: 19px;
 	font-family: 'Just Another Hand', cursive;
 	font-size: 35px;
-	text-align: left;
-	margin-left: 10px;
+	text-align: center;
+	margin-left: 70px;
+	margin-top: -30px;
 }
 
 #scoreLog {
 	color: black;
-	width: 95%;
+	width: 85%;
 	height: 75%;
 	overflow-y: auto;
 	font-family: Verdana, sans-serif;
 	font-size: small;
 	word-wrap: break-word;
 	margin-top: 25px;
-	margin-left: 12px;
+	margin-left: 70px;
 }
 
 table.scorecard {
@@ -91,7 +92,7 @@ th.score, td.score{
     border-bottom: 1px solid;
     border-bottom-style: dotted;
 	font-family: 'Just Another Hand', cursive;
-	font-size: 1.3rem;
+	font-size: 1.8rem;
 	text-align: center;
 }
 

@@ -18,6 +18,8 @@ $(document).ready(function() {
 			list(scoreboards);
 			// call showScore to display first scoreboard on right side
 			showScore(JSON.parse(scoreboards[0]["scoreboard"]));
+			var scoreDate = scoreboards[0]["date"];
+			$('.papyrusHeader').html("Score sheet - " + new Date(scoreDate).toLocaleString());
 		} else {
 			//TODO: display message there are no scoreboards currently to display
 			$('#sbListContainer').hide();
@@ -40,6 +42,8 @@ function list(scoreboards) {
 			var longDate = scoreboards[i]["date"];
 			$lnkScoreboard = $(
 					"<a id='" + i + "' href='#'>"+ new Date(longDate).toLocaleString()  +"</a>").click(function() {
+						var scoreDate = scoreboards[$(this).prop('id')]["date"];
+						$('.papyrusHeader').html("Score sheet - " + new Date(scoreDate).toLocaleString());
 						showScore(JSON.parse(scoreboards[$(this).prop('id')]["scoreboard"]));
 			});
 			$('#sbList').append("<br/>");
@@ -73,12 +77,12 @@ function showScore(scoreboard) {
 		}
 		
 		scoreHTML += ("<td class='score' width='15%'>Bid / Opp</td>");
-		scoreHTML += ("<td class='score' width='20%'>P / T</td>");
+		scoreHTML += ("<td class='score' width='20%'>Partner / Trump</td>");
 		
 		scoreHTML += ("</tr>");
 		
 		var scorecard, scores, bidSpec, bidTarget, bidder, score;
-		for(var j in scorecards){
+		for(var j = 0; j<scorecards.length; j++){
 			
 			scorecard = scorecards[j];
 			scores = scorecard["scores"];
@@ -92,7 +96,7 @@ function showScore(scoreboard) {
 							.replace(/D/g, "&diams;");
 			
 			scoreHTML += ("<tr>");
-			scoreHTML += ("<td class='score'>"+j+"</td>");
+			scoreHTML += ("<td class='score'>"+(j+1)+"</td>");
 			
 			for(var i in players){
 				

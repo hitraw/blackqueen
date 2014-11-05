@@ -208,7 +208,7 @@ function showScore(message) {
 		scoreHTML += ("</tr>");
 		
 		var scorecard, scores, bidSpec, bidTarget, bidder, score;
-		for(var j in scorecards){
+		for(var j = 0; j<scorecards.length; j++){
 			
 			scorecard = scorecards[j];
 			scores = scorecard["scores"];
