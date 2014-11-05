@@ -388,7 +388,8 @@ function openNewChannel(isSpectator) {
 			break;
 		
 		default: // show error
-			sessionOff();
+			// sessionOff();
+			window.location = '/';
 			showError(error.responseText);
 		}
 		
@@ -424,6 +425,10 @@ $(document).ready(function() {
 	} else {
 		sessionOff();
 	}
+	
+//	$('#bq').click(function(){
+//		window.location = '/';
+//	})
 	
 	$('#txtName').focus(function() {
 		if ($(this).val() == "Name")

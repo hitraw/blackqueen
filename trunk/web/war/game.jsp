@@ -28,7 +28,7 @@
 
 	<div id="joinInfo">
 		<div class="imgContainer">
-			<img src="/images/bq.png" height="300" />
+			<a href="/"><img id="bq" src="/images/bq.png" height="300" /></a>
 		</div>
 		<div class="hdrContainer">
 			<h1>Black Queen</h1>

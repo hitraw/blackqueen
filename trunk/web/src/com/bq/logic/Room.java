@@ -768,7 +768,7 @@ public class Room {
 			if (bidScore >= bidTarget) {
 				// declare bidding team has won
 				sendMessageToAll(new Message(Message.Type.GAME_NOTIFICATION,
-						"Game over. Bidding team achieved their target."));
+						"Game over. Bidding team won!"));
 				isGameOver = true;
 				bidScore = bidTarget;
 				oppScore = 0;
@@ -778,7 +778,7 @@ public class Room {
 			else if (oppScore >= oppTarget) {
 				// declare opponents team has won
 				sendMessageToAll(new Message(Message.Type.GAME_NOTIFICATION,
-						"Game over. Opposition team achieved their target."));
+						"Game over. Opposition team won!"));
 				isGameOver = true;
 				oppScore = oppTarget;
 				bidScore = 0;

@@ -29,13 +29,13 @@ function defineCardPos(){
 	   	
 		cardpos = [	// array of card positions for players 0 to 7
 		            {top: $('#pos0').offset().top - 120, left: $('#pos0').offset().left + margin0},
-		            {top: $('#pos1').offset().top, left: matLeft + matWidth/2 - 90},
+		            {top: $('#pos1').offset().top - 60, left: matLeft + matWidth/2 - 90},
 		            {top: $('#pos2').offset().top - 10, left: matLeft + matWidth/2 - 90},
-		            {top: $('#pos3').offset().top - 20, left: matLeft + matWidth/2 - 90},
+		            {top: $('#pos3').offset().top + 60, left: matLeft + matWidth/2 - 90},
 		            {top: $('#pos4').offset().top + 120, left: $('#pos4').offset().left + margin0},
-		            {top: $('#pos5').offset().top - 20, left: matRight - matWidth/2 + 20},
+		            {top: $('#pos5').offset().top + 60, left: matRight - matWidth/2 + 20},
 		            {top: $('#pos6').offset().top - 10, left: matRight - matWidth/2 + 20},
-		            {top: $('#pos7').offset().top, left: matRight - matWidth/2 + 20}
+		            {top: $('#pos7').offset().top - 60, left: matRight - matWidth/2 + 20}
 		           ];
 		posDefined = true;
 	}
@@ -447,7 +447,6 @@ function showCardTable(json){
 
 function showCardsSeq(card, index){
 	window.setTimeout(function(){
-		console.log("is this even getting called?");
 		showPlayedCard(card, index);
 	}, 1000);
 }
@@ -509,7 +508,7 @@ function managePlayMessage(json) {
 	
 	// if it's my turn now, set my playable cards
 	if (status === RoomStatus.PLAYING && nextIndex === myIndex){
-		console.log("managePlayMessage::: status="+status+", nextIndex="+nextIndex + ", myIndex="+myIndex);
+//		console.log("managePlayMessage::: status="+status+", nextIndex="+nextIndex + ", myIndex="+myIndex);
 		setPlayableCards();
 		highlightTurn();	
 	}	
@@ -521,7 +520,6 @@ function declareRoundWinner(json){
 //	var roundWinnerPoints = json["winnerPoints"];
 //	var roundWinnerPointCards = json["winnerPointCards"];
 	var pointCardsJsonObj = JSON.parse(json["winnerPointCards"]);
-	console.log(pointCardsJsonObj);
 	var roundWinnerPoints = pointCardsJsonObj["points"];
 	var roundWinnerPointCards = pointCardsJsonObj["cards"];
 	var roundPoints = json["points"];
