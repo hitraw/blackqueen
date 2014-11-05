@@ -2,6 +2,7 @@ var channel;
 var socket;
 var status;
 var connected = false;
+var quit = false;
 
 //sound variables;
 var turnSound;
@@ -46,7 +47,8 @@ function playSound(tone){
 function loadSounds(){
 	// buffers automatically when created
 	try{
-		turnSound = new Audio("sounds/Tejat.ogg"); 
+		dealSound = new Audio("sounds/deal-cards.mp3");
+		turnSound = new Audio("sounds/Pollux.ogg"); 
 		cuttingSound = new Audio("sounds/cut.mp3"); 
 		partnerSound = new Audio("sounds/partner.mp3");
 	}catch(error){
@@ -62,14 +64,11 @@ function sessionOn() {
 	loadSounds();
 }
 
-function sessionOff() {
-	connected = false;
-	
-	// following not desirable, hence commented.
-//	$('#chatWindow').resizable();
-	
+
+function clear(){
+	$('#joinInfo').hide();
 	$('.pointCardsContainer').html("");
-	$('#playError').html("").hide();
+	$('#playError').hide();
 	$('#tablePoints').html("");
 	
 	$('#lsChat').html("");
@@ -79,6 +78,14 @@ function sessionOff() {
 	$('#cardMat').html("").hide(); // wipe n hide table(card mat)
 	$('#bidSpecSelector').hide();
 	$('.bidSpec').hide();
+}
+
+function sessionOff() {
+	connected = false;
+	
+	// following not desirable, hence commented.
+//	$('#chatWindow').resizable();
+	clear();
 	
 	$('#chatWindow').hide();
 	$('#room').hide();
@@ -122,8 +129,11 @@ function setStatus(statusText) {
 	if (statusText !== RoomStatus.GAME_OVER){
 		// left and right ear positioned spec controls
 		$('.bidSpec').hide(); // don't wipe this, contains title
-		$('#partnerTrump').html(""); // don't hide this, parent is hidden
+//		$('#partnerTrump').html(""); // don't hide this, parent is hidden
 		$('#bidTarget').html(""); // don't hide this, parent is hidden
+		
+		$('.loyalty').html(""); // clear loyalty inside player divs
+		$('.pCard').html(""); // clear partner card inside player divs
 		$('.points').html(""); // clear points inside player divs
 		$('.pointCardsContainer').html("").hide(); // clear n hide the point cards div
 	}
@@ -333,11 +343,12 @@ function onMessage(result) {
 }
 
 function onClose() {
+	console.log("Close called at "  + new Date().toLocaleString());
 //	sessionOff();
-//	if(confirm("You are disconnected. Do you wish to re-connect?"))
+	if(!quit)
 		openNewChannel();
-//	else
-//		sessionOff();
+	else
+		sessionOff();
 }
 
 function onError(error) {
@@ -352,13 +363,14 @@ function openNewChannel(isSpectator) {
 	}, function(result) {
 		sessionStorage.token = result.trim();
 		sessionStorage.tokenTS = new Date().getTime();
+		console.log("Token obtained ("  + new Date().toLocaleString() + "): " + sessionStorage.token);
 		openChannel(sessionStorage.token);
 	}).fail(function(error) {
 		console.log("Error in obtaining token: " + error.status + ":" + error.responseText)
 		
 		switch(error.status){
 		// Authentication Error: name already in use, show error
-		case 401: 	
+		case 401:
 			showError(error.responseText); 
 			break;
 		
@@ -368,12 +380,15 @@ function openNewChannel(isSpectator) {
 			showError(error.responseText);
 			if(confirm("It seems game has already started or " +
 					"there isn't room for more players. Would you like " +
-					"to join as a spectator?"))
+					"to join as a spectator?")){
+				sessionStorage.spectator = true;
 			// if user clicks on Yes, open channel as spectator
 				openNewChannel(true);
+			}	
 			break;
 		
 		default: // show error
+			sessionOff();
 			showError(error.responseText);
 		}
 		
@@ -393,18 +408,22 @@ function enter(name) {
 	if (name.length >= 3 && name !== 'Name') {
 		sessionStorage.roomName = $('#slRooms').val();
 		sessionStorage.username = name;
-		openNewChannel();
+		openNewChannel(sessionStorage.spectator);
 	} else {
 		showError("Please enter valid name! (3 to 12 characters long)");
 	}
 }
 
 $(document).ready(function() {
-	
-	sessionOff();
 		
-//	sessionOn();
-	// $('#txtName').focus();
+	clear();
+
+	if (sessionStorage.username !== undefined){
+		$('#txtName').val(sessionStorage.username);
+		enter($('#txtName').val());
+	} else {
+		sessionOff();
+	}
 	
 	$('#txtName').focus(function() {
 		if ($(this).val() == "Name")
@@ -445,8 +464,10 @@ $(document).ready(function() {
 	});
 
 	$(window).on('beforeunload', function(e) {
-		if (connected)
-			return 'You are in the middle of the game.';
+		if (connected){
+			quit = true;
+			return '';
+		}	
 	});
 	
 	$('#chatHeader').click(function(){
@@ -483,4 +504,15 @@ $(document).ready(function() {
 		}
 	});
 
+	// wait for a second after it loads, to add hover event
+	window.setTimeout(function(){
+		$('.handCard').hover(
+		        function() {
+		            $(this).animate({ 'zoom': 1.8 }, 400);
+		        },
+		        function() {
+		            $(this).animate({ 'zoom': 1 }, 200);
+		        });
+	},1000);
+	 
 });

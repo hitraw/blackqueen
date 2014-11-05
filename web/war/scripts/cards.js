@@ -13,17 +13,28 @@ var highestCard;
 var tableTop = 200;
 var tableLeft = 400;
 var $myCard;
+var disableAlert = false;
+var posDefined = false;
 
-var cardpos = [	// array of card positions for players 0 to 7
-           {top: 300, left: 415},
-           {top: 260, left: 350},
-           {top: 220, left: 350},
-           {top: 180, left: 350},
-           {top: 145, left: 415},
-           {top: 180, left: 480},
-           {top: 220, left: 480},
-           {top: 260, left: 480}
-          ];
+var cardpos; 
+function defineCardPos(){
+	
+	if(!posDefined){
+		console.log("defining Card Pos on table...");
+	   	console.log($('#pos0').offset());
+		cardpos = [	// array of card positions for players 0 to 7
+		            {top: $('#pos0').offset().top - 120, left: $('#pos0').offset().left + 120 - 35},
+		            {top: $('#pos1').offset().top, left: $('#pos1').offset().left + 330},
+		            {top: $('#pos2').offset().top, left: $('#pos2').offset().left + 330},
+		            {top: $('#pos3').offset().top, left: $('#pos3').offset().left + 330},
+		            {top: $('#pos4').offset().top + 120, left: $('#pos4').offset().left + 120 - 35},
+		            {top: $('#pos5').offset().top, left: $('#pos5').offset().left - 160},
+		            {top: $('#pos6').offset().top, left: $('#pos6').offset().left - 160},
+		            {top: $('#pos7').offset().top, left: $('#pos7').offset().left - 160}
+		           ];
+		posDefined = true;
+	}
+}
 
 // defining endsWith function for strings
 if (typeof String.prototype.endsWith !== 'function') {
@@ -37,129 +48,148 @@ if (typeof String.prototype.endsWith !== 'function') {
  * @param cardArray
  */
 function showCards(cardArray) {
+	defineCardPos();
 	myCardArray = new Array();
 	// clear hand first
 	$('#myHand').html("");
 	var $img;
-	for (var i = 0; i < cardArray.length; i++) {
-		// id is array index and card code appended to keyword myCard
-		// e.g. myCard0-AS, we need index and code both, b'coz code can repeat
-		// and we can't use only index, as they change on server side
-		var id = 'myCard'+i+"-"+cardArray[i];
-		myCardArray.push(id);
-		$img = $(
-				"<div id='" + id
-						+ "' " // style='z-index:" + i + "'
-						+ "class='handCard' style='background-image:url(/images/cards/"
-						+ cardArray[i] + ".png);'/>")
-						.click(function() {
-			// if it's my turn
-			if (myIndex !== undefined && players[myIndex].turn) {
-				// if I've clicked on a playable card
-				if ($(this).hasClass('playable')) {
-					$myCard = $(this);
-					var cardId = $myCard.prop('id');
-					var splitArray = cardId.split("-");
-					var cardCode = splitArray[1]; 
-					$.post('/play', {
-						u : sessionStorage.username,
-						r : sessionStorage.roomName,
-						c : cardCode,
-						i : myIndex
-					}, function(result) {
-						// remove 1 card from array at this position
-//						console.log("played card successfully, now remove from hand");
-						// do we even need to maintain myCardArray?? 
-						// YES!!! we use this in setPlayable to check which cards
-						// remain in our hand  
-						// comment for now TODO: check later
-						var cardIndex = myCardArray.indexOf(cardId);
-						myCardArray.splice(cardIndex, 1);
-						
-						// retrieve and store the offset in a temp variable
-						// because it's gonna change after moving it to #cardMat
-						var offset = $myCard.offset();
-
-						// adjust classes of the card and remove click event
-						$myCard.removeClass('handCard unplayable playable').off();
-						$myCard.addClass('tableCard');
-						
-						// detach $card from #myHand and attach it to #cardMat
-						$myCard.detach().appendTo('#cardMat');
-
-						// #cardMat might be hidden, let's show it!
-						$('#cardMat').show(); 
-						
-						// assign it's old position back to the card, so we
-						// can show it getting animated from there itself!
-						$myCard.offset(offset);
-						
-//						console.log("source: top: "+ offset.top +", left:" + offset.left);
-//						console.log("target: top: "+ cardpos[0].top +", left:" + cardpos[0].left);
 	
-						// build our move string
-						var moveTop = Math.round(cardpos[0].top - offset.top);
-						var moveLeft = Math.round(cardpos[0].left - offset.left);
+	if(cardArray.length > 0){
+		playSound(dealSound);
+	
+		for (var i = 0; i < cardArray.length; i++) {
+			// id is array index and card code appended to keyword myCard
+			// e.g. myCard0-AS, we need index and code both, b'coz code can repeat
+			// and we can't use only index, as they change on server side
+			var id = 'myCard'+i+"-"+cardArray[i];
+			myCardArray.push(id);
+			$img = $(
+					"<div id='" + id
+							+ "' " // style='z-index:" + i + "'
+							+ "class='handCard' style='background-image:url(/images/cards/"
+							+ cardArray[i] + ".png);'/>")
+							.click(function() {
+				// if it's my turn
+				if (myIndex !== undefined && players[myIndex].turn) {
+					// if I've clicked on a playable card
+					if ($(this).hasClass('playable')) {
+						$myCard = $(this);
+						var cardId = $myCard.prop('id');
+						var splitArray = cardId.split("-");
+						var cardCode = splitArray[1]; 
+						$.post('/play', {
+							u : sessionStorage.username,
+							r : sessionStorage.roomName,
+							c : cardCode,
+							i : myIndex
+						}, function(result) {
+							// remove 1 card from array at this position
+	//						console.log("played card successfully, now remove from hand");
+							// do we even need to maintain myCardArray?? 
+							// YES!!! we use this in setPlayable to check which cards
+							// remain in our hand  
+							// comment for now TODO: check later
+							var cardIndex = myCardArray.indexOf(cardId);
+							myCardArray.splice(cardIndex, 1);
+							
+							// retrieve and store the offset in a temp variable
+							// because it's gonna change after moving it to #cardMat
+							var offset = $myCard.offset();
+	
+							// adjust classes of the card and remove click event
+							$myCard.removeClass('handCard unplayable playable').off();
+							$myCard.addClass('tableCard');
+							
+							// detach $card from #myHand and attach it to #cardMat
+							$myCard.detach().appendTo('#cardMat');
+	
+							// #cardMat might be hidden, let's show it!
+							$('#cardMat').show(); 
+							
+							// assign it's old position back to the card, so we
+							// can show it getting animated from there itself!
+							$myCard.offset(offset);
+							
+	//						console.log("source: top: "+ offset.top +", left:" + offset.left);
+	//						console.log("target: top: "+ cardpos[0].top +", left:" + cardpos[0].left);
+		
+							// build our move string
+							var moveTop = Math.round(cardpos[0].top - offset.top);
+							var moveLeft = Math.round(cardpos[0].left - offset.left);
+							
+							// move the card
+							$myCard.animate(
+	//							{'margin-top': moveTop + 'px', 'margin-left': moveLeft + 'px'}
+								{top: cardpos[0].top, left: cardpos[0].left}
+								, 500);
+							
+							// change title back to normal
+							turnOver();
+						}).error(function() {
+							console.log("error in playing card");
+							// TODO display error message: invalid move
+							showPlayError("You played an invalid card.");
+						});
+						// TODO: show animation, card moving up slightly now
+						// and to the table on success above,	
+						// commenting this as it's creating a jitter
+						// $(this).animate({'margin-top':'-30px'}, 300);
 						
-						// move the card
-						$myCard.animate(
-//							{'margin-top': moveTop + 'px', 'margin-left': moveLeft + 'px'}
-							{top: cardpos[0].top, left: cardpos[0].left}
-							, 500);
+					} else {
 						
-						// change title back to normal
-						turnOver();
-					}).error(function() {
-						console.log("error in playing card");
-						// TODO display error message: invalid move
-						showPlayError("You played an invalid card.");
-					});
-					// TODO: show animation, card moving up slightly now
-					// and to the table on success above,	
-					// commenting this as it's creating a jitter
-					// $(this).animate({'margin-top':'-30px'}, 300);
-					
+						if(status === RoomStatus.BIDDING){
+							showPlayError("Patience, we are still in bidding stage!");
+						}
+						else if(status === RoomStatus.GAME_OVER){
+							showPlayError("This game is over! Please start new game!");
+						}
+						else{
+						// display error message you can't play this card
+						// if startingSuit is null, it could only mean you're
+						// playing trump and it's not cut yet. Show error accdly.
+						if(startingSuit === undefined || startingSuit === null)
+							showPlayError("It hasn't been cut yet. You can't start with cutting!");
+	
+						// if starting suit is not null, it means you have that suit
+						// and are trying to play another suit. show error accdly.
+						else
+							showPlayError("You can't play different suit. You have this suit!");
+						}
+					}
 				} else {
-					
-					if(status === RoomStatus.GAME_OVER){
-						showPlayError("This game is over! Please start new game!");
-					}
-					else{
-					// display error message you can't play this card
-					// if startingSuit is null, it could only mean you're
-					// playing trump and it's not cut yet. Show error accdly.
-					if(startingSuit === undefined || startingSuit === null)
-						showPlayError("It hasn't been cut yet. You can't start with cutting!");
-
-					// if starting suit is not null, it means you have that suit
-					// and are trying to play another suit. show error accdly.
-					else
-						showPlayError("You can't play different suit. You have this suit!");
-					}
+					// display error message it's not your turn
+					showPlayError("Don't get too excited, please wait for your turn!");
 				}
-			} else {
-				// display error message it's not your turn
-				showPlayError("Don't get too excited, please wait for your turn!");
-			}
-		});
-
-		$('#myHand').append($img);
+			});
+	
+			$('#myHand').append($img);
+		}
+		
+		// if it was my turn, i make the call to move to next state now
+		// no need, bidding starts automatically after cards are dealt from server
+		// if (player.turn)
+		// startBidding();
+	
+		disableHandCards();
+		if (status === RoomStatus.PLAYING && myIndex !== undefined 
+				&& players[myIndex].turn)
+			setPlayableCards();
+	
+		// show me End button (even if it's not my turn)
+		showEndBtn();
 	}
-	// if it was my turn, i make the call to move to next state now
-	// no need, bidding starts automatically after cards are dealt from server
-	// if (player.turn)
-	// startBidding();
-
-	disableHandCards();
-	if (status === RoomStatus.PLAYING && myIndex !== undefined 
-			&& players[myIndex].turn)
-		setPlayableCards();
-
-	// show me End button (even if it's not my turn)
-	showEndBtn();
 }
 
 function showPlayError(error){
+	
+	var $handOffset = $('#myHand').offset();
+	var $errOffset = {
+		left : $('#myHand').offset().left + $('#myHand').width() / 2
+				- $('#playError').width() / 2 - 12,
+		top : $('#myHand').offset().top + $('#myHand').height() / 2
+				- $('#playError').height() / 2
+	};
+	$('#playError').offset($errOffset);
 	$('#playError').html(error).show().fadeOut(5000);
 }
 
@@ -172,7 +202,19 @@ function initializeCardSpecs() {
 		$(this).addClass('selected');
 		partnerCard = $(this).prop('id');
 		partnerSelected = true;
+		disableAlert = true;
 		checkShowDoneBtn();
+		
+		// CR to display partner above while selection
+		$clone = $(this).clone().removeClass('cardSpec selected').addClass('spec');
+		$clone.click(function(){
+			partnerCard = undefined;
+			partnerSelected = false;
+			$('.cardSpec').removeClass('selected');
+			$('#doneBtn').html("");
+			$(this).remove();
+		});
+		$('#partner').html($clone);
 	});
 
 	$('.suitSpec').click(function() {
@@ -180,7 +222,20 @@ function initializeCardSpecs() {
 		$(this).addClass('selected');
 		trumpSuit = $(this).prop('id');
 		trumpSelected = true;
+		disableAlert = true;
 		checkShowDoneBtn();
+		
+		// CR to display trump above while selection
+		$clone = $(this).clone().removeClass('suitSpec selected').addClass('spec');
+		$clone.click(function(){
+			trumpSuit = undefined;
+			trumpSelected = false;
+			$('.suitSpec').removeClass('selected');
+			$('#doneBtn').html("");
+			$(this).remove();
+		});
+		$('#trump').html($clone);
+		
 	});
 }
 
@@ -199,6 +254,7 @@ function checkShowDoneBtn() {
 						t : trumpSuit
 					}, function(result) {
 						$('#bidSpec').hide(600);
+						$('#room').removeClass('curtain');
 						initializeRound();
 						setPlayableCards(trumpSuit);
 					});
@@ -223,17 +279,23 @@ function manageSpecMessage(json) {
 	var $imgTrump = $("<img class='spec' id='imgTrump' src='/images/cards/"
 			+ trumpSuit + ".png'/>");
 
-	$('#partnerTrump').html($imgPartner).append(" | ").append($imgTrump);
-	$('#bidTarget').html(bidTarget + "/" + oppTarget).show();
+	$('#partner').html($imgPartner);
+	$('#trump').html($imgTrump);
 	$('.bidSpec').show();
+	
+	$('#bidTarget').html(bidTarget + "/" + oppTarget).show();
+	
 }
 
 function initializeGame() {
 	isCut = false;
+	disableAlert = false;
 }
 
 function initializeRound() {
-	startingSuit = null;
+	startingSuit = undefined;
+	highestCard = undefined;
+	disableAlert = false;
 }
 
 function disableHandCards() {
@@ -348,12 +410,13 @@ function showCardTable(json){
 		for (var i = 0; i < cards.length; i++){ 
 			
 			var index = indices[i];
+			var j = i;
 			// TODO Remove following card play notification
 			//	addGameNotification(players[index].name + " played " + cards[i] + ".");
 			
-			// show played cards including my own played card
-			showPlayedCard(cards[i],indices[i]);
-			
+			// show played cards including my own played card, after couple of seconds
+			// let my hand cards load first
+			showCardsSeq(cards[i],indices[i]);
 		}	
 		// show the total points on the table if more than 0
 		// if(points > 0)	// for now show 0 as well
@@ -375,6 +438,13 @@ function showCardTable(json){
 		setPlayableCards();
 		highlightTurn();
 	}	
+}
+
+function showCardsSeq(card, index){
+	window.setTimeout(function(){
+		console.log("is this even getting called?");
+		showPlayedCard(card, index);
+	}, 1000);
 }
 
 function managePlayMessage(json) {
@@ -426,8 +496,7 @@ function managePlayMessage(json) {
 	
 	if (isRoundOver) {
 		declareRoundWinner(json);
-		startingSuit = undefined;
-		highestCard = undefined;
+		initializeRound();
 	}
 	
 	// disable cards in my hand
@@ -479,10 +548,14 @@ function declareRoundWinner(json){
 			// but only if there were any points in this round :)
 			if (roundPoints > 0){
 				roundWinner.drawPointCards(roundWinnerPointCards);
+				roundWinner.setPoints(roundWinnerPoints);
 				$('.pointCardsContainer').fadeIn({
 					duration : 500
 				});
-				roundWinner.setPoints(roundWinnerPoints);
+				$('.points').fadeIn({
+					duration : 500
+				});
+				
 			}
 			// finally clear out #cardMat and #tablePoints controls
 			$('#cardMat').html("");
@@ -494,6 +567,7 @@ function declareRoundWinner(json){
 	
 function showPlayedCard(card, playerIndex){
 
+	defineCardPos();
 	// create non clickable card object at player position
 
 	var id = "p" + playerIndex + "card" + card;
