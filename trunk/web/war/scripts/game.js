@@ -22,7 +22,7 @@ function manageBidMessage(json) {
 
 	var gameIndex = json["gameNo"];
 	if (gameIndex !== undefined && gameIndex > 0)
-		$('#gameId').html("Game " + gameIndex);
+		$('#gameId').html("Game " + (gameIndex + 1));
 
 	var currPlayer = players[playerIndex];
 

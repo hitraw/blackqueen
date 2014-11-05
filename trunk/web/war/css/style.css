@@ -422,7 +422,7 @@ th.number, td.number{
 
 .pointCardsContainer {
 	padding: 0;
-	margin-left: 32px;
+	margin-left: 30px;
 	z-index: 50;
 	height: 60px;
 	width: 160px;
@@ -604,7 +604,7 @@ td.right {
 
 img.pointCard {
 	height: 54px;
-	margin-left: -30px;
+	margin-left: -28px;
 	border: 1px solid;
 	border-color: black;
 	border-radius: 2px;
