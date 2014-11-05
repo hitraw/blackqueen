@@ -116,7 +116,6 @@ function showBidSpecSelector(bidWinner) {
 }
 
 function highlightTurn(){
-	console.log("playing sound");
 	playSound(turnSound);
 	document.title = turnTitle;
 	window.setTimeout(function(){
@@ -301,7 +300,7 @@ function showBidControl(highestBid) {
 	$('#bidControl1').html("What's your bid?<br/>");
 
 	var maxBid = (players.length === 4) ? 130 : 260;
-	var maxCount = (players.length === 4) ? 10 : 20;
+	var maxCount = (players.length === 4) ? 10 : 15;
 	// pass button
 	var bid = -1;
 	$img = $(
