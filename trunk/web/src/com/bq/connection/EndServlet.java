@@ -39,7 +39,7 @@ public class EndServlet extends HttpServlet {
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
 		
 		log.info(username + " ended the game.");
-		room.sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION, username + " ended the game."));
+		room.sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION, username + " started new game."));
 		room.endGame();
 		
 		resp.setContentType("text/plain");

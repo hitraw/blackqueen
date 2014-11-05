@@ -5,7 +5,7 @@ var players; // array of object players currently on screen
 var positions; // array of positions these players are on.
 var myIndex = undefined; // default undefined, 0 will create controls for spectators
 var title = 'Black Queen';
-var turnTitle = title + ' - Your Turn!';
+var turnTitle = 'BQ - Your Turn!';
 
 var LoyaltyType = {
 	NEUTRAL : "neutral",
@@ -347,7 +347,7 @@ function showEndBtn() {
 	// show me End button, (even if it's not my turn)
 	// TODO: check if we need this option
 	var $btnEnd = $(
-			"<input type='button' id='btnEnd' class='button red' value='End Game'/>")
+			"<input type='button' id='btnEnd' class='button red' value='New Game'/>")
 			.click(function() {
 				var startNew = (status === RoomStatus.GAME_OVER);
 				if(!startNew)
@@ -524,7 +524,9 @@ function Player(jsonObj) {
 				$('#pCard' + this.screenPosition).html(partner);
 			}
 			break;	
-		default: break;	
+		default:
+			$('#loyalty' + this.screenPosition).html("");
+			break;	
 		}
 	}
 
