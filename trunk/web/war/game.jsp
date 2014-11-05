@@ -51,16 +51,15 @@
 	<div id="room">
 		<table id="roomTable">
 			<tr>
-				<td width="900">
-					<!-- <div id="tablePoints"></div> -->
+				<td>
 					<div id="bidSpecContainer" align="center">
 						<div id="bidSpecSelector">
 
 							<table class="bidTable">
 								<tr>
-									<td width="20%"><div id="doneBtn"></div></td>
-									<td width="60%"><div id="bidTitle"></div></td>
-									<td width="20%"><div id="bidValue"></div></td>
+									<td width="15%"><div id="doneBtn"></div></td>
+									<td width="70%"><div id="bidTitle"></div></td>
+									<td width="15%"><!-- <div id="bidValue"> --></div></td>
 								</tr>
 							</table>
 
@@ -137,19 +136,31 @@
 					</div>
 
 					<div id="gameTableContainer" align="center">
-
-						<table id="gameTable">
-							<tr class="header">
-								<td width="30%"><div id="gameId" align="left"></div></td>
-								<td width="40%"><div id="status"></div></td>
-								<td width="30%"><div id="endBtn" align="right"></div></td>
-							</tr>
+						<div style="height: 22px">
+							<table class="gameTable">
+								<tr class="header">
+									<td width="30%"><div id="gameId" align="left"></div></td>
+									<td width="40%"><div id="status"></div></td>
+									<td width="30%"><div id="endBtn" align="right"></div></td>
+								</tr>
+							</table>
+						</div>
+						
+						<table class="gameTable">
+							
 							<!-- Top row -->
 							<tr class="tblRow">
 								<td width="30%">
 									<div class="bidSpec">
-										Partner &nbsp; | &nbsp;&nbsp; Trump
-										<div id="partnerTrump"></div>
+											<div style="width:90px; float: left; text-align:center; border-bottom: 1px solid;">Partner</div>
+											<div style="width:20px; float: left; text-align:center; border-bottom: 1px solid;">|</div>
+											<div style="width:90px; float: left; text-align:center; border-bottom: 1px solid;">Trump</div>
+										<!-- Partner &nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; Trump &nbsp;&nbsp;&nbsp; -->
+										<div id="partnerTrump">
+											<div id="partner" class="specContainer"></div>
+											<div style="width:20px; float: left; text-align:center;">|</div>
+											<div id="trump" class="specContainer"></div>
+										</div>
 									</div>
 
 								</td>
@@ -158,9 +169,10 @@
 										<div class="nameContainer">
 											<div id="loyalty4" class="loyalty"></div>
 											<div id="name4" class="name"></div>
-											<div id="points4" class="points"></div>
+											<div id="pCard4" class="pCard"></div>
 										</div>
 										<div id="pointCards4" class="pointCardsContainer"></div>
+										<div id="points4" class="points"></div>
 										<div id="bid4" class="bid"></div>
 									</div>
 								</td>
@@ -179,9 +191,10 @@
 										<div class="nameContainer">
 											<div id="loyalty3" class="loyalty"></div>
 											<div id="name3" class="name"></div>
-											<div id="points3" class="points"></div>
+											<div id="pCard3" class="pCard"></div>
 										</div>
 										<div id="pointCards3" class="pointCardsContainer"></div>
+										<div id="points3" class="points"></div>
 										<div id="bid3" class="bid"></div>
 									</div></td>
 								<td rowspan="3">
@@ -195,9 +208,10 @@
 										<div class="nameContainer">
 											<div id="loyalty5" class="loyalty"></div>
 											<div id="name5" class="name"></div>
-											<div id="points5" class="points"></div>
+											<div id="pCard5" class="pCard"></div>
 										</div>
 										<div id="pointCards5" class="pointCardsContainer"></div>
+										<div id="points5" class="points"></div>
 										<div id="bid5" class="bid"></div>
 									</div></td>
 							</tr>
@@ -206,18 +220,20 @@
 										<div class="nameContainer">
 											<div id="loyalty2" class="loyalty"></div>
 											<div id="name2" class="name"></div>
-											<div id="points2" class="points"></div>
+											<div id="pCard2" class="pCard"></div>
 										</div>
 										<div id="pointCards2" class="pointCardsContainer"></div>
+										<div id="points2" class="points"></div>
 										<div id="bid2" class="bid"></div>
 									</div></td>
 								<td><div id="pos6" class="pos inactive">
 										<div class="nameContainer">
 											<div id="loyalty6" class="loyalty"></div>
 											<div id="name6" class="name"></div>
-											<div id="points6" class="points"></div>
+											<div id="pCard6" class="pCard"></div>
 										</div>
 										<div id="pointCards6" class="pointCardsContainer"></div>
+										<div id="points6" class="points"></div>
 										<div id="bid6" class="bid"></div>
 									</div></td>
 							</tr>
@@ -226,18 +242,20 @@
 										<div class="nameContainer">
 											<div id="loyalty1" class="loyalty"></div>
 											<div id="name1" class="name"></div>
-											<div id="points1" class="points"></div>
+											<div id="pCard1" class="pCard"></div>
 										</div>
 										<div id="pointCards1" class="pointCardsContainer"></div>
+										<div id="points1" class="points"></div>
 										<div id="bid1" class="bid"></div>
 									</div></td>
 								<td><div id="pos7" class="pos inactive">
 										<div class="nameContainer">
 											<div id="loyalty7" class="loyalty"></div>
 											<div id="name7" class="name"></div>
-											<div id="points7" class="points"></div>
+											<div id="pCard7" class="pCard"></div>
 										</div>
 										<div id="pointCards7" class="pointCardsContainer"></div>
+										<div id="points7" class="points"></div>
 										<div id="bid7" class="bid"></div>
 									</div></td>
 							</tr>
@@ -249,9 +267,10 @@
 										<div class="nameContainer">
 											<div id="loyalty0" class="loyalty"></div>
 											<div id="name0" class="name"></div>
-											<div id="points0" class="points"></div>
+											<div id="pCard0" class="pCard"></div>
 										</div>
 										<div id="pointCards0" class="pointCardsContainer"></div>
+										<div id="points0" class="points"></div>
 										<div id="bid0" class="bid"></div>
 									</div></td>
 								<td>
@@ -260,7 +279,7 @@
 							</tr>
 
 							<!-- My cards -->
-							<tr height="110px">
+							<tr height="150px">
 								<td colspan="3">
 									<div id="myHand"></div>
 									<div id="playError"></div>
@@ -272,7 +291,7 @@
 					</div>
 				</td>
 
-				<td>
+				<td width="420px" align="right">
 					<div id="boardContainer" align="right">
 
 						<div id="scoreWindow" class="logWindow">

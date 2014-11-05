@@ -45,6 +45,7 @@ public class Player {
 		pointCards = new ArrayList<Card>();
 		loyalty = Loyalty.NEUTRAL;
 		bid = 0;
+		removeTurn();
 	}
 
 	public void addHandCard(Card card) {

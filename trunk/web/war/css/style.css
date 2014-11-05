@@ -1,6 +1,6 @@
 table, th, td {
-	/* border: 1px solid;
-	border-color: black; */  
+	border: 1px solid;
+	border-color: black;  
 	border-spacing: 0;
 	padding: 0;
 	margin: 0;
@@ -23,6 +23,17 @@ table, th, td {
 	background-size: cover;
 }
 
+.curtain:after {
+	content: "";
+	display: block;
+	width: 100%;
+	height: 100%;
+	min-width: 900px;
+	min-height: 560px;
+	background-color: rgba(0, 0, 0, 0.3);
+	z-index: 100;
+}
+
 #roomTable {
 	height: 100%;
 	width: 100%;
@@ -36,7 +47,7 @@ table, th, td {
 	min-width: 600px;
 }
 
-#gameTable {
+.gameTable {
 	width: 100%;
 	height: 100%;
 	border-spacing: 0px;
@@ -62,10 +73,9 @@ table, th, td {
 }
 
 #boardContainer {
-	width: 100%;
+	width: 420px;
 	height: 100%;
 	border-spacing: 0px;
-	min-width: 300px;
 }
 
 #scoreWindow {
@@ -73,8 +83,10 @@ table, th, td {
 	top: 0px;
 	border-spacing: 0;
 	margin-right: 5px;
-	height: 100%;
-	width: 100%;
+	height: 600px;
+	width: 400px;
+	/* height: 100%;
+	width: 100%; */
 	text-align: center;
 	background: url("/images/papyrus.png") no-repeat;
 	-webkit-background-size: cover;
@@ -111,25 +123,13 @@ table, th, td {
 	height: 19px;
 	font-family: 'Just Another Hand', cursive;
 	font-size: 35px;
-	text-align: left;
+	text-align: center;
 	margin-left: 10px;
-}
-
-.header {
-	background-color: black;
-	color: white;
-	width: 100%;
-	height: 19px;
-	font-family: Verdana, sans-serif;
-	font-size: small;
-	font-weight: bold;
-	text-align: left;
-	padding-top: 2px;
 }
 
 #scoreLog {
 	color: black;
-	width: 95%;
+	width: 93%;
 	height: 100%;
 	overflow-y: auto;
 	font-family: Verdana, sans-serif;
@@ -145,11 +145,6 @@ table.scorecard {
 }
 
 th.score{
-	/* white-space: -o-pre-wrap; 
-    word-wrap: break-word;
-    white-space: pre-wrap; 
-    white-space: -moz-pre-wrap; 
-    white-space: -pre-wrap; */
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -180,9 +175,26 @@ th.number, td.number{
 	padding-right: 5px;
 }
 
+
+.header {
+	background-color: black;
+	color: white;
+	width: 100%;
+	max-height: 22px;
+	font-family: Verdana, sans-serif;
+	font-size: small;
+	font-weight: bold;
+	text-align: left;
+	padding-top: 2px;
+}
+
+#chatHeader{
+	height: 19px;
+}
+
 #chatWindow {
 	position: absolute;
-	right: 20px;
+	right: 5px;
 	bottom: 5px;
 	border-spacing: 0;
 	height: 250px;
@@ -221,12 +233,13 @@ th.number, td.number{
 }
 
 .pos {
-	width: 100%;
-	height: 100%;
+	width: 240px;
+	height: 80px;
 	visibility: visible;
-	max-height: 80px;
-	max-width: 200px;
-	margin: auto;
+	/* position: absolute; 
+	margin-top: -10px;
+	margin-left: 10px; */
+ 	margin: auto;
 }
 
 .neutral {
@@ -251,7 +264,6 @@ th.number, td.number{
 
 #cardMat {
 	text-align: center;
-	height: 100%;
 }
 
 #tablePoints {
@@ -351,9 +363,6 @@ th.number, td.number{
 	position: absolute;
 	height: 20px;
 	width: 400px;
-	margin-top: -70px;
-	margin-left: 250px;
-	text-overflow: ellipsis;
 	z-index: 1000;
 }
 
@@ -372,7 +381,7 @@ th.number, td.number{
 .loyalty{
 	text-align: left;
 	padding-left: 5px;
-	width: 30px;
+	width: 40px;
 	height: 20px;
 	float: left;
 	font-family: 'Just Another Hand', cursive;
@@ -382,7 +391,7 @@ th.number, td.number{
 
 .name {
 	text-align: center;
-	width: 120px;
+	width: 140px;
 	padding-left: 5px;
 	padding-right: 5px;
 	float: left;
@@ -391,12 +400,15 @@ th.number, td.number{
     overflow: hidden;
 }
 
-.points {
+.pCard {
 	text-align: right;
 	padding-right: 5px;
 	float: right;
-	width: 30px;
+	width: 40px;
 	height: 20px;
+	font-family: 'Just Another Hand', cursive;
+	font-size: 20px;
+	font-weight: normal;
 }
 
 .nameContainer {
@@ -410,10 +422,24 @@ th.number, td.number{
 
 .pointCardsContainer {
 	padding: 0;
-	margin-left: 27px;
+	margin-left: 32px;
 	z-index: 50;
 	height: 60px;
-	
+	width: 160px;
+	float: left;
+}
+
+.points {
+	padding: 0;
+	z-index: 50;
+	height: 60px;
+	width: 46px;
+	float: left;
+	text-align: right;
+	margin-right: 2px;
+	font-family: 'Just Another Hand', cursive;
+	font-size: 55px;
+	font-weight: normal;
 }
 
 .tblPoints {
@@ -423,7 +449,7 @@ th.number, td.number{
 }
 
 .tblRow {
-	height: 83px;
+	height: 55px;
 }
 
 .bid {
@@ -502,8 +528,8 @@ td.right {
 	text-align: center;
 	background: rgba(0, 0, 0, 0.8);
 	color: white;
+	margin: 0px;
 	padding: 10px 10px;
-	margin: 10px;
 	border-radius: 10px;
 	border: solid 1px #ffffff;
 }
@@ -528,14 +554,13 @@ td.right {
 	text-align: center;
 	background: rgba(0, 0, 0, 1);
 	color: white;
-	padding: 10px 10px;
+	padding: 2px 2px;
 	border-radius: 10px;
 	border: solid 1px #ffffff;
 	position: absolute;
-	margin-top: 26px;
-	margin-left: 60px;
-	width: 760px;
-	height: 435px;
+	top: 18%;
+	width: 610px;
+	height: 350px;
 	z-index: 100;
 }
 
@@ -562,13 +587,13 @@ td.right {
 
 .bidTable {
 	width: 100%;
-	margin-top: 10px;
-	margin-bottom: 7px;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 .partnerCell {
-	width: 89%;
-	padding-right: 5px;
+	width: 88%;
+	padding-right: 0px;
 }
 
 .trumpCell {
@@ -579,13 +604,20 @@ td.right {
 
 img.pointCard {
 	height: 54px;
-	margin-left: -25px;
+	margin-left: -30px;
 	border: 1px solid;
 	border-color: black;
 	border-radius: 2px;
 	border: 1px solid;
 	float: left;
 	margin-top: 2px;
+}
+
+.specContainer{
+	height: 60px;
+	width: 90px;
+	float: left;
+	margin: auto;
 }
 
 img.spec {
@@ -596,7 +628,7 @@ img.spec {
 }
 
 img.cardSpec {
-	height: 80px;
+	height: 60px;
 	border: 1px solid;
 	border-color: black;
 	border-radius: 4px;
@@ -604,7 +636,7 @@ img.cardSpec {
 }
 
 img.suitSpec {
-	height: 80px;
+	height: 60px;
 	border: 1px solid;
 	border-color: black;
 	border-radius: 4px;
@@ -652,4 +684,5 @@ img.selected {
 	border-top-color: white;
 	font-size: 40px;
 	font-weight: normal;
+	padding-top: 5px;
 }

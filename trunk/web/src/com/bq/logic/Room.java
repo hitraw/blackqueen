@@ -165,7 +165,6 @@ public class Room {
 
 		// reset player turn to false for all
 		for (Player player : players) {
-			player.removeTurn();
 			player.reset();
 		}
 		dealTurnIndex = (dealTurnIndex + 1) % players.size();
@@ -490,6 +489,7 @@ public class Room {
 		// for bidding
 		private int turnIndex;
 		private int bidWinnerIndex; // for score
+		private boolean isBidWon;
 
 		// for bid and game play
 		private int bidTarget; // for score
@@ -513,7 +513,9 @@ public class Room {
 			for (Player p : players) {
 				p.reset();
 			}
+			players.get(turnIndex).setTurn();
 			isCut = false;
+			isBidWon = false;
 			isGameOver = false;
 			trumpSuit = null;
 			partnerCard = null;
@@ -674,7 +676,8 @@ public class Room {
 					// declare him as the winner of the bid.
 					nextPlayer.setLoyalty(Player.Loyalty.BIDDER);
 					oppTarget = maxTarget - bidTarget + 5;
-
+					isBidWon = true;
+					
 					// tell everyone this player has won the bid
 					sendMessageToAll(new Message(
 							Message.Type.GAME_NOTIFICATION,
@@ -700,6 +703,8 @@ public class Room {
 				json.put("currentIndex", currentIndex);
 				json.put("nextIndex", turnIndex);
 				json.put("gameNo", gameCount);
+				json.put("won", isBidWon);
+				json.put("oppTarget", oppTarget);
 				sendMessageToAll(new Message(Message.Type.BID, json.toString()));
 			} catch (JSONException e) {
 				log.severe("Error in building BID json" + e.getStackTrace());
@@ -763,7 +768,7 @@ public class Room {
 			if (bidScore >= bidTarget) {
 				// declare bidding team has won
 				sendMessageToAll(new Message(Message.Type.GAME_NOTIFICATION,
-						"Game over. Bidding team made " + bidScore + " points."));
+						"Game over. Bidding team achieved their target."));
 				isGameOver = true;
 				bidScore = bidTarget;
 				oppScore = 0;
@@ -773,8 +778,7 @@ public class Room {
 			else if (oppScore >= oppTarget) {
 				// declare opponents team has won
 				sendMessageToAll(new Message(Message.Type.GAME_NOTIFICATION,
-						"Game over. Opposition team made " + oppScore
-								+ " points."));
+						"Game over. Opposition team achieved their target."));
 				isGameOver = true;
 				oppScore = oppTarget;
 				bidScore = 0;
