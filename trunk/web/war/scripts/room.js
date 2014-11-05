@@ -222,7 +222,7 @@ function showScore(message) {
 							.replace(/D/g, "&diams;");
 			
 			scoreHTML += ("<tr>");
-			scoreHTML += ("<td class='score'>"+j+"</td>");
+			scoreHTML += ("<td class='score'>"+(j+1)+"</td>");
 			
 			for(var i in players){
 				
