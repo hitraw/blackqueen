@@ -179,9 +179,7 @@ public class Room {
 
 	public void readyToDeal() {
 		changeStatus(Status.READY_TO_DEAL);
-
 		players.get(dealTurnIndex).setTurn();
-
 	}
 
 	public void deal() {
@@ -193,6 +191,7 @@ public class Room {
 			// first step of the round: deal hand cards to all
 			currGame.dealHand();
 
+			// start bidding
 			currGame.startBidding();
 		} else { // log warning - status not ready
 			log.warning("We can't deal because room status is not READY_TO_DEAL");
@@ -327,7 +326,7 @@ public class Room {
 
 	public Player removePlayer(String playerName) {
 		Player p = getPlayer(playerName);
-		int index = players.indexOf(p);
+//		int index = players.indexOf(p);
 
 		if (p != null) { // only in following conditions can player be removed
 			if (Status.WAITING_FOR_PLAYERS.equals(status)
@@ -350,8 +349,13 @@ public class Room {
 						}
 						// if not & if it was turn of removed player to deal
 						else if (p.isTurn()) {
-							// pass the turn to next player
-							players.get(index).setTurn();
+							// pass turn to next player
+							readyToDeal();
+							
+							// call ready to deal to allocate turn to next
+							// don't use /*players.get(index).setTurn();*/ 
+							// as it sometimes leads to a multiple turn issue
+							
 						}
 					}
 					// if player left on his own, won't see this message
@@ -597,6 +601,9 @@ public class Room {
 			changeStatus(Status.BIDDING);
 
 			// identify index of current player and next player to start bidding
+			// turnIndex is initialized with value of dealTurnIndex in Game()
+			// and then it's passed around from player to player
+			// dealTurnIndex is maintained separately to determine who deals next game		
 			int currIndex = (turnIndex);
 			turnIndex = (turnIndex + 1) % players.size();
 
