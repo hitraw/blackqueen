@@ -48,6 +48,7 @@ function list(scoreboards) {
 			});
 			$('#sbList').append("<br/>");
 			$('#sbList').append($lnkScoreboard);
+			$('#sbList').append("<br/>");
 		}
 		$('#sbListContainer').show();
 	}
@@ -72,12 +73,12 @@ function showScore(scoreboard) {
 		scoreHTML += ("<td class='score' width='5%'>#</td>");
 		
 		for(var i in players){
-			scoreHTML += ("<td class='score' width='"+width+"%'>"+players[i]+"</td>");
+			scoreHTML += ("<td class='score number' width='"+width+"%'>"+players[i]+"</td>");
 			totals.push(0);
 		}
 		
-		scoreHTML += ("<td class='score' width='15%'>Bid / Opp</td>");
-		scoreHTML += ("<td class='score' width='20%'>Partner / Trump</td>");
+		scoreHTML += ("<td class='score' width='13%'>Bid / Opp</td>");
+		scoreHTML += ("<td class='score rightItem' width='22%'>Partner / Trump</td>");
 		
 		scoreHTML += ("</tr>");
 		
@@ -111,7 +112,7 @@ function showScore(scoreboard) {
 			}	
 
 			scoreHTML += ("<td class='score'>"+bidTarget+"</td>");
-			scoreHTML += ("<td class='score'>"+bidSpec+"</td>");
+			scoreHTML += ("<td class='score rightItem'>"+bidSpec+"</td>");
 			
 			scoreHTML += ("</tr>");
 		}
@@ -123,7 +124,7 @@ function showScore(scoreboard) {
 		for(var i in players)
 			scoreHTML += ("<th class='score number'>"+totals[i]+"</th>");
 		
-		scoreHTML += ("<th colspan='2' class='score'>TOTAL</th>");
+		scoreHTML += ("<th colspan='2' class='score rightItem'>TOTAL</th>");
 		
 		scoreHTML += ("</tr>");
 		
