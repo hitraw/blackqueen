@@ -208,7 +208,7 @@ function showScore(message) {
 			totals.push(0);
 		}
 		scoreHTML += ("<td class='score' width='15%'>Bid / Opp</td>");
-		scoreHTML += ("<td class='score' width='20%'>Partner Trump</td>");
+		scoreHTML += ("<td class='score rightItem' width='20%'>Partner Trump</td>");
 		
 		scoreHTML += ("</tr>");
 		
@@ -242,7 +242,7 @@ function showScore(message) {
 			}	
 
 			scoreHTML += ("<td class='score'>"+bidTarget+"</td>");
-			scoreHTML += ("<td class='score'>"+bidSpec+"</td>");
+			scoreHTML += ("<td class='score rightItem'>"+bidSpec+"</td>");
 			
 			scoreHTML += ("</tr>");
 		}
@@ -254,7 +254,7 @@ function showScore(message) {
 		for(var i in players)
 			scoreHTML += ("<th class='score number'>"+totals[i]+"</th>");
 		
-		scoreHTML += ("<th colspan='2' class='score'>TOTAL</th>");
+		scoreHTML += ("<th colspan='2' class='score rightItem'>TOTAL</th>");
 		
 		scoreHTML += ("</tr>");
 		

@@ -175,6 +175,9 @@ th.number, td.number{
 	padding-right: 5px;
 }
 
+td.rightItem, th.rightItem{
+	border-right: 0;
+}
 
 .header {
 	background-color: black;
