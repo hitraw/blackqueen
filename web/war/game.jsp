@@ -5,14 +5,17 @@
 <head>
 <meta charset="utf-8">
 <title>Black Queen</title>
+<link rel="image_src" href="http://blackqueen.in/images/bq.png" />
+<meta property="og:title" content="Black Queen" />
+<meta property="og:image" content="http://blackqueen.in/images/bq.png" />
 <link rel="stylesheet" type='text/css'
-	href="/css/jquery-ui.css">
+	href="/css/jquery-ui.css" />
 <link rel='stylesheet' type='text/css'
-	href='http://fonts.googleapis.com/css?family=Trochut:700'>
+	href='http://fonts.googleapis.com/css?family=Trochut:700' />
 <link rel='stylesheet' type='text/css'
-	href='http://fonts.googleapis.com/css?family=Just+Another+Hand'>
-<link rel="stylesheet" type='text/css' href="css/home.css">
-<link rel="stylesheet" type='text/css' href="css/style.css">
+	href='http://fonts.googleapis.com/css?family=Just+Another+Hand' />
+<link rel="stylesheet" type='text/css' href="css/home.css" />
+<link rel="stylesheet" type='text/css' href="css/style.css" />
 
 <script src="/scripts/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="/scripts/jquery-ui.js" type="text/javascript"></script>

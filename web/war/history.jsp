@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Black Queen</title>
+<title>BQ - Score History</title>
 
 <script src="/scripts/jquery-2.1.1.min.js" type="text/javascript"></script>
 <link rel='stylesheet' type='text/css'
