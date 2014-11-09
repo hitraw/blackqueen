@@ -81,6 +81,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/end</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>ExitServlet</servlet-name>
+		<servlet-class>com.bq.connection.ExitServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ExitServlet</servlet-name>
+		<url-pattern>/exit</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>ScoreboardServlet</servlet-name>
 		<servlet-class>com.bq.connection.ScoreboardServlet</servlet-class>
 	</servlet>

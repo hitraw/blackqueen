@@ -25,6 +25,8 @@ public class Player {
 
 	// Player attributes for current game session
 	private String name;
+	private boolean connected;
+	private long dcTime;	// time of disconnection in long format
 
 	// Player attributes for current round
 	private List<Card> handCards;
@@ -37,6 +39,7 @@ public class Player {
 	public Player(String name) {
 		super();
 		this.name = name;
+		this.connected = false;
 		reset();
 	}
 
@@ -75,6 +78,24 @@ public class Player {
 		this.name = name;
 	}
 	
+	public boolean isConnected() {
+		return connected;
+	}
+
+	public void connected() {
+		this.connected = true;
+		this.dcTime = 0;
+	}
+	
+	public void disconnected() {
+		this.connected = false;
+		this.dcTime = System.currentTimeMillis();
+	}
+	
+	public long getDcTime(){
+		return dcTime;
+	}
+
 	public int getScore() {
 		return score;
 	}
@@ -202,6 +223,7 @@ public class Player {
 	public JSONObject getJSON() throws JSONException {
 		JSONObject playerJSON = new JSONObject();
 		playerJSON.put("name", name);
+		playerJSON.put("connected", connected);
 		playerJSON.put("turn", turn);
 		playerJSON.put("loyalty", loyalty.toString().toLowerCase());
 		playerJSON.put("bid", bid);

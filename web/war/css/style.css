@@ -23,6 +23,37 @@ table, th, td {
 	background-size: cover;
 }
 
+/* Also use prefixes with @keyframes and animation to support current browsers */
+@-webkit-keyframes blinker {  
+  0% { opacity: 1.0; }
+  50% { opacity: 0.1; }
+  100% { opacity: 1.0; }
+}
+
+.blinker {
+  -webkit-animation-name: blinker;  
+  -webkit-animation-iteration-count: infinite;  
+  -webkit-animation-timing-function: cubic-bezier(.5, 0, 1, 1);
+  -webkit-animation-duration: 1.7s; 
+}
+
+.disconnected {
+	color: red;
+}
+
+/* .disconnected: after{
+	content: "disconnected";
+	display: block;
+	height: 80px;
+	margin-top: -50px;
+	background-color: rgba(255, 0, 0, 0.3);
+	z-index: 1000;
+}
+ */	
+.connected {
+	
+}
+
 .curtain:after {
 	content: "";
 	display: block;

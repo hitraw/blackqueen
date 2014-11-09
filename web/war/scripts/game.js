@@ -110,6 +110,7 @@ function showBidSpecSelector(bidWinner) {
 	console.log(selPosition);
 	
 	$('#bidSpecSelector').offset(selPosition);
+	$('#bidSpecSelector').load("bidSpecSelector.html");
 
 	// show selector
 	$('#bidSpecSelector').show();
@@ -236,7 +237,6 @@ function manageControls() {
 		break;
 	case RoomStatus.GAME_OVER:
 		showEndBtn();
-		$('#btnEnd').val("New Game");
 		showFinalScore();
 		break;
 	default:
@@ -347,7 +347,7 @@ function showEndBtn() {
 	// show me End button, (even if it's not my turn)
 	// TODO: check if we need this option
 	var $btnEnd = $(
-			"<input type='button' id='btnEnd' class='button red' value='New Game'/>")
+			"<input type='button' id='btnEnd' class='button red' value='Start New Game'/>")
 			.click(function() {
 				var startNew = (status === RoomStatus.GAME_OVER);
 				if(!startNew)
@@ -371,9 +371,9 @@ function replacePlayer(replacement){
 	var newName = replacement["name"];
 
 	if(type === "player")
-		addRoomNotification(newName + " joined, replacing " + oldName);
+		addRoomNotification(newName + " joined, occupying " + oldName);
 	else
-		addRoomNotification(oldName + " left, replaced by " + newName);
+		addRoomNotification(oldName + " left, leaving vacant " + newName);
 
 	// if it's not me, update the name on screen
 	if(newName !== sessionStorage.username){
@@ -383,6 +383,22 @@ function replacePlayer(replacement){
 	// what if it's me? well entire screen will be drawn afresh
 	// no need to update it then.
 	
+}
+
+function showDisconnection(playerName){
+	addRoomNotification(playerName + " disconnected.");
+	for(var i in players){
+		if(players[i].name === playerName)
+			players[i].showDisconnected();
+	}
+}
+
+function showConnection(playerName){
+	addRoomNotification(playerName + " connected.");
+	for(var i in players){
+		if(players[i].name === playerName)
+			players[i].showConnected();
+	}
 }
 
 function updateLoyalties(loyalties){
@@ -399,6 +415,7 @@ function updateLoyalties(loyalties){
 function Player(jsonObj) {
 	// console.log("119:jsonObj:"+jsonObj);
 	this.name = jsonObj["name"];
+	this.connected = jsonObj["connected"];
 	this.loyalty = jsonObj["loyalty"];
 	this.turn = jsonObj["turn"];
 	this.bid = jsonObj["bid"];
@@ -406,18 +423,23 @@ function Player(jsonObj) {
 	this.points = jsonObj["points"];
 	this.pointCards = jsonObj["pointCards"]; // card array
 	this.score = jsonObj["score"];
-	this.connected;
 
 	this.setPosition = function(screenPos) {
 		this.screenPosition = screenPos;
 	}
 
-	this.connected = function() {
-		connected = true;
+	this.showConnected = function() {
+		this.connected = true;
+		$('#name' + this.screenPosition).removeClass('blinker');
+//		$('#pos' + this.screenPosition).removeClass('disconnected');
+//		$('#pos' + this.screenPosition).addClass('connected');
 	}
 
-	this.disconnected = function() {
-		connected = false;
+	this.showDisconnected = function() {
+		this.connected = false;
+		$('#name' + this.screenPosition).addClass('blinker');
+//		$('#pos' + this.screenPosition).removeClass('connected');
+//		$('#pos' + this.screenPosition).addClass('disconnected');
 	}
 
 	this.removeTurn = function() {
@@ -469,6 +491,12 @@ function Player(jsonObj) {
 		// show name in center
 		$('#name' + this.screenPosition).html(this.name);
 		
+		// show connectivity
+		if(this.connected)
+			this.showConnected();
+		else
+			this.showDisconnected();
+		
 		// show loyalty flag on the left
 		this.showLoyalty();
 		
@@ -493,6 +521,11 @@ function Player(jsonObj) {
 		if(this.points > 0)
 			$('#points' + this.screenPosition).html(this.points);
 	}
+	
+	this.showLoyalty = function(){
+		$('#pos' + this.screenPosition).removeClass('inactive neutral').addClass(
+				this.loyalty).show();
+	}	
 	
 	this.showLoyalty = function(){
 		$('#pos' + this.screenPosition).removeClass('inactive neutral').addClass(
