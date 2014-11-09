@@ -263,6 +263,7 @@ function showScore(message) {
 		
 	} else {
 		$('#scoreLog').html("");
+		$('#gameId').html("Game 1");
 	}
 	// scroll to bottom of score window
 	var scoreLog = document.getElementById('scoreLog');
