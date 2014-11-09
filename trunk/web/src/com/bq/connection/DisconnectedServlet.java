@@ -48,14 +48,15 @@ public class DisconnectedServlet extends HttpServlet {
 		String playerName = splits[1];
 
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
+		room.disconnected(playerName);
 		
 		// first check & remove from spectator list
-		if(room.removeSpectator(playerName) != null){
-			log.info(playerName + "(S) left.");
-		} else // if not found in there, remove from player list
-			if(room.removePlayer(playerName) != null){
-			log.info(playerName + " left.");
-		}	
+//		if(room.removeSpectator(playerName) != null){
+//			log.info(playerName + "(S) left.");
+//		} else // if not found in there, remove from player list
+//			if(room.removePlayer(playerName) != null){
+//			log.info(playerName + " left.");
+//		}	
 
 	}
 

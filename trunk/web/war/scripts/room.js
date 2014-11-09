@@ -3,6 +3,8 @@ var socket;
 var status;
 var connected = false;
 var quit = false;
+var spectator = false;
+var refreshing = false;
 
 //sound variables;
 var turnSound;
@@ -10,6 +12,8 @@ var cutSound;
 var partnerSound;
 
 var MessageType = {
+	CONNECTION : "connection",
+	DISCONNECTION : "disconnection",
 	ROOM_NOTIFICATION : "room_notification",
 	GAME_NOTIFICATION : "game_notification",
 	CHAT : "chat",
@@ -272,6 +276,14 @@ function showScore(message) {
 
 function onOpened() {
 	sessionOn();
+	refreshing = false;
+	// set timer to disconnect and connect again after 115 mins
+	// because token expires after 120 mins
+	window.setTimeout(function(){
+		refreshing = true;
+		socket.close();
+		openNewChannel(spectator);
+	}, 115 * 60 * 1000);
 }
 
 function onMessage(result) {
@@ -283,9 +295,15 @@ function onMessage(result) {
 	case MessageType.CHAT:
 		addChatMessage(message);
 		break;
+	case MessageType.CONNECTION:
+		showConnection(message);
+		break;
+	case MessageType.DISCONNECTION:
+		showDisconnection(message);
+		break;	
 	case MessageType.ROOM_NOTIFICATION:
 		addRoomNotification(message);
-		break;
+		break;	
 	case MessageType.GAME_NOTIFICATION:
 		addGameNotification(message);
 		break;	
@@ -350,11 +368,14 @@ function onMessage(result) {
 
 function onClose() {
 	console.log("Close called at "  + new Date().toLocaleString());
-//	sessionOff();
-	if(!quit)
-		openNewChannel();
-	else
-		sessionOff();
+	window.location = "/";
+//	if(!refreshing)
+//		sessionOff();
+	
+//	if(!quit)
+//		openNewChannel();
+//	else
+//		sessionOff();
 }
 
 function onError(error) {
@@ -387,9 +408,12 @@ function openNewChannel(isSpectator) {
 			if(confirm("It seems game has already started or " +
 					"there isn't room for more players. Would you like " +
 					"to join as a spectator?")){
-				sessionStorage.spectator = true;
-			// if user clicks on Yes, open channel as spectator
+//				$('#cbSpectator').prop('checked', true);
+				// if user clicks on Yes, open channel as spectator
 				openNewChannel(true);
+				// do we need to maintain this flag??
+				spectator = true;
+				
 			}	
 			break;
 		
@@ -415,7 +439,9 @@ function enter(name) {
 	if (name.length >= 3 && name !== 'Name') {
 		sessionStorage.roomName = $('#slRooms').val();
 		sessionStorage.username = name;
-		openNewChannel(sessionStorage.spectator);
+//		openNewChannel(sessionStorage.spectator);
+//		console.log("$('#cbSpectator').prop('checked')="+$('#cbSpectator').prop("checked") );
+		openNewChannel(spectator);
 	} else {
 		showError("Please enter valid name! (3 to 12 characters long)");
 	}
@@ -424,8 +450,9 @@ function enter(name) {
 $(document).ready(function() {
 		
 	clear();
-
-	if (sessionStorage.username !== undefined){
+//	console.log("sessionStorage.username="+sessionStorage.username);
+	if (sessionStorage.username !== undefined && sessionStorage.username !== "undefined"){
+//		console.log(sessionStorage.username.length);
 		$('#txtName').val(sessionStorage.username);
 		enter($('#txtName').val());
 	} else {
@@ -475,17 +502,39 @@ $(document).ready(function() {
 	});
 
 	$(window).on('beforeunload', function(e) {
-		if (connected){
-			quit = true;
-			return '';
-		}	
+		if (connected && !quit)
+			return "If you're leaving for good, please hit the Leave button!"
+			 + " \nIf you're just refreshing, please continue.";
+	});
+	
+	$('#btnQuit').click(function(){
+		quit = true;
+		if(status === RoomStatus.BIDDING)
+			quit = confirm("Didn't like your cards, so chickening out!\nAre you sure you want to quit the game?");
+		else if(status === RoomStatus.PLAYING)
+			quit = confirm("You are in the middle of a game.\nAre you sure you want to quit the game?");
+		else 
+			quit = confirm("Are you sure you want to quit the game?");
+		
+		if(quit){
+			// make sure this player is removed from the game
+			$.post('/exit', {
+				u : sessionStorage.username,
+				r : sessionStorage.roomName,
+			});
+			
+			socket.close();
+//			window.close();
+			sessionStorage.username = undefined;
+			window.location = "/";
+		}
 	});
 	
 	$('#chatHeader').click(function(){
 		$('.chat').toggle();
 	});
 	
-	$('#chatWindow').draggable();
+//	$('#chatWindow').draggable();
 	
 	$('#historyIcon').click(function(){
 		window.open('/history', '_blank');

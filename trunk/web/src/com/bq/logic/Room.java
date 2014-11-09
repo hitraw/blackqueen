@@ -101,8 +101,8 @@ public class Room {
 		for (Player p : players)
 			channelService.sendMessage(new ChannelMessage(getChannelKey(p
 					.getName()), message.toString()));
-		
-		// also send message to all spectators, both chat and game messages 
+
+		// also send message to all spectators, both chat and game messages
 		// for spectators to view the game being played.
 		for (Player p : spectators)
 			channelService.sendMessage(new ChannelMessage(getChannelKey(p
@@ -205,9 +205,9 @@ public class Room {
 		}
 		return null;
 	}
-	
-	public Player getSpectator(String name){
-		for (Player p: spectators){
+
+	public Player getSpectator(String name) {
+		for (Player p : spectators) {
 			if (name.equals(p.getName()))
 				return p;
 		}
@@ -220,6 +220,49 @@ public class Room {
 				.equals(Status.READY_TO_DEAL))));
 	}
 
+	public boolean connected(String playerName) {
+		boolean connected = false;
+		Player p = getPlayer(playerName);
+		if (p == null)
+			p = getSpectator(playerName);
+
+		if (p != null && !p.isConnected()) {
+			p.connected();
+			connected = true;
+
+			// catchup player/spectator to current state of the game
+			catchupPlayer(p);
+
+			// inform everyone of this player connecting
+			sendMessageToAll(new Message(Message.Type.CONNECTION, playerName));
+		} else {
+			connected = false;
+			log.severe("Error in connecting player: isConnected=" + (p != null ? String
+					.valueOf(p.isConnected()) : null));
+		}
+		return connected;
+	}
+
+	public boolean disconnected(String playerName) {
+		boolean disconnected = false;
+		Player p = getPlayer(playerName);
+		if (p != null && p.isConnected()) {
+			p.disconnected();
+			disconnected = true;
+			sendMessageToAll(new Message(Message.Type.DISCONNECTION, playerName));
+		} // if spectator disconnects, just remove him/her. 
+		// no need to maintain connect/disconnect for spectator 
+		else if (getSpectator(playerName)!=null){
+			removeSpectator(playerName);
+		} // if neither, we didn't find whom to disconnect. 
+		else {
+			disconnected = false;
+			log.severe("Error in disconnecting player: isConnected=" + (p != null ? String
+					.valueOf(p.isConnected()) : null));
+		}
+		return disconnected;	
+	}
+
 	public Player addPlayer(String playerName) {
 		Player p = null;
 		// robot players need to be replaced first
@@ -230,18 +273,19 @@ public class Room {
 				String robotName = p.getName();
 				log.info(playerName + " replaced " + robotName);
 				p.setName(playerName);
-				
+
 				// catchup player to current state of the game
-				catchupPlayer(p);
-				
+				// following two will be done on connection now
+				// catchupPlayer(p);
+
 				// send cards to this player
-				sendMessage(p,
-						new Message(Message.Type.CARDS, p.getHandCardsJson()));
+				// sendMessage(p,
+				// new Message(Message.Type.CARDS, p.getHandCardsJson()));
 
 				// sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
 				// playerName + " joined, replacing " + robotName + "."));
-				
-				// the above is now done by replacement message below, 
+
+				// the above is now done by replacement message below,
 				// to improve performance, by sending only incremental info
 				sendReplacementMessage("player", p, robotName);
 			}
@@ -262,9 +306,10 @@ public class Room {
 			}
 			sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayersJSON()));
 		}
-		if (scoreboard.hasData())
-			sendMessage(p,
-					new Message(Message.Type.SCORE, scoreboard.getJSON()));
+		// following taken care of by catchupPlayer()
+		// if (scoreboard.hasData())
+		// sendMessage(p,
+		// new Message(Message.Type.SCORE, scoreboard.getJSON()));
 
 		return p;
 	}
@@ -280,27 +325,30 @@ public class Room {
 		// Imp: spec message has to be sent before players, but
 		// round info only after players, bcoz of processing order on JS
 		// ***
-		if (Status.PLAYING.equals(status)
-				|| Status.GAME_OVER.equals(status)) {
-			sendMessage(
-					p,
-					new Message(Message.Type.SPEC, currGame
-							.getBidSpec()));
+		if (Status.PLAYING.equals(status) || Status.GAME_OVER.equals(status)) {
+			sendMessage(p,
+					new Message(Message.Type.SPEC, currGame.getBidSpec()));
 		}
 
 		// send other players info to this player
-		sendMessage(p, new Message(Message.Type.PLAYERS,
-				getPlayersJSON()));
+		sendMessage(p, new Message(Message.Type.PLAYERS, getPlayersJSON()));
 
 		// and if game has already begun, send the round
 		// info e.g. cards on the table, points, etc.
 		// *** Imp: round message has to be sent after
-		// players, but before cards ***
+		// players, but before cards, ***
+		// TODO: WHY??? shouldn't cards be sent first???
 		if (Status.PLAYING.equals(status)) {
-			sendMessage(p, new Message(Message.Type.ROUND,
-					currGame.currRound.getRoundInfo()));
+			sendMessage(
+					p,
+					new Message(Message.Type.ROUND, currGame.currRound
+							.getRoundInfo()));
 		}
-		
+
+		if (!p.getHandCards().isEmpty())
+			sendMessage(p,
+					new Message(Message.Type.CARDS, p.getHandCardsJson()));
+
 		if (scoreboard.hasData())
 			sendMessage(p,
 					new Message(Message.Type.SCORE, scoreboard.getJSON()));
@@ -326,7 +374,7 @@ public class Room {
 
 	public Player removePlayer(String playerName) {
 		Player p = getPlayer(playerName);
-//		int index = players.indexOf(p);
+		// int index = players.indexOf(p);
 
 		if (p != null) { // only in following conditions can player be removed
 			if (Status.WAITING_FOR_PLAYERS.equals(status)
@@ -351,11 +399,11 @@ public class Room {
 						else if (p.isTurn()) {
 							// pass turn to next player
 							readyToDeal();
-							
+
 							// call ready to deal to allocate turn to next
-							// don't use /*players.get(index).setTurn();*/ 
+							// don't use /*players.get(index).setTurn();*/
 							// as it sometimes leads to a multiple turn issue
-							
+
 						}
 					}
 					// if player left on his own, won't see this message
@@ -363,16 +411,18 @@ public class Room {
 					// means admin kicked the player out.
 					sendMessage(p, new Message(Message.Type.KICK,
 							"You have been kicked out by the Admin."));
-					sendMessageToAll(new Message(Message.Type.PLAYERS, 
+					sendMessageToAll(new Message(Message.Type.PLAYERS,
 							getPlayersJSON()));
 				}
 			} else { // else (when game in progress) player is replaced by robot
-				String robotName = "Robot " + (robots.size() + 1);
+				// let's label it empty seat though, to eliminate confusion
+				String robotName = "[seat " + (robots.size() + 1) + "]";
 				p.setName(robotName);
+				p.disconnected();
 				robots.add(p);
 				sendReplacementMessage("robot", p, playerName);
-//				sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
-//						playerName + " left, replaced by " + robotName + "."));
+				// sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
+				// playerName + " left, replaced by " + robotName + "."));
 				// if player left on his own, won't see this message
 				// will see this only if window is still open, which
 				// means admin kicked the player out.
@@ -603,7 +653,8 @@ public class Room {
 			// identify index of current player and next player to start bidding
 			// turnIndex is initialized with value of dealTurnIndex in Game()
 			// and then it's passed around from player to player
-			// dealTurnIndex is maintained separately to determine who deals next game		
+			// dealTurnIndex is maintained separately to determine who deals
+			// next game
 			int currIndex = (turnIndex);
 			turnIndex = (turnIndex + 1) % players.size();
 
@@ -684,7 +735,7 @@ public class Room {
 					nextPlayer.setLoyalty(Player.Loyalty.BIDDER);
 					oppTarget = maxTarget - bidTarget + 5;
 					isBidWon = true;
-					
+
 					// tell everyone this player has won the bid
 					sendMessageToAll(new Message(
 							Message.Type.GAME_NOTIFICATION,
@@ -1058,19 +1109,22 @@ public class Room {
 
 	public void resetScoreboard() {
 		scoreboard = new Scoreboard();
+		gameCount = 0;
 		sendMessageToAll(new Message(Message.Type.SCORE, scoreboard.getJSON()));
 	}
 
 	public void addSpectator(String username) {
 		spectators.add(new Player(username));
+		sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
+				username + " joined, as spectator."));
 	}
-	
-	public Player removeSpectator(String username){
-		for(Player s: spectators){
-			if(s.getName().equals(username)){
-				if(spectators.remove(s)){
-					sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION, 
-							username + " left."));
+
+	public Player removeSpectator(String username) {
+		for (Player s : spectators) {
+			if (s.getName().equals(username)) {
+				if (spectators.remove(s)) {
+					sendMessageToAll(new Message(
+							Message.Type.ROOM_NOTIFICATION, username + " left."));
 					return s;
 				}
 			}
