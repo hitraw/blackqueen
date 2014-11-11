@@ -151,8 +151,7 @@ public class Room {
 	}
 
 	/**
-	 * Method to end the current game in progress abruptly TODO add code to
-	 * handle logical completion of game
+	 * Method to end the current game in progress abruptly 
 	 */
 	public void endGame() {
 		// remove robots from player list
@@ -226,7 +225,7 @@ public class Room {
 		if (p == null)
 			p = getSpectator(playerName);
 
-		if (p != null && !p.isConnected()) {
+		if (p != null) {
 			p.connected();
 			connected = true;
 
@@ -352,6 +351,10 @@ public class Room {
 		if (scoreboard.hasData())
 			sendMessage(p,
 					new Message(Message.Type.SCORE, scoreboard.getJSON()));
+		
+		if (status.equals(Status.GAME_OVER))
+			sendMessage(p, new Message(Message.Type.SNAPSHOT,
+					getCardSnapshotsJSON()));
 	}
 
 	private void sendReplacementMessage(String type, Player p, String previous) {
@@ -433,6 +436,22 @@ public class Room {
 		return p;
 	}
 
+	public String getCardSnapshotsJSON(){
+		String json = null;
+		if (players != null) {
+			JSONArray snapshotsArray = new JSONArray();
+			try {
+				for (Player p : players)
+					snapshotsArray.put(p.getCardSnapshotJSON());
+				json = snapshotsArray.toString();
+			} catch (JSONException e) {
+				log.severe("Error in building player JSON array:"
+						+ e.getStackTrace());
+			}
+		}
+		return json;
+	}
+	
 	public String getPlayersJSON() {
 		String json = null;
 		if (players != null) {
@@ -491,46 +510,33 @@ public class Room {
 			int playerIndex = Integer.parseInt(strPlayerIndex);
 			success = currGame.play(playerIndex, card);
 
-			if (success) {
-
-				if (currGame.isGameOver) {
-
-					currGame.assignPoints();
-
-					Room.this.changeStatus(Status.GAME_OVER);
-					sendMessageToAll(new Message(Message.Type.PLAYERS,
-							getPlayersJSON()));
-
-					currGame.addToScoreboard();
-					gameCount++;
-
-					sendMessageToAll(new Message(Message.Type.SCORE,
-							scoreboard.getJSON()));
-					// endGame();
-				}
-
-				/*
-				 * if (currRound.isRoundOver) { // pause for few seconds then
-				 * start new round, update // player info: points, point cards,
-				 * etc. // try { // Thread.sleep(4000); // } catch
-				 * (InterruptedException e) { //
-				 * log.severe("Error in pausing the game"); //
-				 * e.printStackTrace(); // }
-				 * 
-				 * players.get(currRound.roundWinnerIndex).setTurn(); currRound
-				 * = new Round(currRound.roundWinnerIndex);
-				 * 
-				 * sendMessageToAll(new Message(Message.Type.PLAYERS,
-				 * getPlayers())); sendMessageToAll(new
-				 * Message(Message.Type.ROUND, currRound.getRoundInfo()));
-				 */
-			}
+			if (success) 
+				if (currGame.isGameOver) 
+					declareGameOver();
 
 		} catch (Exception e) {
 			log.severe("Error in playing card");
 			e.printStackTrace();
 		}
 		return success;
+	}
+
+	private void declareGameOver() {
+		currGame.assignPoints();
+
+		Room.this.changeStatus(Status.GAME_OVER);
+		sendMessageToAll(new Message(Message.Type.PLAYERS,
+				getPlayersJSON()));
+
+		currGame.addToScoreboard();
+		gameCount++;
+
+		sendMessageToAll(new Message(Message.Type.SCORE,
+				scoreboard.getJSON()));
+		
+		sendMessageToAll(new Message(Message.Type.SNAPSHOT,
+				getCardSnapshotsJSON()));
+		// endGame();
 	}
 
 	class Game {
@@ -588,9 +594,11 @@ public class Room {
 			boolean success = currRound.play(playerIndex, card);
 
 			if (success) {
+				
+				calculatePoints();
+				
 				// if round has been won
 				if (currRound.isRoundOver) {
-					calculatePoints();
 
 					players.get(currRound.roundWinnerIndex).setTurn();
 					currRound = new Round(currRound.roundWinnerIndex);
@@ -938,11 +946,9 @@ public class Room {
 			}
 
 			private boolean play(int playerIndex, String cardCode) {
-				Player p = players.get(playerIndex);
+				Player player = players.get(playerIndex);
 
-				int cardIndex = p.getCardIndex(cardCode);
-				log.info("cardIndex=" + cardIndex);
-				Card c = p.getHandCards().get(cardIndex);
+				Card card = player.getHandCard(cardCode);
 
 				/*
 				 * we are retrieving index first and then card from that index,
@@ -952,23 +958,25 @@ public class Room {
 				 * of first and playing that one
 				 */
 
-				if (validatePlay(p, c)) {
-					table.add(p.getHandCards().remove(cardIndex));
+				if (validatePlay(player, card) && player.play(card)) {
+					
+					// add card to table
+					table.add(card);
 
 					// for order, who played which card, not sure if we need
 					indices.add(playerIndex);
-					tablePoints += c.getPoints();
+					tablePoints += card.getPoints();
 
 					if (startingSuit == null)
-						startingSuit = c.getSuit();
+						startingSuit = card.getSuit();
 
-					if (isHigher(c, highestCard)) {
-						highestCard = c;
+					if (isHigher(card, highestCard)) {
+						highestCard = card;
 						roundWinnerIndex = playerIndex;
 					}
 
-					if (c.getCode().equals(partnerCard)) {
-						p.setLoyalty(Loyalty.PARTNER);
+					if (card.getCode().equals(partnerCard)) {
+						player.setLoyalty(Loyalty.PARTNER);
 						JSONArray loyalties = new JSONArray();
 						JSONObject updatedLoyalty = new JSONObject();
 						try {
@@ -978,7 +986,7 @@ public class Room {
 							loyalties.put(updatedLoyalty);
 
 							sendMessageToAll(new Message(
-									Message.Type.GAME_NOTIFICATION, p.getName()
+									Message.Type.GAME_NOTIFICATION, player.getName()
 											+ " is revealed as Partner."));
 							partnerCount++;
 
@@ -1007,9 +1015,11 @@ public class Room {
 						// (partial/complete)
 						sendMessageToAll(new Message(Message.Type.LOYALTIES,
 								loyalties.toString()));
+						
+						// TODO: add mid round check for game over???
 					}
 
-					p.removeTurn();
+					player.removeTurn();
 					// if round is still going on
 					if (table.size() != players.size()) {
 						// pass turn
@@ -1022,7 +1032,7 @@ public class Room {
 						// give turn for next round to winner of this round.
 						// turnIndex = roundWinnerIndex;
 					}
-					sendPlayMessage(playerIndex, c);
+					sendPlayMessage(playerIndex, card);
 					return true;
 				} else
 					return false;

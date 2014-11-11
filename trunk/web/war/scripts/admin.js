@@ -24,28 +24,63 @@ $(document).ready(function() {
 });
 
 function list(players) {
-	$('#result').html(""); // clear list
+	
+	var table = "<table width='300px'><tr><th width='33%'>Name</th>" +
+		"<th width='34%'></th><th width='33%'></th></tr>";
+	
+	
+//	$('#result').html("<table width='300px'><tr><th width='3c3%'>Name</th>" +
+//			"<th width='34%'></th><th width='33%'></th></tr>"); 
 
 	var $btnRemove;
 
 	if (players.length > 0) {
 		for (var i = 0; i < players.length; i++) {
-			$btnRemove = $(
-					"<input type='button' id='" + i + "' value='" + players[i]
-							+ "' />'").click(function() {
-				// console.log($(this).attr('id') + ":" +
-				// players[$(this).attr('id')]);
-				$.post('/admin', {
-					room : $('#slRooms').val(),
-					action : "remove",
-					player : $(this).val()
-				// players[$(this).attr('id')]
-				}, function(result) {
-					list(JSON.parse(result));
-					// $('#player' + $(this).attr('id')).html("");
-				});
-			});
-			$('#result').append($btnRemove);
+			
+			table += ("<tr>");
+//			$('#result').append("<tr>");
+			
+			table += ("<td>") + (players[i]) + ("</td>");
+//			$('#result').append("<td>").append(players[i]).append("</td>");
+			
+			table += "<td><input type='button' class='actionButton' id='" 
+				+ players[i] + "' value='Disconnect' />" + "</td>";
+			
+			table += "<td><input type='button' class='actionButton' id='" 
+				+ players[i] + "' value='Remove' />" + "</td>";
+			
+			table += ("</tr>");
+//			$btnDisconnect = $(
+//					"<input type='button' id='" + players[i] + "' value='Disconnect"  
+//							+ "' />'");
+//							.click(function() {
+//				$.post('/admin', {
+//					room : $('#slRooms').val(),
+//					action : "disconnect",
+//					player : $(this).prop('id')
+//				}, function(result) {
+//					list(JSON.parse(result));
+//					// $('#player' + $(this).attr('id')).html("");
+//				});
+//			});
+			
+//			$('#result').append("<td>").append($btnDisconnect).append("</td>");
+			
+//			$btnRemove = $(
+//					"<input type='button' id='" + players[i] + "' value='Remove"  
+//							+ "' />'");
+//							.click(function() {
+//				$.post('/admin', {
+//					room : $('#slRooms').val(),
+//					action : "remove",
+//					player : $(this).prop('id')
+//				}, function(result) {
+//					list(JSON.parse(result));
+//				});
+//			});
+//			$('#result').append("<td>").append($btnRemove).append("</td>");
+			
+//			$('#result').append("</tr>");
 			// "<tr id='player" + i + "'><td>");
 			// "<div id='player"+i+"'>"
 			// + players[i] + "");
@@ -53,6 +88,21 @@ function list(players) {
 			// $('#player'+i).append("</td></tr>");
 			// $('#result').append("</div>");
 		}
+//		$('#result').append("</table>");
+		
+		$('#result').html(table);
+			$('.actionButton').click(function(){
+				console.log("click captured");
+				$.post('/admin', {
+					room : $('#slRooms').val(),
+					action : $(this).val().toLowerCase(),
+					player : $(this).prop('id')
+				}, function(result) {
+					list(JSON.parse(result));
+				}).fail(function(error) {
+					alert(error.responseText);
+				});
+			});
 	}
 
 }

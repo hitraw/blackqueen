@@ -50,6 +50,15 @@ public class AdminServlet extends HttpServlet {
 			resp.setStatus(200);
 			resp.getWriter().println(room.getPlayerList());
 			break;
+		case "disconnect":
+			if (room.disconnected(username)) {
+				resp.setStatus(200);
+				resp.getWriter().println(room.getPlayerList());
+			} else {
+				resp.setStatus(400);
+				resp.getWriter().println("Player could not be disconnected");
+			}
+			break;
 		case "remove":
 			if (room.removeSpectator(username)!=null 
 					|| room.removePlayer(username) != null) {

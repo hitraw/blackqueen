@@ -64,6 +64,7 @@ public class Card {
 	private String code;
 	private int value;
 	private int points;
+	private boolean played;
 
 	public Card(Suit suit, Rank rank) {
 		super();
@@ -74,6 +75,7 @@ public class Card {
 			this.points = BLACK_QUEEN_POINTS;
 		else
 			this.points = rank.points;
+		this.played = false;
 	}
 
 	public Suit getSuit() {
@@ -114,7 +116,13 @@ public class Card {
 		return "Card [code=" + code + ", value=" + value + ", points=" + points
 				+ "]";
 	}
+
+	public void played() {
+		played = true;
+	}
 	
-	
+	public boolean isPlayed(){
+		return played;
+	}
 
 }

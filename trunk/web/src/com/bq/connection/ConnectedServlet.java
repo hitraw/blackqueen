@@ -8,8 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.bq.logic.Message;
 import com.bq.logic.Room;
 import com.bq.room.manager.RoomManagerFactory;
+import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelPresence;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
@@ -50,7 +52,12 @@ public class ConnectedServlet extends HttpServlet {
 		
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
 		
-		log.info(username + " connected?" + room.connected(username));
+		if(room.connected(username))
+			log.info(username + " connected") ;
+		else	
+			channelService.sendMessage(new ChannelMessage(client, 
+				new Message(Message.Type.KICK, 
+				"Session timed out. Please login again").toString()));
 		
 		// if this user connected is in the spectator list already
 //		Player player = room.getPlayer(username);

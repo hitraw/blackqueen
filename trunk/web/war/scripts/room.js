@@ -4,7 +4,9 @@ var status;
 var connected = false;
 var quit = false;
 var spectator = false;
-var refreshing = false;
+var forceRefresh = false;
+var connectionAttempt = 0;
+var tokenTimeoutID;
 
 //sound variables;
 var turnSound;
@@ -27,6 +29,7 @@ var MessageType = {
 	REPLACEMENT: "replacement",
 	LOYALTIES: "loyalties",
 	ROUND : "round",
+	SNAPSHOT : "snapshot",
 	SCORE : "score"
 };
 
@@ -72,6 +75,7 @@ function sessionOn() {
 function clear(){
 	$('#joinInfo').hide();
 	$('.pointCardsContainer').html("");
+	$('.snapshot').html("").hide();
 	$('#playError').hide();
 	$('#tablePoints').html("");
 	
@@ -134,7 +138,8 @@ function setStatus(statusText) {
 	// clear hand only when new game is started
 	if (statusText === RoomStatus.READY_TO_DEAL
 			|| statusText === RoomStatus.WAITING_FOR_PLAYERS) {
-		$('#myHand').html(""); // clear hand
+		$('#myHand').html("").show(); // clear hand
+		$('#cardMat').html("");
 		
 		// left and right ear positioned spec controls
 		$('.bidSpec').hide(); // don't wipe this, contains child elements
@@ -146,6 +151,7 @@ function setStatus(statusText) {
 		$('.pCard').html(""); // clear partner card
 		$('.points').html(""); // clear points inside player divs
 		$('.pointCardsContainer').html("").hide(); // clear n hide the point cards div
+		$('.snapshot').html("").hide(); // clear snapshot
 		
 		resetGame();
 
@@ -274,18 +280,6 @@ function showScore(message) {
 	scoreLog.scrollTop = scoreLog.scrollHeight;
 }
 
-function onOpened() {
-	sessionOn();
-	refreshing = false;
-	// set timer to disconnect and connect again after 115 mins
-	// because token expires after 120 mins
-	window.setTimeout(function(){
-		refreshing = true;
-		socket.close();
-		openNewChannel(spectator);
-	}, 115 * 60 * 1000);
-}
-
 function onMessage(result) {
 	var json = JSON.parse(result.data);
 	var type = json["type"];
@@ -296,6 +290,7 @@ function onMessage(result) {
 		addChatMessage(message);
 		break;
 	case MessageType.CONNECTION:
+		console.log(new Date().toLocaleString() + ": " + message + " connected.");
 		showConnection(message);
 		break;
 	case MessageType.DISCONNECTION:
@@ -320,7 +315,7 @@ function onMessage(result) {
 		if(status === RoomStatus.GAME_OVER)
 			window.setTimeout(function(){
 				showPlayers(JSON.parse(message));
-			}, 2000);
+			}, 1000);
 		else
 			showPlayers(JSON.parse(message));
 		break;
@@ -338,16 +333,22 @@ function onMessage(result) {
 		break;
 	case MessageType.PLAY:
 		// update play information on the screen
-			managePlayMessage(JSON.parse(message));
+		managePlayMessage(JSON.parse(message));
 		break;
 	case MessageType.LOYALTIES:
 		// update play information on the screen
-			updateLoyalties(JSON.parse(message));
+		updateLoyalties(JSON.parse(message));
 		break;	
 	case MessageType.ROUND:
 		// update round information on the screen
 		showCardTable(JSON.parse(message));
 		break;
+	case MessageType.SNAPSHOT:
+		// show what cards were dealt to every player 
+		window.setTimeout(function(){
+			showSnapshots(JSON.parse(message));
+		}, 1200);
+		break;	
 	case MessageType.SCORE:
 		// update round information on the screen
 		showScore(JSON.parse(message));
@@ -357,7 +358,11 @@ function onMessage(result) {
 		addRoomNotification(message);
 		alert(message);
 		socket.close();
-		window.close();
+		sessionStorage.username = undefined;
+		sessionStorage.token = undefined;
+		sessionStorage.tokenTS = undefined;
+//		window.close();
+		window.location = "/";
 		break;
 	default:
 		// default: display it in notifications window
@@ -367,9 +372,21 @@ function onMessage(result) {
 }
 
 function onClose() {
-	console.log("Close called at "  + new Date().toLocaleString());
-	window.location = "/";
-//	if(!refreshing)
+	console.log(new Date().toLocaleString() + ": Close called");
+	console.log("connected="+connected);
+	
+	if(connected && connectionAttempt < 5){
+//		socket.close();
+//		connected = false;
+//		sessionOff();
+		openChannel(sessionStorage.token)
+	}
+	else{
+		forceRefresh = true;
+		window.location = "/";
+	}
+		
+//	if(!forceRefresh)
 //		sessionOff();
 	
 //	if(!quit)
@@ -379,10 +396,43 @@ function onClose() {
 }
 
 function onError(error) {
-	console.log("Error:" + error.code + ":" + error.description);
+	connectionAttempt++;
+	console.log(new Date().toLocaleString() + ": Error:" + error.code + ":" + error.description);
+}
+
+function onOpened() {
+	console.log(new Date().toLocaleString() + ": Connected.");
+	sessionOn();
+	forceRefresh = false;
+	var currentTS = new Date().getTime();
+	var tokenAge = currentTS - sessionStorage.tokenTS;
+	var tokenExpiryAge = 115 * 60 * 1000; // 115 mins * 60 secs * 1000 ms
+	var timeToExpire = tokenExpiryAge - tokenAge;
+	// diffTS will be negligible for new connection
+	// but significant for older connections
+	// allowing us to ensure that older connections don't timeout
+	console.log("time to Expire: "+timeToExpire/1000/60 + " minutes");
+	
+	// clear previous tokenTimeout
+	window.clearTimeout(tokenTimeoutID);
+	
+	// set timer to disconnect and connect again after 115 mins
+	// because token expires after 120 mins
+	tokenTimeoutID = window.setTimeout(function(){
+		forceRefresh = true;
+		socket.close();
+		openNewChannel(spectator);
+	}, timeToExpire);
+	
+//	alert(new Date().toLocaleString()+":on opened waala alert");
+//	
+//	window.setTimeout(function(){
+//		alert(new Date().toLocaleString()+"after 2 mins waala alert");
+//	}, 2 * 60000);
 }
 
 function openNewChannel(isSpectator) {
+	console.log(new Date().toLocaleString() + ": Requesting token...");
 	$.post('/getToken', {
 		u : sessionStorage.username,
 		r : sessionStorage.roomName,
@@ -390,14 +440,15 @@ function openNewChannel(isSpectator) {
 	}, function(result) {
 		sessionStorage.token = result.trim();
 		sessionStorage.tokenTS = new Date().getTime();
-		console.log("Token obtained ("  + new Date().toLocaleString() + "): " + sessionStorage.token);
+		console.log(new Date().toLocaleString() + ": Token obtained: " + sessionStorage.token);
 		openChannel(sessionStorage.token);
 	}).fail(function(error) {
-		console.log("Error in obtaining token: " + error.status + ":" + error.responseText)
+		console.log(new Date().toLocaleString() + ": Error in obtaining token: " + error.status + ":" + error.responseText)
 		
 		switch(error.status){
 		// Authentication Error: name already in use, show error
 		case 401:
+			sessionOff();
 			showError(error.responseText); 
 			break;
 		
@@ -419,14 +470,14 @@ function openNewChannel(isSpectator) {
 		
 		default: // show error
 			// sessionOff();
-			window.location = '/';
-			showError(error.responseText);
+//			window.location = '/';
 		}
 		
 	});
 }
 
 function openChannel(token) {
+	console.log(new Date().toLocaleString() + ": Connecting... with token:" + token);
 	channel = new goog.appengine.Channel(token);
 	socket = channel.open();
 	socket.onopen = onOpened;
@@ -441,7 +492,14 @@ function enter(name) {
 		sessionStorage.username = name;
 //		openNewChannel(sessionStorage.spectator);
 //		console.log("$('#cbSpectator').prop('checked')="+$('#cbSpectator').prop("checked") );
-		openNewChannel(spectator);
+		var currTS = new Date().getTime();
+		
+		// if we already have a token, use that token to connect
+		if (sessionStorage.tokenTS !== undefined 
+			&& (currTS - sessionStorage.tokenTS) < (115 * 60 * 1000))
+				openChannel(sessionStorage.token);
+		else // else i.e. if it's missing or old, then open new channel		
+			openNewChannel(spectator);
 	} else {
 		showError("Please enter valid name! (3 to 12 characters long)");
 	}
@@ -502,13 +560,12 @@ $(document).ready(function() {
 	});
 
 	$(window).on('beforeunload', function(e) {
-		if (connected && !quit)
-			return "If you're leaving for good, please hit the Leave button!"
-			 + " \nIf you're just refreshing, please continue.";
+		if (connected && !forceRefresh)
+			return "Please use the Leave button to leave the game!";
 	});
 	
 	$('#btnQuit').click(function(){
-		quit = true;
+		
 		if(status === RoomStatus.BIDDING)
 			quit = confirm("Didn't like your cards, so chickening out!\nAre you sure you want to quit the game?");
 		else if(status === RoomStatus.PLAYING)
@@ -524,8 +581,9 @@ $(document).ready(function() {
 			});
 			
 			socket.close();
-//			window.close();
+//			window.close(); // won't allow to close
 			sessionStorage.username = undefined;
+			forceRefresh = true;
 			window.location = "/";
 		}
 	});

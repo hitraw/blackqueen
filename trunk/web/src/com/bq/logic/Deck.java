@@ -69,6 +69,7 @@ public class Deck {
 				for (int i = 3; i < ranks.length; i++) {
 					c = new Card(s, ranks[i]);
 					cards.add(c);
+					c = new Card(s, ranks[i]);
 					cards.add(c);
 					totalPoints += c.getPoints()*2;
 				}
@@ -81,6 +82,7 @@ public class Deck {
 				for (int i = 1; i < ranks.length; i++) {
 					c = new Card(s, ranks[i]);
 					cards.add(c);
+					c = new Card(s, ranks[i]);
 					cards.add(c);
 					totalPoints += c.getPoints()*2;
 				}

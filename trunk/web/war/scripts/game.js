@@ -21,7 +21,7 @@ function manageBidMessage(json) {
 	var nextIndex = json["nextIndex"];
 
 	var gameIndex = json["gameNo"];
-	if (gameIndex !== undefined && gameIndex > 0)
+	if (gameIndex !== undefined && gameIndex >= 0)
 		$('#gameId').html("Game " + (gameIndex + 1));
 
 	var currPlayer = players[playerIndex];
@@ -84,36 +84,39 @@ function declareBidWinner(winnerIndex) {
 
 function showBidSpecSelector(bidWinner) {
 //	$('#bidValue').html("Bid: " + bidWinner.bid);
-	$('#bidTitle').html("You have won the bid. Please make your selection.");
-	$('.bidControl').hide();
-	$('#room').addClass('curtain');
-	
-	// get position of base, top and selector 
-	var basePosition = $('#pos0').offset();
-	var topPosition = $('#targetContainer').offset();
-	var selPosition = $('#bidSpecSelector').offset();
-	
-	// calculate horizontal center of game table
-	var centerLeft = basePosition.left + $('#pos0').width()/2;
-	console.log("centerLeft:"+centerLeft);
-	
-	// calculate 'left' position of selector
-	var targetLeft = centerLeft - $('#bidSpecSelector').width()/2;
-	console.log("targetLeft="+targetLeft);
-	
-	//calculate vertical position of selecter
-	var targetTop = topPosition.top + $('#targetContainer').height() + 15; 
-	
-	// update selector position
-	console.log(selPosition);
-	selPosition = {top: targetTop, left: targetLeft};
-	console.log(selPosition);
-	
-	$('#bidSpecSelector').offset(selPosition);
-	$('#bidSpecSelector').load("bidSpecSelector.html");
+	$('#bidSpecSelector').load("bidSpecSelector.html", function(){
+		initializeCardSpecs();
+		
+		$('#bidTitle').html("You have won the bid. Please make your selection.");
+		$('.bidControl').hide();
+		$('#room').addClass('curtain');
+		
+		// get position of base, top and selector 
+		var basePosition = $('#pos0').offset();
+		var topPosition = $('#targetContainer').offset();
+		var selPosition = $('#bidSpecSelector').offset();
+		
+		// calculate horizontal center of game table
+		var centerLeft = basePosition.left + $('#pos0').width()/2;
+//		console.log("centerLeft:"+centerLeft);
+		
+		// calculate 'left' position of selector
+		var targetLeft = centerLeft - $('#bidSpecSelector').width()/2;
+//		console.log("targetLeft="+targetLeft);
+		
+		//calculate vertical position of selecter
+		var targetTop = topPosition.top + $('#targetContainer').height() + 15; 
+		
+		// update selector position
+//		console.log(selPosition);
+		selPosition = {top: targetTop, left: targetLeft};
+//		console.log(selPosition);
+		
+		$('#bidSpecSelector').offset(selPosition);
 
-	// show selector
-	$('#bidSpecSelector').show();
+		// show selector
+		$('#bidSpecSelector').show();
+	});
 }
 
 function highlightTurn(){
@@ -123,10 +126,8 @@ function highlightTurn(){
 		// if after 20 seconds user has still not played
 		// and status is still bidding/playing 
 		if(document.title === turnTitle && !disableAlert){ 
-			if(status === RoomStatus.BIDDING)
-				alert("It's your turn, please hurry up!");
-			else if(status === RoomStatus.PLAYING)
-				alert("It's your turn, please hurry up!");
+			if(status === RoomStatus.BIDDING || status === RoomStatus.PLAYING )
+				playSound(turnSound);
 			else turnOver();
 		}
 	}, 20000); 
@@ -228,15 +229,16 @@ function manageControls() {
 		break;
 	case RoomStatus.BIDDING:
 		manageBid();
-		showEndBtn();
+		if(!spectator)
+			showEndBtn();
 		break;
 	case RoomStatus.PLAYING:
-		// if it's my turn allow me to play - NOT REQD
-		// managed by showCardTable in cards.js
-		showEndBtn();
+		if(!spectator)
+			showEndBtn();
 		break;
 	case RoomStatus.GAME_OVER:
-		showEndBtn();
+		if(!spectator)
+			showEndBtn();
 		showFinalScore();
 		break;
 	default:
@@ -265,8 +267,9 @@ function showFinalScore(){
 	for (var i in players)
 		players[i].showScore();
 	
-	$('.pointCardsContainer').fadeIn(500).fadeOut(1000).fadeIn(500);
-	$('.points').fadeIn(500).fadeOut(1000).fadeIn(500);
+	$('.pointCardsContainer').show(); //.fadeIn(500).fadeOut(1000).fadeIn(500);
+	$('.points').show(); //.fadeIn(500).fadeOut(1000).fadeIn(500);
+//	$('.snapshot').show();
 	// commenting below, because actual score is shown on score sheet
 	// let this table show what players have earned
 //	$('.pointCardsContainer').fadeOut(1000).fadeIn(500).fadeOut(100,
@@ -275,6 +278,19 @@ function showFinalScore(){
 //				// till then let points flash
 //				$('.bid').fadeIn(500);
 //			});
+}
+
+function showSnapshots(snapshotsArray){
+	var snapshotArray, card, player;
+	for(var i in players){
+		player = players[i];
+		player.drawSnapshot(snapshotsArray[i]);
+		snapshotArray = snapshotsArray[i];
+	}
+	$('#myHand').fadeOut(500, function(){
+		$('.snapshot').fadeIn(500);
+	})
+	
 }
 
 function showDealBtn() {
@@ -344,10 +360,9 @@ function showBidControl(highestBid) {
 }
 
 function showEndBtn() {
-	// show me End button, (even if it's not my turn)
-	// TODO: check if we need this option
+	// show me End button, (even if it's not my turn), but only if i am not spectator
 	var $btnEnd = $(
-			"<input type='button' id='btnEnd' class='button red' value='Start New Game'/>")
+			"<input type='button' id='btnEnd' class='button red' value='Start New '/>")
 			.click(function() {
 				var startNew = (status === RoomStatus.GAME_OVER);
 				if(!startNew)
@@ -386,7 +401,8 @@ function replacePlayer(replacement){
 }
 
 function showDisconnection(playerName){
-	addRoomNotification(playerName + " disconnected.");
+//	addRoomNotification(playerName + " disconnected.");
+	console.log(playerName + " disconnected.");
 	for(var i in players){
 		if(players[i].name === playerName)
 			players[i].showDisconnected();
@@ -394,7 +410,8 @@ function showDisconnection(playerName){
 }
 
 function showConnection(playerName){
-	addRoomNotification(playerName + " connected.");
+//	addRoomNotification(playerName + " connected.");
+	console.log(playerName + " connected.");
 	for(var i in players){
 		if(players[i].name === playerName)
 			players[i].showConnected();
@@ -481,8 +498,8 @@ function Player(jsonObj) {
 	 * as the one we used for bid
 	 */
 	this.showScore = function() {
-		$('#bid' + this.screenPosition).hide();
-		$('#bid' + this.screenPosition).html(this.score);
+//		$('#bid' + this.screenPosition).hide();
+//		$('#bid' + this.screenPosition).html(this.score);
 	}
 
 	
@@ -577,6 +594,22 @@ function Player(jsonObj) {
 		
 		// just draw don't show, let them be shown together from calling function
 		$('#pointCards' + this.screenPosition).hide();
+	}
+	
+	this.drawSnapshot = function(cards){
+		var $card, card;
+//		console.log("Cards="+ cards);
+		$('#snapshot' + this.screenPosition).html("");
 
+		for (var i = 0; i < cards.length; i++) {
+			card = cards[i];
+			$card = $("<div class='snapshotCard' id='"+this.name+i+card['code']+
+				"' style='background-image:url(/images/cards/" + card['code'] + ".png);'/>");
+			if(card['played'])
+				 $card.addClass('played');
+			 
+			$('#snapshot' + this.screenPosition).append($card);
+		}
+		
 	}
 }

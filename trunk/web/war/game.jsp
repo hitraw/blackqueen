@@ -81,8 +81,8 @@
 							<table class="gameTable">
 								<tr class="header">
 									<td width="30%">
-										<div id="gameId" style="float: left; text-align: left; margin-top: 2px;"></div>
-										<div id="endBtn" style="float: left; text-align: left; margin-left: 5px;"></div>
+										<div id="endBtn" style="float: left; text-align: left;"></div>
+										<div id="gameId" style="float: left; text-align: left; margin-left: 5px; margin-top: 2px;"></div>
 									</td>
 									<td width="40%"><div id="status"></div></td>
 									<td width="30%"><div id="quitBtn" align="right">
@@ -120,6 +120,7 @@
 										<div id="pointCards4" class="pointCardsContainer"></div>
 										<div id="points4" class="points"></div>
 										<div id="bid4" class="bid"></div>
+										<div id="snapshot4" class="snapshot"></div>
 									</div>
 								</td>
 								<td width="30%">
@@ -142,6 +143,7 @@
 										<div id="pointCards3" class="pointCardsContainer"></div>
 										<div id="points3" class="points"></div>
 										<div id="bid3" class="bid"></div>
+										<div id="snapshot3" class="snapshot"></div>
 									</div></td>
 								<td rowspan="3">
 									<div id="cardMat"></div>
@@ -159,6 +161,7 @@
 										<div id="pointCards5" class="pointCardsContainer"></div>
 										<div id="points5" class="points"></div>
 										<div id="bid5" class="bid"></div>
+										<div id="snapshot5" class="snapshot"></div>
 									</div></td>
 							</tr>
 							<tr class="tblRow">
@@ -171,6 +174,7 @@
 										<div id="pointCards2" class="pointCardsContainer"></div>
 										<div id="points2" class="points"></div>
 										<div id="bid2" class="bid"></div>
+										<div id="snapshot2" class="snapshot"></div>
 									</div></td>
 								<td><div id="pos6" class="pos inactive">
 										<div class="nameContainer">
@@ -181,6 +185,7 @@
 										<div id="pointCards6" class="pointCardsContainer"></div>
 										<div id="points6" class="points"></div>
 										<div id="bid6" class="bid"></div>
+										<div id="snapshot6" class="snapshot"></div>
 									</div></td>
 							</tr>
 							<tr class="tblRow">
@@ -193,6 +198,7 @@
 										<div id="pointCards1" class="pointCardsContainer"></div>
 										<div id="points1" class="points"></div>
 										<div id="bid1" class="bid"></div>
+										<div id="snapshot1" class="snapshot"></div>
 									</div></td>
 								<td><div id="pos7" class="pos inactive">
 										<div class="nameContainer">
@@ -203,6 +209,7 @@
 										<div id="pointCards7" class="pointCardsContainer"></div>
 										<div id="points7" class="points"></div>
 										<div id="bid7" class="bid"></div>
+										<div id="snapshot7" class="snapshot"></div>
 									</div></td>
 							</tr>
 
@@ -218,6 +225,7 @@
 										<div id="pointCards0" class="pointCardsContainer"></div>
 										<div id="points0" class="points"></div>
 										<div id="bid0" class="bid"></div>
+										<div id="snapshot0" class="snapshot"></div>
 									</div></td>
 								<td>
 									<div id="end"></div>
@@ -247,46 +255,9 @@
 								<img id='archiveIcon' class='scoreboardIcon'
 									src='/images/archive.png' title='Archive and create new scoresheet' />
 								<div id="scoreboardError"></div>
-
 							</div>
 							<div class="papyrusHeader">&nbsp;Scores</div>
 							<div id="scoreLog" class="log">
-<!-- 
-								<table class="scorecard">
-									<tr>
-										<td class='score' width="5%">#</td>
-										<td class='score' width="15%">Bid / Opp</td>
-										<td class='score' width="20%">Partner Trump</td>
-										<td class='score' width="10%">Hitesh</td>
-										<td class='score' width="10%">Vedavyas</td>
-										<td class='score' width="10%">Barkha</td>
-										<td class='score' width="10%">Aarti</td>
-										<td class='score' width="10%">Handsome Hunk</td>
-										<td class='score' width="10%">Giant Robot</td>
-									</tr>
-									<tr>
-										<td class='score'>0</td>
-										<td class='score'>888/888</td>
-										<td class='score'>A&spades;/&clubs;</td>
-										<td class='score number'><b>160</b></td>
-										<td class='score number'>0</td>
-										<td class='score number'>160</td>
-										<td class='score number'>0</td>
-										<td class='score number'>160</td>
-										<td class='score number'>0</td>
-									</tr>
-									<tr>
-										<th class='score' colspan="3">TOTAL</th>
-										<th class='score number'><b>160</b></th>
-										<th class='score number'>0</th>
-										<th class='score number'>160</th>
-										<th class='score number'>0</th>
-										<th class='score number'>160</th>
-										<th class='score number'>0</th>
-									</tr>
-								</table>
-
- -->
 							</div>
 						</div>
 
