@@ -24,6 +24,7 @@ function resetGame() {
 }
 
 function resetRound() {
+	posDefined = false;
 	startingSuit = undefined;
 	highestCard = undefined;
 	disableAlert = false;
@@ -36,8 +37,8 @@ function defineCardPos(){
 		
 		// need this to be visible because all positions are relative to this
 		$('#cardMat').show();
-		console.log("defining Card Pos on table...");
-	   	console.log("mat width="+$('#cardMat').width());
+//		console.log("defining Card Pos on table...");
+//	   	console.log("mat width="+$('#cardMat').width());
 	   	var margin0 = 120 - 35;
 	   	var matWidth = $('#cardMat').width();
 	   	var matLeft = $('#cardMat').offset().left;
@@ -330,7 +331,7 @@ function setPlayableCards() {
 			$('.handCard').removeClass('unplayable').addClass('playable');
 
 		else {
-			console.log("it hasn't been cut yet");
+//			console.log("it hasn't been cut yet");
 
 			// let's assume I have don't have non trump cards
 			var hasNonTrump = false;
@@ -444,7 +445,7 @@ function showCardTable(json){
 	// if it's my turn now, set & enable my playable cards
 	if (status === RoomStatus.PLAYING && myIndex !== undefined 
 			&& players[myIndex].turn){
-		console.log("showCardTable::: status="+status+", myIndex="+myIndex);
+//		console.log("showCardTable::: status="+status+", myIndex="+myIndex);
 		setPlayableCards();
 		highlightTurn();
 	}	
@@ -637,7 +638,3 @@ function showPlayedCard(card, playerIndex){
 //					+ $('#pos'+e).offset().left);
 //	
 }
-
-$(document).ready(function() {
-	initializeCardSpecs();
-});

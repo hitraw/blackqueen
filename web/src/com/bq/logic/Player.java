@@ -55,9 +55,13 @@ public class Player {
 		handCards.add(card);
 	}
 
-	public Card playCard(int index) {
-		this.turn = false;
-		return handCards.remove(index);
+	public boolean play(Card card) {
+		if(card != null && !card.isPlayed()){
+			this.turn = false;
+			card.played();
+			return true;
+		}else
+			return false;
 	}
 
 	public void orderCards() {
@@ -155,6 +159,7 @@ public class Player {
 		// form JSON array of cards
 		JSONArray cards = new JSONArray();
 		for (Card c : handCards) {
+			if(!c.isPlayed())
 			cards.put(c.getCode());
 		}
 		return cards.toString();
@@ -168,6 +173,19 @@ public class Player {
 		return points;
 	}
 
+	public JSONArray getCardSnapshotJSON() throws JSONException { 
+		
+		JSONArray cards = new JSONArray();
+		for (Card c : handCards) {
+			JSONObject card = new JSONObject();
+			card.put("code", c.getCode());
+			card.put("played", c.isPlayed());
+			cards.put(card);
+		}
+		return cards;
+	}
+
+	
 	public String getPointCardsJSON() throws JSONException {
 //		Collections.sort(pointCards, new Comparator<Card>() {
 //
@@ -244,13 +262,11 @@ public class Player {
 		this.bid = bid;
 	}
 
-	public int getCardIndex(String cardCode) {
-		// TODO Auto-generated method stub
-		for (int i = 0; i < handCards.size(); i++) {
-			if (cardCode.equals(handCards.get(i).getCode()))
-				return i;
-		}
-		return -1;
+	public Card getHandCard(String cardCode) {
+		for(Card card: handCards)
+			if (cardCode.equals(card.getCode()) && !card.isPlayed())
+				return card;
+		return null;
 	}
 
 	public void winRound(List<Card> table) {
