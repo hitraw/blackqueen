@@ -68,7 +68,15 @@ function sessionOn() {
 	$('#joinInfo').hide();
 	$('#room').show();
 	$('#chatWindow').show();
+	
+	// load sounds
 	loadSounds();
+	
+//	window.setTimeout(function (){
+		// load cards, well kind of in the cache
+		$('#bidSpecSelector').hide();
+		$('#bidSpecSelector').load("bidSpecSelector.html");
+//	}, 2000);
 }
 
 
@@ -515,9 +523,9 @@ function enter(name) {
 $(document).ready(function() {
 		
 	clear();
-//	console.log("sessionStorage.username="+sessionStorage.username);
+	console.log("sessionStorage.username="+sessionStorage.username);
 	if (sessionStorage.username !== undefined && sessionStorage.username !== "undefined"){
-//		console.log(sessionStorage.username.length);
+		console.log("calling enter:"+sessionStorage.username.length);
 		$('#txtName').val(sessionStorage.username);
 		enter($('#txtName').val());
 	} else {
@@ -586,9 +594,12 @@ $(document).ready(function() {
 				u : sessionStorage.username,
 				r : sessionStorage.roomName,
 			}, function(){
-				socket.close();
+				
 //				window.close(); // won't allow to close
 				sessionStorage.username = undefined;
+				sessionStorage.token = undefined;
+				sessionStorage.tokenTS = undefined;
+				socket.close();
 				forceRefresh = true;
 				window.location = "/";
 			});

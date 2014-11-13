@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.bq.logic.Message;
+import com.bq.logic.Player;
 import com.bq.logic.Room;
 import com.bq.room.manager.RoomManagerFactory;
 
@@ -60,10 +62,21 @@ public class AdminServlet extends HttpServlet {
 			}
 			break;
 		case "remove":
-			if (room.removeSpectator(username)!=null 
-					|| room.removePlayer(username) != null) {
-				resp.setStatus(200);
-				resp.getWriter().println(room.getPlayerList());
+				
+				Player p = room.removePlayer(username);
+				
+				if(p == null)
+					room.removeSpectator(username);
+
+				if(p != null){
+					// if player left on his own, won't see this message
+					// will see this only if window is still open, which
+					// means admin kicked the player out.
+					room.sendMessage(p, new Message(Message.Type.KICK,
+							"You have been kicked out by the Admin."));
+	
+					resp.setStatus(200);
+					resp.getWriter().println(room.getPlayerList());
 			} else {
 				resp.setStatus(400);
 				resp.getWriter().println("Player could not be removed");
