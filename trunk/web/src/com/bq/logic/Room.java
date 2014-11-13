@@ -253,6 +253,7 @@ public class Room {
 		// no need to maintain connect/disconnect for spectator 
 		else if (getSpectator(playerName)!=null){
 			removeSpectator(playerName);
+			disconnected = true;
 		} // if neither, we didn't find whom to disconnect. 
 		else {
 			disconnected = false;
