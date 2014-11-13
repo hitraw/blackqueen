@@ -402,7 +402,7 @@ function replacePlayer(replacement){
 
 function showDisconnection(playerName){
 //	addRoomNotification(playerName + " disconnected.");
-	console.log(playerName + " disconnected.");
+	console.log(new Date().toLocaleString() + ": " + playerName + " disconnected.");
 	for(var i in players){
 		if(players[i].name === playerName)
 			players[i].showDisconnected();
@@ -411,7 +411,7 @@ function showDisconnection(playerName){
 
 function showConnection(playerName){
 //	addRoomNotification(playerName + " connected.");
-	console.log(playerName + " connected.");
+	console.log(new Date().toLocaleString() + ": " + playerName + " connected.");
 	for(var i in players){
 		if(players[i].name === playerName)
 			players[i].showConnected();

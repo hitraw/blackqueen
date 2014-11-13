@@ -25,16 +25,16 @@ $(document).ready(function() {
 
 function list(players) {
 	
-	var table = "<table width='300px'><tr><th width='33%'>Name</th>" +
-		"<th width='34%'></th><th width='33%'></th></tr>";
-	
-	
 //	$('#result').html("<table width='300px'><tr><th width='3c3%'>Name</th>" +
 //			"<th width='34%'></th><th width='33%'></th></tr>"); 
 
-	var $btnRemove;
-
 	if (players.length > 0) {
+		
+		var $btnRemove;
+		
+		var table = "<table width='300px'><tr><th width='33%'>Name</th>" +
+		"<th width='34%'></th><th width='33%'></th></tr>";
+		
 		for (var i = 0; i < players.length; i++) {
 			
 			table += ("<tr>");
@@ -103,6 +103,8 @@ function list(players) {
 					alert(error.responseText);
 				});
 			});
+	} else {
+		$('#result').html("");
 	}
 
 }
