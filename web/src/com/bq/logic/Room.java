@@ -256,8 +256,7 @@ public class Room {
 		} // if neither, we didn't find whom to disconnect. 
 		else {
 			disconnected = false;
-			log.severe("Error in disconnecting player: isConnected=" + (p != null ? String
-					.valueOf(p.isConnected()) : null));
+			log.severe("Error in disconnecting player: player doesn't exist");
 		}
 		return disconnected;	
 	}
