@@ -6,6 +6,7 @@ var positions; // array of positions these players are on.
 var myIndex = undefined; // default undefined, 0 will create controls for spectators
 var title = 'Black Queen';
 var turnTitle = 'BQ - Your Turn!';
+var turnTimeout;
 
 var LoyaltyType = {
 	NEUTRAL : "neutral",
@@ -84,7 +85,7 @@ function declareBidWinner(winnerIndex) {
 
 function showBidSpecSelector(bidWinner) {
 //	$('#bidValue').html("Bid: " + bidWinner.bid);
-	$('#bidSpecSelector').load("bidSpecSelector.html", function(){
+//	$('#bidSpecSelector').load("bidSpecSelector.html", function(){
 		initializeCardSpecs();
 		
 		$('#bidTitle').html("You have won the bid. Please make your selection.");
@@ -116,13 +117,13 @@ function showBidSpecSelector(bidWinner) {
 
 		// show selector
 		$('#bidSpecSelector').show();
-	});
+//	});
 }
 
 function highlightTurn(){
 	playSound(turnSound);
 	document.title = turnTitle;
-	window.setTimeout(function(){
+	turnTimeout = window.setTimeout(function(){
 		// if after 20 seconds user has still not played
 		// and status is still bidding/playing 
 		if(document.title === turnTitle && !disableAlert){ 
@@ -135,6 +136,7 @@ function highlightTurn(){
 
 function turnOver(){
 	document.title = title;
+	window.clearTimeout(turnTimeout);
 }
 
 function showPlayers(playerJsonArray) {
@@ -613,3 +615,4 @@ function Player(jsonObj) {
 		
 	}
 }
+

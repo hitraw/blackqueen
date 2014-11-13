@@ -544,6 +544,7 @@ function declareRoundWinner(json){
 	var position = $('#pos' + positionIndex).offset();
 	
 	// first let's wait for 1 sec for all card animations to complete
+	// actually let's wait for 3 seconds to let users grasp what happened.
 	window.setTimeout(function() {
 		// then let's fade out cards on the table slowly
 		$('.tableCard').fadeOut({
@@ -575,7 +576,7 @@ function declareRoundWinner(json){
 			$('#cardMat').html("");
 			$('#tablePoints').html("");
 		});
-	}, 1000);
+	}, 2500);
 		
 }
 	

@@ -396,7 +396,6 @@ public class Room {
 							changeStatus(Status.WAITING_FOR_PLAYERS);
 							for (Player player : players)
 								player.removeTurn();
-							players.get(dealTurnIndex).removeTurn();
 						}
 						// if not & if it was turn of removed player to deal
 						else if (p.isTurn()) {
@@ -409,11 +408,6 @@ public class Room {
 
 						}
 					}
-					// if player left on his own, won't see this message
-					// will see this only if window is still open, which
-					// means admin kicked the player out.
-					sendMessage(p, new Message(Message.Type.KICK,
-							"You have been kicked out by the Admin."));
 					sendMessageToAll(new Message(Message.Type.PLAYERS,
 							getPlayersJSON()));
 				}
