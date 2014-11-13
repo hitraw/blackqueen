@@ -43,7 +43,7 @@ public class ConnectedServlet extends HttpServlet {
 		ChannelPresence presence = channelService.parsePresence(req);
 
 		String client = presence.clientId();
-		log.info(client + " connected.");
+		log.info(client + " connected to server, connecting to game...");
 
 		String[] splits = client.split(Room.KEY_DELIMITER);
 		String roomName = splits[0];
@@ -53,11 +53,13 @@ public class ConnectedServlet extends HttpServlet {
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
 		
 		if(room.connected(username))
-			log.info(username + " connected") ;
-		else	
+			log.info(username + " connected to game.") ;
+		else // the only case where user will not be able to be connected is
+			// when Admin must've removed him/her for timeout. Hence a different 
+			// time out message versus the normal kick message from Admin
 			channelService.sendMessage(new ChannelMessage(client, 
 				new Message(Message.Type.KICK, 
-				"Session timed out. Please login again").toString()));
+				"Session timed out. Please login again.").toString()));
 		
 		// if this user connected is in the spectator list already
 //		Player player = room.getPlayer(username);

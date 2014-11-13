@@ -41,14 +41,17 @@ public class DisconnectedServlet extends HttpServlet {
 		ChannelPresence presence = channelService.parsePresence(req);
 
 		String client = presence.clientId();
-		log.info(client + " disconnected");
+		log.info(client + " disconnected from server, disconnecting from game...");
 
 		String[] splits = client.split(Room.KEY_DELIMITER);
 		String roomName = splits[0];
 		String playerName = splits[1];
 
 		Room room = RoomManagerFactory.getInstance().getRoom(roomName);
-		room.disconnected(playerName);
+		if(room.disconnected(playerName))
+			log.info(client + " disconnected from game.");
+		else
+			log.info(client + " could NOT be disconnected from game.");
 		
 		// first check & remove from spectator list
 //		if(room.removeSpectator(playerName) != null){
