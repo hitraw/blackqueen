@@ -290,7 +290,6 @@ function onMessage(result) {
 		addChatMessage(message);
 		break;
 	case MessageType.CONNECTION:
-		console.log(new Date().toLocaleString() + ": " + message + " connected.");
 		showConnection(message);
 		break;
 	case MessageType.DISCONNECTION:
@@ -361,6 +360,7 @@ function onMessage(result) {
 		sessionStorage.username = undefined;
 		sessionStorage.token = undefined;
 		sessionStorage.tokenTS = undefined;
+		forceRefresh = true;
 //		window.close();
 		window.location = "/";
 		break;
@@ -398,6 +398,13 @@ function onClose() {
 function onError(error) {
 	connectionAttempt++;
 	console.log(new Date().toLocaleString() + ": Error:" + error.code + ":" + error.description);
+//	if(connected && connectionAttempt < 5){
+//		openChannel(sessionStorage.token)
+//	}
+//	else{
+		forceRefresh = true;
+		window.location = "/";
+//	}
 }
 
 function onOpened() {
@@ -462,15 +469,15 @@ function openNewChannel(isSpectator) {
 //				$('#cbSpectator').prop('checked', true);
 				// if user clicks on Yes, open channel as spectator
 				openNewChannel(true);
-				// do we need to maintain this flag??
+				// do we need to maintain this flag?? YES!!
 				spectator = true;
-				
 			}	
 			break;
 		
 		default: // show error
-			// sessionOff();
-//			window.location = '/';
+			sessionOff();
+			showError(error.responseText); 
+			break;
 		}
 		
 	});
@@ -567,24 +574,24 @@ $(document).ready(function() {
 	$('#btnQuit').click(function(){
 		
 		if(status === RoomStatus.BIDDING)
-			quit = confirm("Didn't like your cards, so chickening out!\nAre you sure you want to quit the game?");
+			quit = confirm("Didn't like your cards, so chickening out!\nAre you sure you want to leave the game?");
 		else if(status === RoomStatus.PLAYING)
-			quit = confirm("You are in the middle of a game.\nAre you sure you want to quit the game?");
+			quit = confirm("You are in the middle of a game.\nAre you sure you want to leave the game?");
 		else 
-			quit = confirm("Are you sure you want to quit the game?");
+			quit = confirm("Are you sure you want to leave the game?");
 		
 		if(quit){
 			// make sure this player is removed from the game
 			$.post('/exit', {
 				u : sessionStorage.username,
 				r : sessionStorage.roomName,
+			}, function(){
+				socket.close();
+//				window.close(); // won't allow to close
+				sessionStorage.username = undefined;
+				forceRefresh = true;
+				window.location = "/";
 			});
-			
-			socket.close();
-//			window.close(); // won't allow to close
-			sessionStorage.username = undefined;
-			forceRefresh = true;
-			window.location = "/";
 		}
 	});
 	
