@@ -59,7 +59,7 @@ public class ConnectedServlet extends HttpServlet {
 			// time out message versus the normal kick message from Admin
 			channelService.sendMessage(new ChannelMessage(client, 
 				new Message(Message.Type.KICK, 
-				"Session timed out. Please login again.").toString()));
+				"Session expired. Please login again.").toString()));
 		
 		// if this user connected is in the spectator list already
 //		Player player = room.getPlayer(username);

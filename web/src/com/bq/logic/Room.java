@@ -155,24 +155,31 @@ public class Room {
 	 */
 	public void endGame() {
 		// remove robots from player list
-		for (Player player : robots) {
+		for (Player player : robots) 
 			players.remove(player);
-		}
 
 		// reset robots list
 		robots = new ArrayList<Player>();
-
-		// reset player turn to false for all
-		for (Player player : players) {
+		
+		// remove disconnected players and reset turn for connected players
+		List<Player> playersCopy = new ArrayList<Player>(players);
+		for (Player player: playersCopy) {
 			player.reset();
+			if(!player.isConnected())
+				players.remove(player);
 		}
+		
+		// move dealTurnIndex (who's turn it is to deal)
 		dealTurnIndex = (dealTurnIndex + 1) % players.size();
 
+		// evaluate status based on updated numbers
 		if (players.size() >= MIN_PLAYERS)
 			readyToDeal();
 		else {
 			changeStatus(Status.WAITING_FOR_PLAYERS);
 		}
+		
+		// communicate to all updated player info
 		sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayersJSON()));
 	}
 
@@ -184,7 +191,7 @@ public class Room {
 	public void deal() {
 		// check room status again to see if we can deal
 		if (Status.READY_TO_DEAL.equals(status)) {
-			// create new round object and point currRound to it
+			// create new game object and point currGame to it
 			currGame = new Game(dealTurnIndex); // + 1
 
 			// first step of the round: deal hand cards to all
@@ -225,7 +232,9 @@ public class Room {
 		if (p == null)
 			p = getSpectator(playerName);
 
-		if (p != null) {
+		if (p != null 
+				&& !p.isConnected() // to prevent connection override
+				) { 
 			p.connected();
 			connected = true;
 
@@ -249,6 +258,13 @@ public class Room {
 			p.disconnected();
 			disconnected = true;
 			sendMessageToAll(new Message(Message.Type.DISCONNECTION, playerName));
+			
+			// if a player disconnects when game is not in progress
+			// remove the players from the game as well
+			if(status.equals(Status.WAITING_FOR_PLAYERS) 
+					|| status.equals(Status.READY_TO_DEAL)){
+				removePlayer(playerName);
+			}
 		} // if spectator disconnects, just remove him/her. 
 		// no need to maintain connect/disconnect for spectator 
 		else if (getSpectator(playerName)!=null){
@@ -297,11 +313,6 @@ public class Room {
 						playerName + " joined."));
 				if (players.size() == MIN_PLAYERS)
 					readyToDeal();
-				else
-					// we don't need to send following message to player
-					// in above case, as readyToDeal will send it anyways
-					sendMessage(p,
-							new Message(Message.Type.STATUS, getStatus()));
 			}
 			sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayersJSON()));
 		}

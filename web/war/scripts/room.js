@@ -1,12 +1,8 @@
 var channel;
 var socket;
 var status;
-var connected = false;
-var quit = false;
-var spectator = false;
-var forceRefresh = false;
-var connectionAttempt = 0;
-var tokenTimeoutID;
+//var tokenTimeoutID;
+var reconnecting = false;
 
 //sound variables;
 var turnSound;
@@ -72,11 +68,9 @@ function sessionOn() {
 	// load sounds
 	loadSounds();
 	
-//	window.setTimeout(function (){
-		// load cards, well kind of in the cache
-		$('#bidSpecSelector').hide();
-		$('#bidSpecSelector').load("bidSpecSelector.html");
-//	}, 2000);
+	// load cards, well kind of in the cache
+	$('#bidSpecSelector').hide();
+	$('#bidSpecSelector').load("bidSpecSelector.html");
 }
 
 
@@ -108,9 +102,9 @@ function sessionOff() {
 	$('#joinInfo').show();
 }
 
-function showError(errorMessage) {
-	$('#error').html(errorMessage).show().fadeOut(5000);
-}
+//function showError(errorMessage) {
+//	$('#error').html(errorMessage).show().fadeOut(5000);
+//}
 
 function setStatus(statusText) {
 	
@@ -365,60 +359,43 @@ function onMessage(result) {
 		addRoomNotification(message);
 		alert(message);
 		socket.close();
-		sessionStorage.username = undefined;
-		sessionStorage.token = undefined;
-		sessionStorage.tokenTS = undefined;
-		forceRefresh = true;
-//		window.close();
-		window.location = "/";
+		goHome();
 		break;
 	default:
-		// default: display it in notifications window
+		// default: log it in console
 		// till we figure out how to handle this message
-		$('#lsNotif').append("<li>" + message + "</li>");
+		console.log("Unknown message:"+message);
 	}
+}
+
+function goHome(){
+	sessionStorage.username = undefined;
+	sessionStorage.token = undefined;
+	sessionStorage.tokenTS = undefined;
+//	forceRefresh = true;
+	window.location = "/";
 }
 
 function onClose() {
 	console.log(new Date().toLocaleString() + ": Close called");
-	console.log("connected="+connected);
-	
-	if(connected && connectionAttempt < 5){
-//		socket.close();
-//		connected = false;
-//		sessionOff();
-		openChannel(sessionStorage.token)
-	}
-	else{
-		forceRefresh = true;
-		window.location = "/";
-	}
-		
-//	if(!forceRefresh)
-//		sessionOff();
-	
-//	if(!quit)
-//		openNewChannel();
-//	else
-//		sessionOff();
+	console.log("reconnecting="+reconnecting);
+
+	// as long as we're not reconnecting 
+	if(!reconnecting)
+		// redirect to home page;
+		goHome();
 }
 
 function onError(error) {
-	connectionAttempt++;
 	console.log(new Date().toLocaleString() + ": Error:" + error.code + ":" + error.description);
-//	if(connected && connectionAttempt < 5){
-//		openChannel(sessionStorage.token)
-//	}
-//	else{
-		forceRefresh = true;
-		window.location = "/";
-//	}
+	goHome();
 }
 
 function onOpened() {
 	console.log(new Date().toLocaleString() + ": Connected.");
 	sessionOn();
-	forceRefresh = false;
+//	forceRefresh = false;
+	reconnecting = false;
 	var currentTS = new Date().getTime();
 	var tokenAge = currentTS - sessionStorage.tokenTS;
 	var tokenExpiryAge = 115 * 60 * 1000; // 115 mins * 60 secs * 1000 ms
@@ -429,29 +406,26 @@ function onOpened() {
 	console.log("time to Expire: "+timeToExpire/1000/60 + " minutes");
 	
 	// clear previous tokenTimeout
-	window.clearTimeout(tokenTimeoutID);
+//	window.clearTimeout(tokenTimeoutID);
 	
 	// set timer to disconnect and connect again after 115 mins
 	// because token expires after 120 mins
-	tokenTimeoutID = window.setTimeout(function(){
-		forceRefresh = true;
+//	tokenTimeoutID = 
+		window.setTimeout(function(){
+		// important to set reconnecting flag to true
+		// so that close doesn't redirect to home page
+		reconnecting = true;
 		socket.close();
-		openNewChannel(spectator);
+		openNewChannel();
 	}, timeToExpire);
-	
-//	alert(new Date().toLocaleString()+":on opened waala alert");
-//	
-//	window.setTimeout(function(){
-//		alert(new Date().toLocaleString()+"after 2 mins waala alert");
-//	}, 2 * 60000);
 }
 
-function openNewChannel(isSpectator) {
+function openNewChannel() {
 	console.log(new Date().toLocaleString() + ": Requesting token...");
 	$.post('/getToken', {
 		u : sessionStorage.username,
 		r : sessionStorage.roomName,
-		s : isSpectator
+		s : sessionStorage.spectator
 	}, function(result) {
 		sessionStorage.token = result.trim();
 		sessionStorage.tokenTS = new Date().getTime();
@@ -459,32 +433,29 @@ function openNewChannel(isSpectator) {
 		openChannel(sessionStorage.token);
 	}).fail(function(error) {
 		console.log(new Date().toLocaleString() + ": Error in obtaining token: " + error.status + ":" + error.responseText)
-		
 		switch(error.status){
-		// Authentication Error: name already in use, show error
-		case 401:
-			sessionOff();
-			showError(error.responseText); 
-			break;
-		
+				
 		// Forbidden: room full, or game in progress, show option to 
 		// join as spectator
 		case 403: 	
-			showError(error.responseText);
-			if(confirm("It seems game has already started or " +
-					"there isn't room for more players. Would you like " +
-					"to join as a spectator?")){
-//				$('#cbSpectator').prop('checked', true);
-				// if user clicks on Yes, open channel as spectator
-				openNewChannel(true);
-				// do we need to maintain this flag?? YES!!
-				spectator = true;
-			}	
+//			alert(error.responseText);
+			window.setTimeout(function(){
+				if(confirm("It seems game has already started or " +
+						"there isn't room for more players. Would you like " +
+						"to join as a spectator?")){
+					// if user clicks on Yes, open channel as spectator
+					sessionStorage.spectator = true;
+					openNewChannel();
+				} else {
+					goHome();
+				}
+			},200);
 			break;
 		
 		default: // show error
-			sessionOff();
-			showError(error.responseText); 
+//			sessionOff();
+			alert(error.responseText);
+			goHome();
 			break;
 		}
 		
@@ -501,64 +472,17 @@ function openChannel(token) {
 	socket.onclose = onClose;
 }
 
-function enter(name) {
-	if (name.length >= 3 && name !== 'Name') {
-		sessionStorage.roomName = $('#slRooms').val();
-		sessionStorage.username = name;
-//		openNewChannel(sessionStorage.spectator);
-//		console.log("$('#cbSpectator').prop('checked')="+$('#cbSpectator').prop("checked") );
-		var currTS = new Date().getTime();
-		
-		// if we already have a token, use that token to connect
-		if (sessionStorage.tokenTS !== undefined 
-			&& (currTS - sessionStorage.tokenTS) < (115 * 60 * 1000))
-				openChannel(sessionStorage.token);
-		else // else i.e. if it's missing or old, then open new channel		
-			openNewChannel(spectator);
-	} else {
-		showError("Please enter valid name! (3 to 12 characters long)");
-	}
-}
-
 $(document).ready(function() {
 		
 	clear();
 	console.log("sessionStorage.username="+sessionStorage.username);
 	if (sessionStorage.username !== undefined && sessionStorage.username !== "undefined"){
-		console.log("calling enter:"+sessionStorage.username.length);
-		$('#txtName').val(sessionStorage.username);
-		enter($('#txtName').val());
+		openNewChannel();
 	} else {
-		sessionOff();
+//		sessionOff();
+		goHome();
 	}
 	
-//	$('#bq').click(function(){
-//		window.location = '/';
-//	})
-	
-	$('#txtName').focus(function() {
-		if ($(this).val() == "Name")
-			$(this).val("");
-	}).blur(function() {
-		if ($(this).val() == "")
-			$(this).val("Name");
-	});
-
-	$('#txtName').keydown(function(e) {
-		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-		if (key == 13) {
-			enter($('#txtName').val());
-		}
-	});
-
-	$('#btnEnter').click(function() {
-		enter($('#txtName').val());
-	});
-
-	// var token = $('#token').val();
-	// if(token !== undefined)
-	// openChannel(token);
-
 	$('#txtChat').keydown(function(e) {
 		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 		if (key == 13) {
@@ -575,15 +499,25 @@ $(document).ready(function() {
 	});
 
 	$(window).on('beforeunload', function(e) {
-		if (connected && !forceRefresh)
-			return "Please use the Leave button to leave the game!";
+		// resetting spectator flag to false, so that user may login as player now
+		// TODO: change this when spectator checkbox is added on home page
+//		sessionStorage.spectator = false;
+		
+		// changing reconnecting flag to true, because in case page is
+		// getting refreshed, onClose should not redirect to home page.
+		// if page is not getting refreshed, but closed, 
+		// it won't matter as this is page scoped variable
+		reconnecting = true;
+		
+		// to prevent the delayed polling from raising an error
+		window.clearTimeout(socket.pollingTimer_);
 	});
 	
 	$('#btnQuit').click(function(){
-		
-		if(status === RoomStatus.BIDDING)
+		var quit = false;
+		if(status === RoomStatus.BIDDING && !sessionStorage.spectator)
 			quit = confirm("Didn't like your cards, so chickening out!\nAre you sure you want to leave the game?");
-		else if(status === RoomStatus.PLAYING)
+		else if(status === RoomStatus.PLAYING && !sessionStorage.spectator)
 			quit = confirm("You are in the middle of a game.\nAre you sure you want to leave the game?");
 		else 
 			quit = confirm("Are you sure you want to leave the game?");
@@ -594,14 +528,8 @@ $(document).ready(function() {
 				u : sessionStorage.username,
 				r : sessionStorage.roomName,
 			}, function(){
-				
-//				window.close(); // won't allow to close
-				sessionStorage.username = undefined;
-				sessionStorage.token = undefined;
-				sessionStorage.tokenTS = undefined;
 				socket.close();
-				forceRefresh = true;
-				window.location = "/";
+				goHome();
 			});
 		}
 	});
@@ -610,7 +538,8 @@ $(document).ready(function() {
 		$('.chat').toggle();
 	});
 	
-//	$('#chatWindow').draggable();
+	$('#chatWindow').draggable();
+	$('#bidSpecSelector').draggable();
 	
 	$('#historyIcon').click(function(){
 		window.open('/history', '_blank');
@@ -640,15 +569,4 @@ $(document).ready(function() {
 		}
 	});
 
-	// wait for a second after it loads, to add hover event
-	window.setTimeout(function(){
-		$('.handCard').hover(
-		        function() {
-		            $(this).animate({ 'zoom': 1.8 }, 400);
-		        },
-		        function() {
-		            $(this).animate({ 'zoom': 1 }, 200);
-		        });
-	},1000);
-	 
 });
