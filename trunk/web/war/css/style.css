@@ -131,6 +131,7 @@ table, th, td {
 	height: 40px;
 	margin-right: 5%;
 	margin-top: 3%;
+	cursor: pointer;
 }
 
 #scoreboardError{
@@ -224,6 +225,7 @@ td.rightItem, th.rightItem{
 
 #chatHeader{
 	height: 19px;
+	cursor: pointer;
 }
 
 #chatWindow {
@@ -233,6 +235,7 @@ td.rightItem, th.rightItem{
 	border-spacing: 0;
 	height: 250px;
 	width: 310px;
+	cursor: move;
 }
 
 #chatLog {
@@ -274,6 +277,13 @@ td.rightItem, th.rightItem{
 	margin-top: -10px;
 	margin-left: 10px; */
  	margin: auto;
+}
+
+.inactive {
+	background-color: aqua;
+	width: 100%;
+	height: 100%;
+	visibility: hidden;
 }
 
 .neutral {
@@ -385,6 +395,7 @@ td.rightItem, th.rightItem{
 }
 
 .playable {
+	cursor: pointer;
 }
 
 #playError{
@@ -405,13 +416,6 @@ td.rightItem, th.rightItem{
 .highestCard {
 	box-shadow: 0 0 0 2px #ff0;
 	border-radius: 5px;
-}
-
-.inactive {
-	background-color: aqua;
-	width: 100%;
-	height: 100%;
-	visibility: hidden;
 }
 
 .loyalty{
@@ -575,6 +579,7 @@ td.right {
 	text-decoration: none;
 	border-radius: 2px;
 	padding: 2px 2px;
+	cursor: pointer;
 }
 
 .green {
@@ -622,6 +627,7 @@ td.right {
 	padding: 10px 10px;
 	border-radius: 10px;
 	border: solid 1px #ffffff;
+	display: none;
 }
 
 #bidControl2 {
@@ -651,7 +657,9 @@ td.right {
 	top: 18%;
 	width: 610px;
 	height: 350px;
+	display: none;
 	z-index: 100;
+	cursor: move;
 }
 
 #bidValue {
@@ -723,6 +731,7 @@ img.cardSpec {
 	border-color: black;
 	border-radius: 4px;
 	padding: 2px 2px;
+	cursor: pointer;
 }
 
 img.suitSpec {
@@ -731,6 +740,7 @@ img.suitSpec {
 	border-color: black;
 	border-radius: 4px;
 	padding: 2px 2px;
+	cursor: pointer;
 }
 
 img.unselected {
@@ -759,6 +769,7 @@ img.selected {
 	max-height: 80px;
 	max-width: 200px;
 	margin: auto;
+	display: none;
 }
 
 #partnerTrump {

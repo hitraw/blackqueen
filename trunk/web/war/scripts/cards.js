@@ -12,6 +12,8 @@ var highestCard;
 var $myCard;
 var disableAlert = false;
 var posDefined = false;
+var justPlayed = false;
+var tableClearing = false;
 var cardpos; 
 
 function resetGame() {
@@ -95,6 +97,7 @@ function showCards(cardArray) {
 				if (myIndex !== undefined && players[myIndex].turn) {
 					// if I've clicked on a playable card
 					if ($(this).hasClass('playable')) {
+						justPlayed = true;
 						$myCard = $(this);
 						var cardId = $myCard.prop('id');
 						var splitArray = cardId.split("-");
@@ -147,15 +150,22 @@ function showCards(cardArray) {
 							
 							// change title back to normal
 							turnOver();
+							
+							justPlayed = false;
 						}).error(function() {
 							console.log("error in playing card");
 							// TODO display error message: invalid move
 							showPlayError("You played an invalid card.");
+							
+							// if somehow user managed to play an invalid card
+							// allow him to play again
+							setPlayableCards();
+							
+							justPlayed = false;
 						});
-						// TODO: show animation, card moving up slightly now
-						// and to the table on success above,	
-						// commenting this as it's creating a jitter
-						// $(this).animate({'margin-top':'-30px'}, 300);
+						// while the card is being played, make sure to...
+						// disable cards in my hand
+						disableHandCards();
 						
 					} else {
 						
@@ -166,21 +176,28 @@ function showCards(cardArray) {
 							showPlayError("This game is over! Please start new game!");
 						}
 						else{
-						// display error message you can't play this card
-						// if startingSuit is null, it could only mean you're
-						// playing trump and it's not cut yet. Show error accdly.
-						if(startingSuit === undefined || startingSuit === null)
-							showPlayError("It hasn't been cut yet. You can't start with cutting!");
-	
-						// if starting suit is not null, it means you have that suit
-						// and are trying to play another suit. show error accdly.
-						else
-							showPlayError("You can't play different suit. You have this suit!");
+							if(justPlayed)
+								showPlayError("Relax, you just played! Please wait a moment!");
+							else if(tableClearing)
+								showPlayError("Please wait a moment for table to clear!");
+							// display error message you can't play this card
+							// if startingSuit is null, it could only mean you're
+							// playing trump and it's not cut yet. Show error accdly.
+							else if(startingSuit === undefined || startingSuit === null)
+								showPlayError("It hasn't been cut yet. You can't start with cutting!");
+		
+							// if starting suit is not null, it means you have that suit
+							// and are trying to play another suit. show error accdly.
+							else
+								showPlayError("You can't play different suit. You have this suit!");
 						}
 					}
 				} else {
-					// display error message it's not your turn
-					showPlayError("Don't get too excited, please wait for your turn!");
+					if(status === RoomStatus.BIDDING)
+						showPlayError("Patience, we are still in bidding stage!");
+					else
+						// display error message it's not your turn
+						showPlayError("Don't get too excited, please wait for your turn!");
 				}
 			});
 	
@@ -216,8 +233,8 @@ function showPlayError(error){
 }
 
 function initializeCardSpecs() {
-	// $('.cardSpec').removeClass('selected');
-	// $('.suitSpec').removeClass('selected');
+	$('.cardSpec').removeClass('selected');
+	$('.suitSpec').removeClass('selected');
 
 	$('.cardSpec').click(function() {
 		$('.cardSpec').removeClass('selected');
@@ -278,7 +295,7 @@ function checkShowDoneBtn() {
 						$('#bidSpec').hide(600);
 						$('#room').removeClass('curtain');
 						resetRound();
-						setPlayableCards(trumpSuit);
+//						setPlayableCards();
 					});
 
 				});
@@ -395,6 +412,7 @@ function setPlayableCards() {
 			// make everything in my hand playable
 			$('.handCard').removeClass('unplayable').addClass('playable');
 	}
+	highlightTurn();
 }
 
 function showCardTable(json){
@@ -447,7 +465,6 @@ function showCardTable(json){
 			&& players[myIndex].turn){
 //		console.log("showCardTable::: status="+status+", myIndex="+myIndex);
 		setPlayableCards();
-		highlightTurn();
 	}	
 }
 
@@ -458,6 +475,11 @@ function showCardsSeq(card, index){
 }
 
 function managePlayMessage(json) {
+	
+	// first thing we do is...
+	// disable cards in my hand
+	disableHandCards();
+	
 	var card = json["card"];
 	var playerIndex = json["currentIndex"];
 	var nextIndex = json["nextIndex"];
@@ -515,19 +537,17 @@ function managePlayMessage(json) {
 		// reset round level variables and controls
 		resetRound();
 	}
-	
-	// disable cards in my hand
-	disableHandCards();
-	
-	// if it's my turn now, set my playable cards
-	if (status === RoomStatus.PLAYING && nextIndex === myIndex){
-//		console.log("managePlayMessage::: status="+status+", nextIndex="+nextIndex + ", myIndex="+myIndex);
-		setPlayableCards();
-		highlightTurn();	
+	else {
+		// if it's my turn now, set my playable cards
+		if (status === RoomStatus.PLAYING && nextIndex === myIndex){
+			setPlayableCards();
+		}
 	}	
 }
 
 function declareRoundWinner(json){
+	
+	tableClearing = true;
 	
 	var roundWinnerIndex = json["winnerIndex"];
 	var pointCardsJsonObj = JSON.parse(json["winnerPointCards"]);
@@ -576,6 +596,13 @@ function declareRoundWinner(json){
 			$('#cardMat').html("");
 			$('#tablePoints').html("");
 		});
+		
+		// and if it's my turn now, set my playable cards & highlight my turn
+		if (status === RoomStatus.PLAYING && myIndex !== undefined 
+				&& players[myIndex].turn)
+			setPlayableCards();
+		
+		tableClearing = false;
 	}, 2500);
 		
 }

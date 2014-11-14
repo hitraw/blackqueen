@@ -1,6 +1,3 @@
-var centreX = 450;
-var centreY = 270;
-var radius = 260;
 var players; // array of object players currently on screen
 var positions; // array of positions these players are on.
 var myIndex = undefined; // default undefined, 0 will create controls for spectators
@@ -231,15 +228,15 @@ function manageControls() {
 		break;
 	case RoomStatus.BIDDING:
 		manageBid();
-		if(!spectator)
+		if(!sessionStorage.spectator)
 			showEndBtn();
 		break;
 	case RoomStatus.PLAYING:
-		if(!spectator)
+		if(!sessionStorage.spectator)
 			showEndBtn();
 		break;
 	case RoomStatus.GAME_OVER:
-		if(!spectator)
+		if(!sessionStorage.spectator)
 			showEndBtn();
 		showFinalScore();
 		break;
