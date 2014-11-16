@@ -1,7 +1,6 @@
 var channel;
 var socket;
 var status;
-//var tokenTimeoutID;
 var reconnecting = false;
 
 //sound variables;
@@ -394,7 +393,9 @@ function onError(error) {
 function onOpened() {
 	console.log(new Date().toLocaleString() + ": Connected.");
 	sessionOn();
-//	forceRefresh = false;
+	window.setTimeout(function(){
+		$('#curtain').fadeOut(500);
+	},1000);
 	reconnecting = false;
 	var currentTS = new Date().getTime();
 	var tokenAge = currentTS - sessionStorage.tokenTS;
@@ -414,9 +415,14 @@ function onOpened() {
 		window.setTimeout(function(){
 		// important to set reconnecting flag to true
 		// so that close doesn't redirect to home page
-		reconnecting = true;
-		socket.close();
-		openNewChannel();
+//		reconnecting = true;
+//		$('.load').html("reconnecting");
+//		$('#curtain').show();
+//		socket.close();
+		// give it a second for connection to close on the server
+//		window.setTimeout(openNewChannel, 1000);
+//		openNewChannel();
+		window.location = "/game";	
 	}, timeToExpire);
 }
 
@@ -425,7 +431,7 @@ function openNewChannel() {
 	$.post('/getToken', {
 		u : sessionStorage.username,
 		r : sessionStorage.roomName,
-		s : sessionStorage.spectator
+		s : sessionStorage.spectator,
 	}, function(result) {
 		sessionStorage.token = result.trim();
 		sessionStorage.tokenTS = new Date().getTime();
@@ -455,7 +461,7 @@ function openNewChannel() {
 		default: // show error
 //			sessionOff();
 			alert(error.responseText);
-			goHome();
+//			goHome();
 			break;
 		}
 		
@@ -472,12 +478,20 @@ function openChannel(token) {
 	socket.onclose = onClose;
 }
 
+
+// 
+
 $(document).ready(function() {
 		
+	if(sessionStorage.refresh)
+		$('.load').html("reconnecting");
 	clear();
-	console.log("sessionStorage.username="+sessionStorage.username);
+	
+	console.log("username="+sessionStorage.username);
 	if (sessionStorage.username !== undefined && sessionStorage.username !== "undefined"){
-		openNewChannel();
+		// give it couple of seconds for connections to close on the server
+		// and then open new channel
+		window.setTimeout(openNewChannel, 2000);
 	} else {
 //		sessionOff();
 		goHome();
@@ -509,8 +523,14 @@ $(document).ready(function() {
 		// it won't matter as this is page scoped variable
 		reconnecting = true;
 		
+		// if browser tab is closed, sessionStorage scope ends, hence following.
+		sessionStorage.refresh = true;
+		
 		// to prevent the delayed polling from raising an error
 		window.clearTimeout(socket.pollingTimer_);
+		
+		// no need to call following explicitly, handled by the framework
+//		socket.close();
 	});
 	
 	$('#btnQuit').click(function(){

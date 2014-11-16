@@ -28,7 +28,17 @@
 </head>
 
 <body>
-
+	<div id="curtain">
+		<div class="circ">
+			<div class="load">connecting</div>
+			<div class="hands"></div>
+			<div class="body"></div>
+			<div class="head">
+				<div class="eye"></div>
+			</div>
+		</div>
+	</div>
+	
 	<div id="room">
 		<table id="roomTable">
 			<tr>

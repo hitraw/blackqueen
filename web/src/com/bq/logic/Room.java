@@ -151,24 +151,24 @@ public class Room {
 	}
 
 	/**
-	 * Method to end the current game in progress abruptly 
+	 * Method to end the current game in progress abruptly
 	 */
 	public void endGame() {
 		// remove robots from player list
-		for (Player player : robots) 
+		for (Player player : robots)
 			players.remove(player);
 
 		// reset robots list
 		robots = new ArrayList<Player>();
-		
+
 		// remove disconnected players and reset turn for connected players
 		List<Player> playersCopy = new ArrayList<Player>(players);
-		for (Player player: playersCopy) {
+		for (Player player : playersCopy) {
 			player.reset();
-			if(!player.isConnected())
+			if (!player.isConnected())
 				players.remove(player);
 		}
-		
+
 		// move dealTurnIndex (who's turn it is to deal)
 		dealTurnIndex = (dealTurnIndex + 1) % players.size();
 
@@ -178,7 +178,7 @@ public class Room {
 		else {
 			changeStatus(Status.WAITING_FOR_PLAYERS);
 		}
-		
+
 		// communicate to all updated player info
 		sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayersJSON()));
 	}
@@ -233,8 +233,8 @@ public class Room {
 			p = getSpectator(playerName);
 
 		if (p != null 
-				&& !p.isConnected() // to prevent connection override
-				) { 
+//				&& !p.isConnected() // to prevent connection override
+		) {
 			p.connected();
 			connected = true;
 
@@ -245,8 +245,8 @@ public class Room {
 			sendMessageToAll(new Message(Message.Type.CONNECTION, playerName));
 		} else {
 			connected = false;
-			log.severe("Error in connecting player: isConnected=" + (p != null ? String
-					.valueOf(p.isConnected()) : null));
+			log.severe("Error in connecting player: isConnected="
+					+ (p != null ? String.valueOf(p.isConnected()) : null));
 		}
 		return connected;
 	}
@@ -258,24 +258,26 @@ public class Room {
 			p.disconnected();
 			disconnected = true;
 			sendMessageToAll(new Message(Message.Type.DISCONNECTION, playerName));
-			
+
 			// if a player disconnects when game is not in progress
 			// remove the players from the game as well
-			if(status.equals(Status.WAITING_FOR_PLAYERS) 
-					|| status.equals(Status.READY_TO_DEAL)){
+			if (status.equals(Status.WAITING_FOR_PLAYERS)
+					|| status.equals(Status.READY_TO_DEAL)) {
 				removePlayer(playerName);
 			}
-		} // if spectator disconnects, just remove him/her. 
-		// no need to maintain connect/disconnect for spectator 
-		else if (getSpectator(playerName)!=null){
+		} // if spectator disconnects, just remove him/her.
+			// no need to maintain connect/disconnect for spectator
+		else if (getSpectator(playerName) != null) {
 			removeSpectator(playerName);
 			disconnected = true;
-		} // if neither, we didn't find whom to disconnect. 
+		} // if neither, we didn't find whom to disconnect.
 		else {
 			disconnected = false;
-			log.severe("Error in disconnecting player: player doesn't exist");
+			log.severe("Error in disconnecting player: " 
+					+ p != null ? "p.isConnected=" + p.isConnected()
+					: "player doesn't exist");
 		}
-		return disconnected;	
+		return disconnected;
 	}
 
 	public Player addPlayer(String playerName) {
@@ -362,7 +364,7 @@ public class Room {
 		if (scoreboard.hasData())
 			sendMessage(p,
 					new Message(Message.Type.SCORE, scoreboard.getJSON()));
-		
+
 		if (status.equals(Status.GAME_OVER))
 			sendMessage(p, new Message(Message.Type.SNAPSHOT,
 					getCardSnapshotsJSON()));
@@ -441,7 +443,7 @@ public class Room {
 		return p;
 	}
 
-	public String getCardSnapshotsJSON(){
+	public String getCardSnapshotsJSON() {
 		String json = null;
 		if (players != null) {
 			JSONArray snapshotsArray = new JSONArray();
@@ -456,7 +458,7 @@ public class Room {
 		}
 		return json;
 	}
-	
+
 	public String getPlayersJSON() {
 		String json = null;
 		if (players != null) {
@@ -515,8 +517,8 @@ public class Room {
 			int playerIndex = Integer.parseInt(strPlayerIndex);
 			success = currGame.play(playerIndex, card);
 
-			if (success) 
-				if (currGame.isGameOver) 
+			if (success)
+				if (currGame.isGameOver)
 					declareGameOver();
 
 		} catch (Exception e) {
@@ -530,15 +532,13 @@ public class Room {
 		currGame.assignPoints();
 
 		Room.this.changeStatus(Status.GAME_OVER);
-		sendMessageToAll(new Message(Message.Type.PLAYERS,
-				getPlayersJSON()));
+		sendMessageToAll(new Message(Message.Type.PLAYERS, getPlayersJSON()));
 
 		currGame.addToScoreboard();
 		gameCount++;
 
-		sendMessageToAll(new Message(Message.Type.SCORE,
-				scoreboard.getJSON()));
-		
+		sendMessageToAll(new Message(Message.Type.SCORE, scoreboard.getJSON()));
+
 		sendMessageToAll(new Message(Message.Type.SNAPSHOT,
 				getCardSnapshotsJSON()));
 		// endGame();
@@ -599,9 +599,9 @@ public class Room {
 			boolean success = currRound.play(playerIndex, card);
 
 			if (success) {
-				
+
 				calculatePoints();
-				
+
 				// if round has been won
 				if (currRound.isRoundOver) {
 
@@ -964,7 +964,7 @@ public class Room {
 				 */
 
 				if (validatePlay(player, card) && player.play(card)) {
-					
+
 					// add card to table
 					table.add(card);
 
@@ -991,7 +991,8 @@ public class Room {
 							loyalties.put(updatedLoyalty);
 
 							sendMessageToAll(new Message(
-									Message.Type.GAME_NOTIFICATION, player.getName()
+									Message.Type.GAME_NOTIFICATION,
+									player.getName()
 											+ " is revealed as Partner."));
 							partnerCount++;
 
@@ -1020,7 +1021,7 @@ public class Room {
 						// (partial/complete)
 						sendMessageToAll(new Message(Message.Type.LOYALTIES,
 								loyalties.toString()));
-						
+
 						// TODO: add mid round check for game over???
 					}
 
@@ -1130,8 +1131,8 @@ public class Room {
 
 	public void addSpectator(String username) {
 		spectators.add(new Player(username));
-		sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
-				username + " joined, as spectator."));
+		sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION, username
+				+ " joined, as spectator."));
 	}
 
 	public Player removeSpectator(String username) {
