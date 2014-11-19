@@ -42,8 +42,8 @@ h4{
 	top: 0px;
 	border-spacing: 0;
 	margin-left: 50px;
-	width: 600px;
-	height: 400px;
+	width: 900px;
+	height: 600px;
 	text-align: center;
 	background: url("/images/papyrus-landscape.png") no-repeat;
 	-webkit-background-size: cover;
@@ -66,14 +66,14 @@ h4{
 
 #scoreLog {
 	color: black;
-	width: 82%;
+	width: 80%;
 	height: 75%;
 	overflow-y: auto;
 	font-family: Verdana, sans-serif;
 	font-size: small;
 	word-wrap: break-word;
 	margin-top: 25px;
-	margin-left: 55px;
+	margin-left: 85px;
 }
 
 table.scorecard {

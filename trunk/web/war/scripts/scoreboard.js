@@ -77,8 +77,8 @@ function showScore(scoreboard) {
 			totals.push(0);
 		}
 		
-		scoreHTML += ("<td class='score' width='13%'>Bid / Opp</td>");
-		scoreHTML += ("<td class='score rightItem' width='22%'>Partner / Trump</td>");
+		scoreHTML += ("<td class='score' width='17%'>Bid / Opp</td>");
+		scoreHTML += ("<td class='score rightItem' width='18%'>Partner / Trump</td>");
 		
 		scoreHTML += ("</tr>");
 		

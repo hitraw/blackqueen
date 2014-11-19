@@ -154,6 +154,9 @@ function setStatus(statusText) {
 		$('.pointCardsContainer').html("").hide(); // clear n hide the point cards div
 		$('.snapshot').html("").hide(); // clear snapshot
 		
+		// fix for defect where title still displayed - Your turn even after new game started
+		turnOver(); 
+		
 		resetGame();
 
 	} else if (statusText === RoomStatus.BIDDING) {
