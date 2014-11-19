@@ -128,7 +128,7 @@ public class ScoreboardServlet extends HttpServlet {
 		Query query = new Query("Scoreboard", roomKey).addSort("date",
 				Query.SortDirection.DESCENDING);
 		List<Entity> scoreboards = datastore.prepare(query).asList(
-				FetchOptions.Builder.withLimit(5));
+				FetchOptions.Builder.withLimit(10));
 		
 		if(!scoreboards.isEmpty()){
 			for (Entity scoreboard : scoreboards) {
