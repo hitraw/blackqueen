@@ -42,8 +42,8 @@ h4{
 	top: 0px;
 	border-spacing: 0;
 	margin-left: 50px;
-	width: 900px;
-	height: 600px;
+	width: 750px;
+	height: 500px;
 	text-align: center;
 	background: url("/images/papyrus-landscape.png") no-repeat;
 	-webkit-background-size: cover;
@@ -73,7 +73,7 @@ h4{
 	font-size: small;
 	word-wrap: break-word;
 	margin-top: 25px;
-	margin-left: 85px;
+	margin-left: 72px;
 }
 
 table.scorecard {
