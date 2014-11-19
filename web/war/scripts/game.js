@@ -155,17 +155,20 @@ function showPlayers(playerJsonArray) {
 		positions = [ 0, 4 ];
 		break;
 	case 3:
-		positions = [ 0, 3, 5 ];
+		positions = [ 0, 2, 4 ];
 		break;
 	case 4:
 		positions = [ 0, 2, 4, 6 ];
 		break;
 	case 5:
-		positions = [ 0, 1, 3, 5, 7 ];
+		positions = [ 0, 1, 3, 4, 6 ];
 		break;
 	case 6:
 		positions = [ 0, 1, 3, 4, 5, 7 ];
 		break;
+	case 7:
+		positions = [ 0, 1, 2, 3, 4, 5, 7 ];
+		break;	
 	case 8:
 		positions = [ 0, 1, 2, 3, 4, 5, 6, 7 ];
 		break;
@@ -212,7 +215,8 @@ function showPlayers(playerJsonArray) {
  * function to show relevant controls/fields as per status
  */
 function manageControls() {
-	// console.log(status);
+	var isSpectator = sessionStorage.spectator == true 
+		|| sessionStorage.spectator == "true";
 	switch (status) {
 	case RoomStatus.WAITING_FOR_PLAYERS:
 		$('#endBtn').html(''); // clear end button div
@@ -228,15 +232,15 @@ function manageControls() {
 		break;
 	case RoomStatus.BIDDING:
 		manageBid();
-		if(!sessionStorage.spectator)
+		if(!isSpectator)
 			showEndBtn();
 		break;
 	case RoomStatus.PLAYING:
-		if(!sessionStorage.spectator)
+		if(!isSpectator)
 			showEndBtn();
 		break;
 	case RoomStatus.GAME_OVER:
-		if(!sessionStorage.spectator)
+		if(!isSpectator)
 			showEndBtn();
 		showFinalScore();
 		break;

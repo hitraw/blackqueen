@@ -28,7 +28,7 @@ public class Room {
 
 	private Logger log = Logger.getLogger(Room.class.getName());
 	private static final int MIN_PLAYERS = 4;
-	private static final int MAX_PLAYERS = 6;
+	private static final int MAX_PLAYERS = 8;
 	public static final String KEY_DELIMITER = ":";
 	private String name;
 	private List<Player> players;
@@ -672,8 +672,11 @@ public class Room {
 			turnIndex = (turnIndex + 1) % players.size();
 
 			// calculate starting bid as half of max points
-			// again, typically 65 (for 4 players) or 130 (for 5-8 players)
+			// again, typically 65 (for 4 players) or 130 (for 5-6 players)
 			bidTarget = maxTarget / 2;
+			
+			if(players.size() > 6)
+				bidTarget = 120; // lowering starting bid for 7-8 player game
 
 			Player dealer = players.get(currIndex);
 			dealer.setBid(bidTarget);
@@ -790,7 +793,7 @@ public class Room {
 			return (p != null && p.isTurn() && p.getBid() != PASS
 					&& Status.BIDDING.equals(status) && (bid == PASS || (bid % 5 == 0 && (players
 					.size() == 4 ? (bid >= 70 && bid <= 130)
-					: (bid >= 135 && bid <= 260)))));
+					: (bid >= 120 && bid <= 260)))));
 		}
 
 		public void setBidSpec(String partnerCard, String trumpSuit) {
