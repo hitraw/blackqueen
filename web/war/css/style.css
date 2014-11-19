@@ -655,14 +655,13 @@ td.rightItem, th.rightItem{
 }
 
 .snapshotCard {
-	height: 60px;
+	height: 58px;
 	width: 40px;
 	float: left;
 	margin-left: -27px;
 	border: 1px solid;
 	border-color: black;
 	border-radius: 2px;
-	border: 1px solid;
 	background-size: contain;
 	background-repeat: no-repeat;
 	margin-top: 2px;
@@ -671,7 +670,7 @@ td.rightItem, th.rightItem{
 .played:after {
 	content: "";
 	display: block;
-	height: 60px;
+	height: 58px;
 	background-color: rgba(0, 0, 0, 0.3);
 	z-index: 100;
 }
