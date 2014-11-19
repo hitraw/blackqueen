@@ -1,7 +1,7 @@
 <!doctype html>
 <!-- HTML5 shortened doctype!   -->
 
-<html>
+<html manifest="game.appcache">
 <head>
 <meta charset="utf-8">
 <title>Black Queen</title>
