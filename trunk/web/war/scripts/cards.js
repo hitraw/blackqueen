@@ -49,11 +49,11 @@ function defineCardPos(){
 		cardpos = [	// array of card positions for players 0 to 7
 		            {top: $('#pos0').offset().top - 120, left: $('#pos0').offset().left + margin0},
 		            {top: $('#pos1').offset().top - 60, left: matLeft + matWidth/2 - 90},
-		            {top: $('#pos2').offset().top - 10, left: matLeft + matWidth/2 - 90},
+		            {top: $('#pos2').offset().top, left: matLeft + matWidth/2 - 90},
 		            {top: $('#pos3').offset().top + 60, left: matLeft + matWidth/2 - 90},
 		            {top: $('#pos4').offset().top + 120, left: $('#pos4').offset().left + margin0},
 		            {top: $('#pos5').offset().top + 60, left: matRight - matWidth/2 + 20},
-		            {top: $('#pos6').offset().top - 10, left: matRight - matWidth/2 + 20},
+		            {top: $('#pos6').offset().top, left: matRight - matWidth/2 + 20},
 		            {top: $('#pos7').offset().top - 60, left: matRight - matWidth/2 + 20}
 		           ];
 		posDefined = true;
