@@ -168,7 +168,15 @@ public class Room {
 			if (!player.isConnected())
 				players.remove(player);
 		}
-
+		
+		// add spectators to the game?
+		while(players.size() < MAX_PLAYERS && !spectators.isEmpty()){
+			Player p = spectators.remove(0);
+			if (players.add(p)) {
+				sendMessageToAll(new Message(Message.Type.ROOM_NOTIFICATION,
+						p.getName() + " joined the game."));
+			}
+		}	
 		// move dealTurnIndex (who's turn it is to deal)
 		dealTurnIndex = (dealTurnIndex + 1) % players.size();
 
