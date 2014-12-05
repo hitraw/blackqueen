@@ -357,7 +357,7 @@ public class Room {
 		// info e.g. cards on the table, points, etc.
 		// *** Imp: round message has to be sent after
 		// players, but before cards, ***
-		// TODO: WHY??? shouldn't cards be sent first???
+		// WHY??? shouldn't cards be sent first???
 		if (Status.PLAYING.equals(status)) {
 			sendMessage(
 					p,
@@ -612,16 +612,8 @@ public class Room {
 
 				// if round has been won
 				if (currRound.isRoundOver) {
-
 					players.get(currRound.roundWinnerIndex).setTurn();
 					currRound = new Round(currRound.roundWinnerIndex);
-
-					// no need to send this any more TODO: check
-					// sendMessageToAll(new Message(Message.Type.PLAYERS,
-					// getPlayersJSON()));
-					// sendMessageToAll(new Message(Message.Type.ROUND,
-					// currRound.getRoundInfo()));
-
 				}
 			}
 			return success;
@@ -1025,7 +1017,6 @@ public class Room {
 								}
 
 						} catch (JSONException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						// mid round update declaring change in loyalties
@@ -1033,7 +1024,6 @@ public class Room {
 						sendMessageToAll(new Message(Message.Type.LOYALTIES,
 								loyalties.toString()));
 
-						// TODO: add mid round check for game over???
 					}
 
 					player.removeTurn();

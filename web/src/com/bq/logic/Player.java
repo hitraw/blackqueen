@@ -64,10 +64,6 @@ public class Player {
 			return false;
 	}
 
-	public void orderCards() {
-		// TODO: add logic to order cards held in hand
-	}
-
 	public void addPointCards(List<Card> cards) {
 		for (Card c : cards) {
 			pointCards.add(c);
