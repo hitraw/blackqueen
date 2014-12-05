@@ -56,8 +56,6 @@ public class TokenServlet extends HttpServlet {
 				token = generateToken(room, username);
 				resp.getWriter().println(token);
 				
-				// TODO but how do we ensure concurrent check
-				// check again when user connects, refuse connection, but how???
 			}
 			else {
 				// raise error
